@@ -1,0 +1,17 @@
+/* CUSTOMIZE LOADING BUTTON */
+button.loading.button-spin,
+button.loading.button-check {
+	padding-top: 0;
+	padding-bottom: 0;
+}
+button.loading > .spinner {
+	height: 1.556rem;
+	width: 1.556rem;
+	border-width: 2px;
+	margin: 0.3rem 0.5rem 0.3rem 0.5rem;
+}
+button.loading > .check {
+	width: 1.8rem;
+	height: 1.8rem;
+	margin: 0.225rem 0.378rem 0.225rem 0.378rem;
+}

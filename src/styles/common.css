@@ -1,0 +1,87 @@
+/* https://coolors.co/000000-7b7b7b-f5f5f5-fafafa-ffffff */
+html {
+	height: 100%;
+}
+body,
+#root,
+.fullscreen {
+	height: inherit;
+	min-height: 100%;
+}
+
+/* BOOTSTRAP WEIRD BORDER REMOVAL */
+button {
+	outline: none !important;
+}
+
+:root {
+	--default-transition-duration: 100ms;
+	--lightgray: #fafafa;
+	--lesslightgray: #f5f5f5;
+}
+
+/* SPACING */
+.core-wrapper {
+	padding-top: 4.2rem;
+	padding-bottom: 3rem;
+}
+
+/* BANNER */
+.banner-wrapper {
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	margin-top: 0.5rem;
+}
+
+/* Specific BS adjustments */
+.invalid.form-text {
+	color: red;
+}
+.valid.form-text {
+	color: #28a745;
+}
+.account-dropdown > button,
+.account-dropdown > button:active,
+.account-dropdown > button:focus,
+.account-dropdown > button:hover {
+	background-color: unset !important;
+	border: none !important;
+	box-shadow: none !important;
+}
+.account-dropdown.show > button,
+.account-dropdown > button:hover {
+	color: lightgray !important;
+}
+.account-dropdown > button::after {
+	display: none;
+}
+
+/* DOUBLE PANER */
+.double-pane > .row {
+	margin: 0;
+}
+.double-pane > .row > div:first-child {
+	border-right: 1px solid lightgray;
+}
+.double-pane > .row > div {
+	padding: 0;
+}
+.double-pane .card-title {
+	margin: 0;
+	cursor: pointer;
+}
+.double-pane .tab-title {
+	padding: 1.25rem;
+	transition: all var(--default-transition-duration);
+}
+.double-pane .tab-title.active,
+.double-pane > .row > div:nth-child(2) {
+	background-color: var(--lightgray);
+}
+.double-pane .tab-title:hover {
+	background-color: var(--lesslightgray);
+}
+.double-pane .tab-title:nth-child(odd) {
+	border-bottom: 1px solid lightgray;
+}
