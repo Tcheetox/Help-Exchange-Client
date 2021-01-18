@@ -25,9 +25,10 @@ export const AppContextProvider = props => {
 	])
 	const removeCookieAuth = useCallback(() => handleCookie('longlived-auth', false), [handleCookie])
 
+	// TODO: fetchRequest could probably be refactored nicely
 	const fetchRequest = useCallback(async (method, body, uriSuffix, token = null, callback = null) => {
 		// Build request
-		const reqOptions = {
+		let reqOptions = {
 			method: method,
 			headers: token
 				? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
@@ -38,6 +39,7 @@ export const AppContextProvider = props => {
 				client_secret: process.env.REACT_APP_CLIENT_SECRET,
 			}),
 		}
+		if (method === 'HEAD' || method === 'GET') reqOptions = { ...reqOptions, body: null }
 		// Submit request and fetch result
 		let resp
 		let parsedResp
@@ -48,23 +50,25 @@ export const AppContextProvider = props => {
 				: await fetch(`http://localhost:3000/api/v1/${uriSuffix}`, reqOptions)
 			parsedResp = await resp.json()
 		} catch (_error) {
+			// TODO: do something when there's no body, e.g. 401
 			error = _error
 			logError(error)
 		}
 		// Display error message automatically by triggering a banner update if server provided a display message or if try-catch is triggered
-		if (error || ('error' in parsedResp && parsedResp.error.display_message !== ''))
+		if ((!resp && error) || (resp && 'error' in resp))
 			setGlobals(g => {
 				return {
 					...g,
-					bannerMessage: isBlank(parsedResp)
-						? 'An unexpected error has occured, please try again later.'
-						: parsedResp.error.display_message,
+					bannerMessage:
+						!parsedResp || isBlank(parsedResp.error.display_message)
+							? 'An unexpected error has occured, please try again later.'
+							: parsedResp.error.display_message,
 					bannerType: 'danger',
 					bannerTime: 5000,
 					bannerTimestamp: isBlank(parsedResp) ? new Date().getTime() : parsedResp.error.timestamp,
 				}
 			})
-		if (callback) callback(error ? { status: 500 } : resp, error ? {} : parsedResp)
+		if (callback) callback(!resp ? { status: 500 } : resp, isBlank(parsedResp) ? {} : parsedResp)
 	}, [])
 
 	const logIn = (email, password, rememberMe, callback = null) =>
