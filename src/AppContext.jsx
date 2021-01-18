@@ -28,19 +28,23 @@ export const AppContextProvider = props => {
 	// TODO: fetchRequest could probably be refactored nicely
 	const fetchRequest = useCallback(async (method, body, uriSuffix, token = null, callback = null) => {
 		// Build request
-		let reqOptions = {
-			method: method,
-			headers: token
-				? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
-				: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({
-				...body,
-				client_id: process.env.REACT_APP_CLIENT_ID,
-				client_secret: process.env.REACT_APP_CLIENT_SECRET,
-			}),
-		}
-		if (method === 'HEAD' || method === 'GET') reqOptions = { ...reqOptions, body: null }
+		const reqHeaders = token
+			? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+			: { 'Content-Type': 'application/json' }
+		const reqBody =
+			method === 'HEAD' || method === 'GET' || !body
+				? null
+				: token
+				? JSON.stringify({ ...body })
+				: JSON.stringify({
+						...body,
+						client_id: process.env.REACT_APP_CLIENT_ID,
+						client_secret: process.env.REACT_APP_CLIENT_SECRET,
+				  })
+		const reqOptions = { method: method, headers: reqHeaders, body: reqBody }
+
 		// Submit request and fetch result
+		console.log(reqOptions)
 		let resp
 		let parsedResp
 		let error
