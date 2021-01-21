@@ -1,13 +1,13 @@
 import React from 'react'
 import Card from 'react-bootstrap/Card'
 
-import ConnectUser from '../components/forms/ConnectUser'
+import Connect from '../components/forms/user/Connect'
 
 export default function Login() {
 	return (
 		<Card>
 			<Card.Body>
-				<ConnectUser title='Log in' />
+				<Connect title='Log in' />
 			</Card.Body>
 		</Card>
 	)

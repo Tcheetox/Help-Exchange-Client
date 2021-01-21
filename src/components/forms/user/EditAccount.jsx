@@ -1,11 +1,14 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext, useCallback } from 'react'
 
-import { AppContext } from '../../AppContext'
+import { AppContext } from '../../../AppContext'
 import Form from 'react-bootstrap/Form'
-import LoadingButton from '../decorations/LoadingButton'
+import LoadingButton from '../../decorations/LoadingButton'
+import FileUpload from '../../decorations/FileUpload'
+
+// TODO: disabled state for FileUpload + success + error?!
 
 export default function EditAccount() {
-	const { fetchRequest, userToken } = useContext(AppContext)
+	const { fetchRequest, fetchFileRequest, isUserLoggedIn } = useContext(AppContext)
 	const [display, setDisplay] = useState(0)
 	const [data, setData] = useState({
 		firstName: '',
@@ -14,6 +17,7 @@ export default function EditAccount() {
 		address: '',
 		postCode: '',
 		country: '',
+		govId: '',
 	})
 
 	const refreshData = (r, pR) => {
@@ -25,9 +29,11 @@ export default function EditAccount() {
 				address: pR.address,
 				postCode: pR.post_code,
 				country: pR.country,
+				govId: pR.gov_id,
 			})
 		}
 	}
+
 	const handleChange = e => setData({ ...data, [e.target.name]: e.target.value })
 	const handleSubmit = e => {
 		e.preventDefault()
@@ -41,19 +47,36 @@ export default function EditAccount() {
 				address: data.address,
 				post_code: data.postCode,
 				country: data.country,
+				gov_id: data.govId,
 			},
 			'users/edit',
-			userToken,
 			(r, pR) => {
 				refreshData(r, pR)
-				setDisplay(0)
+				if (r.status === 200) setDisplay(2)
+				else setDisplay(0)
 			}
 		)
 	}
-	useEffect(() => fetchRequest('GET', null, 'users/edit', userToken, (r, pR) => refreshData(r, pR)), [
-		userToken,
-		fetchRequest,
-	])
+
+	useEffect(() => {
+		if (isUserLoggedIn) fetchRequest('GET', null, 'users/edit', (r, pR) => refreshData(r, pR))
+	}, [fetchRequest, isUserLoggedIn])
+
+	const handleFileChange = useCallback(
+		(file, callback = null) =>
+			file
+				? fetchFileRequest('PATCH', 'government_id', file, 'users/edit', (r, pR) => {
+						if (callback) callback(r, pR)
+						if (r.status === 200)
+							setData(d => {
+								return { ...d, govId: pR.gov_id }
+							})
+				  })
+				: setData(d => {
+						return { ...d, govId: null }
+				  }),
+		[fetchFileRequest]
+	)
 
 	return (
 		<Form onSubmit={handleSubmit}>
@@ -66,6 +89,7 @@ export default function EditAccount() {
 						placeholder='First name'
 						value={data.firstName}
 						onChange={handleChange}
+						isValid={display === 2}
 						disabled={display === 1 || display === 2}
 					/>
 				</Form.Group>
@@ -77,10 +101,20 @@ export default function EditAccount() {
 						placeholder='Last name'
 						value={data.lastName}
 						onChange={handleChange}
+						isValid={display === 2}
 						disabled={display === 1 || display === 2}
 					/>
 				</Form.Group>
 			</Form.Row>
+			<Form.Group>
+				<FileUpload
+					allowedExtensions={['.jpg', '.jpeg', '.png', '.pdf']}
+					maxSize={3145728}
+					defaultUrl={data.govId}
+					onChange={handleFileChange}
+					disabled={display === 1 || display === 2}
+				/>
+			</Form.Group>
 			<Form.Group>
 				<Form.Label>Phone</Form.Label>
 				<Form.Control
@@ -89,6 +123,7 @@ export default function EditAccount() {
 					placeholder='Phone'
 					value={data.phone}
 					onChange={handleChange}
+					isValid={display === 2}
 					disabled={display === 1 || display === 2}
 				/>
 			</Form.Group>
@@ -100,6 +135,7 @@ export default function EditAccount() {
 					placeholder='Address'
 					value={data.address}
 					onChange={handleChange}
+					isValid={display === 2}
 					disabled={display === 1 || display === 2}
 				/>
 			</Form.Group>
@@ -112,6 +148,7 @@ export default function EditAccount() {
 						placeholder='Post code'
 						value={data.postCode}
 						onChange={handleChange}
+						isValid={display === 2}
 						disabled={display === 1 || display === 2}
 					/>
 				</Form.Group>
@@ -123,6 +160,7 @@ export default function EditAccount() {
 						placeholder='Country'
 						value={data.country}
 						onChange={handleChange}
+						isValid={display === 2}
 						disabled={display === 1 || display === 2}
 					/>
 				</Form.Group>

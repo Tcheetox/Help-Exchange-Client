@@ -1,11 +1,11 @@
 import React, { useState, useContext } from 'react'
 import { Link } from 'react-router-dom'
-import { isValidEmail, isBlank, shouldShowValid, shouldShowInvalid } from '../../utilities'
-import { AppContext } from '../../AppContext'
+import { isValidEmail, isBlank, shouldShowValid, shouldShowInvalid } from '../../../utilities'
+import { AppContext } from '../../../AppContext'
 import Form from 'react-bootstrap/Form'
-import LoadingButton from '../decorations/LoadingButton'
+import LoadingButton from '../../decorations/LoadingButton'
 
-export default function CreateUser({ title = '' }) {
+export default function Create({ title = '' }) {
 	const { fetchRequest, logIn } = useContext(AppContext)
 	const [display, setDisplay] = useState(0)
 	const [data, setData] = useState({
@@ -45,25 +45,31 @@ export default function CreateUser({ title = '' }) {
 		// Submit form if no errors
 		if (Object.values(errorsAssessed).filter(x => x === '').length === Object.keys(errors).length) {
 			setDisplay(1)
-			fetchRequest('POST', { email: data.email, password: data.password }, 'users', null, (r, pR) => {
-				if ('user' in pR && pR.user.access_token !== '') {
-					logIn(data.email, data.password, true)
-					setDisplay(2)
-				} else {
-					// Check if the error is due to existing email, adjust data validation
-					if ('error' in pR && pR.error.server_code === 42201)
-						setErrors({ ...errors, email: 'Email already in use' })
-					// Reset data validation
-					else
-						setErrors({
-							email: undefined,
-							password: undefined,
-							passwordConfirmation: undefined,
-							conditions: undefined,
-						})
-					setDisplay(0)
-				}
-			})
+			fetchRequest(
+				'POST',
+				{ email: data.email, password: data.password },
+				'users',
+				(r, pR) => {
+					if ('user' in pR && pR.user.access_token !== '') {
+						logIn(data.email, data.password, true)
+						setDisplay(2)
+					} else {
+						// Check if the error is due to existing email, adjust data validation
+						if ('error' in pR && pR.error.server_code === 42201)
+							setErrors({ ...errors, email: 'Email already in use' })
+						// Reset data validation
+						else
+							setErrors({
+								email: undefined,
+								password: undefined,
+								passwordConfirmation: undefined,
+								conditions: undefined,
+							})
+						setDisplay(0)
+					}
+				},
+				false // Don't use token because you don't have one (yet)
+			)
 		}
 	}
 

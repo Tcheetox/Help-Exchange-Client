@@ -1,8 +1,8 @@
 import React, { useState, useContext } from 'react'
-import { isBlank, shouldShowValid, shouldShowInvalid } from '../../utilities'
-import { AppContext } from '../../AppContext'
+import { isBlank, shouldShowValid, shouldShowInvalid } from '../../../utilities'
+import { AppContext } from '../../../AppContext'
 import Form from 'react-bootstrap/Form'
-import LoadingButton from '../decorations/LoadingButton'
+import LoadingButton from '../../decorations/LoadingButton'
 
 // TODO: verify behavior without server -> adjust banner, etc.
 // Next user related forms under specific folder
@@ -10,7 +10,7 @@ import LoadingButton from '../decorations/LoadingButton'
 // Perhaps TODO: add banner when password has changed!
 
 export default function EditCredentials() {
-	const { fetchRequest, userToken } = useContext(AppContext)
+	const { fetchRequest } = useContext(AppContext)
 	const [display, setDisplay] = useState(0)
 	const [data, setData] = useState({ currentPassword: '', password: '', passwordConfirmation: '' })
 	const [errors, setErrors] = useState({
@@ -45,12 +45,10 @@ export default function EditCredentials() {
 				'PUT',
 				{ current_password: data.currentPassword, password: data.password },
 				'users/edit',
-				userToken,
 				(r, pR) => {
 					if (r.status === 204) setDisplay(2)
 					else {
 						if (r.status === 403 && 'error' in pR) {
-							console.log(pR.error.description)
 							setErrors({
 								...errors,
 								password: pR.error.server_code === 40301 ? pR.error.description : errors.password,

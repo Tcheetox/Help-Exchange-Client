@@ -1,11 +1,11 @@
 import React, { useState, useContext } from 'react'
-import { shouldShowValid, shouldShowInvalid } from '../../utilities'
-import { AppContext } from '../../AppContext'
+import { shouldShowValid, shouldShowInvalid } from '../../../utilities'
+import { AppContext } from '../../../AppContext'
 import Form from 'react-bootstrap/Form'
-import LoadingButton from '../decorations/LoadingButton'
+import LoadingButton from '../../decorations/LoadingButton'
 
 export default function RemoveUser() {
-	const { fetchRequest, userToken, logOut } = useContext(AppContext)
+	const { fetchRequest, logOut } = useContext(AppContext)
 	const [display, setDisplay] = useState(0)
 	const [confirmation, setConfirmation] = useState(false)
 	const [confirmationError, setConfirmationError] = useState()
@@ -17,7 +17,7 @@ export default function RemoveUser() {
 		else {
 			setConfirmationError('')
 			setDisplay(1)
-			fetchRequest('DELETE', null, 'users/edit', userToken, (r, pR) => {
+			fetchRequest('DELETE', null, 'users/edit', (r, pR) => {
 				if (r.status === 204) {
 					logOut()
 					setDisplay(2)

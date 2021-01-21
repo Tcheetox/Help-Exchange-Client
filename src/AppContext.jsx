@@ -1,10 +1,14 @@
-import React, { createContext, useState, useEffect, useCallback } from 'react'
+import React, { createContext, useState, useEffect, useCallback, useRef } from 'react'
 import { useCookies } from 'react-cookie'
 import { logError, isBlank } from './utilities'
 
 export const AppContext = createContext()
 
 export const AppContextProvider = props => {
+	const [tokens, setTokens] = useState({ accessToken: '', refreshToken: undefined })
+	const tokensRef = useRef()
+	tokensRef.current = tokens
+
 	const [cookie, setCookie, removeCookie] = useCookies(['longlived-auth', 'test'])
 	const handleCookie = useCallback(
 		(name, create, val = null) => {
@@ -25,29 +29,12 @@ export const AppContextProvider = props => {
 	])
 	const removeCookieAuth = useCallback(() => handleCookie('longlived-auth', false), [handleCookie])
 
-	// TODO: fetchRequest could probably be refactored nicely
-	const fetchRequest = useCallback(async (method, body, uriSuffix, token = null, callback = null) => {
-		// Build request
-		const reqHeaders = token
-			? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
-			: { 'Content-Type': 'application/json' }
-		const reqBody =
-			method === 'HEAD' || method === 'GET' || !body
-				? null
-				: token
-				? JSON.stringify({ ...body })
-				: JSON.stringify({
-						...body,
-						client_id: process.env.REACT_APP_CLIENT_ID,
-						client_secret: process.env.REACT_APP_CLIENT_SECRET,
-				  })
-		const reqOptions = { method: method, headers: reqHeaders, body: reqBody }
-
-		// Submit request and fetch result
-		console.log(reqOptions)
+	// TODO: submitFetchRequest && fetchRequest could probably be refactored nicely
+	const submitFetchRequest = useCallback(async (reqOptions, uriSuffix, callback = null) => {
 		let resp
 		let parsedResp
 		let error
+		console.log(reqOptions)
 		try {
 			resp = uriSuffix.includes('oauth')
 				? await fetch(`http://localhost:3000/${uriSuffix}`, reqOptions)
@@ -75,19 +62,48 @@ export const AppContextProvider = props => {
 		if (callback) callback(!resp ? { status: 500 } : resp, isBlank(parsedResp) ? {} : parsedResp)
 	}, [])
 
+	const fetchRequest = useCallback(
+		async (method, body, uriSuffix, callback = null, useToken = true) => {
+			const reqHeaders = useToken
+				? { 'Content-Type': 'application/json', Authorization: `Bearer ${tokensRef.current.accessToken}` }
+				: { 'Content-Type': 'application/json' }
+			const reqBody =
+				method === 'HEAD' || method === 'GET' || !body
+					? null
+					: useToken
+					? JSON.stringify({ ...body })
+					: JSON.stringify({
+							...body,
+							client_id: process.env.REACT_APP_CLIENT_ID,
+							client_secret: process.env.REACT_APP_CLIENT_SECRET,
+					  })
+			submitFetchRequest({ method: method, headers: reqHeaders, body: reqBody }, uriSuffix, callback)
+		},
+		[submitFetchRequest]
+	)
+
+	const fetchFileRequest = useCallback(
+		async (method, fileType, file, uriSuffix, callback = null) => {
+			const reqHeaders = { Authorization: `Bearer ${tokensRef.current.accessToken}` }
+			var formData = new FormData()
+			formData.append('file_type', fileType)
+			formData.append('file', file)
+			submitFetchRequest({ method: method, headers: reqHeaders, body: formData }, uriSuffix, callback)
+		},
+		[submitFetchRequest]
+	)
+
 	const logIn = (email, password, rememberMe, callback = null) =>
 		fetchRequest(
 			'POST',
 			{ email: email, password: password, grant_type: 'password' },
 			'oauth/token',
-			null,
 			(resp, parsedResp) => {
 				if (resp.status === 200) {
+					setTokens({ accessToken: parsedResp.access_token, refreshToken: parsedResp.refresh_token })
 					setGlobals({
 						...globals,
 						isUserLoggedIn: true,
-						userToken: parsedResp.access_token,
-						userRefreshToken: parsedResp.refresh_token,
 						userEmail: email,
 						bannerMessage: `Welcome back ${email}!`,
 						bannerType: 'success',
@@ -96,19 +112,20 @@ export const AppContextProvider = props => {
 					// Adjust cookies
 					if (rememberMe) createCookieAuth(parsedResp.cookie)
 					else removeCookieAuth()
-				} else
+				} else {
+					setTokens({ accessToken: '', refreshToken: '' })
 					setGlobals({
 						...globals,
 						isUserLoggedIn: false,
-						userToken: '',
-						userRefreshToken: '',
 						userEmail: '',
 						bannerMessage: `Invalid username and/or password`,
 						bannerType: 'danger',
 						bannerTime: 4000,
 					})
+				}
 				if (callback) callback(resp, parsedResp)
-			}
+			},
+			false
 		)
 
 	const logInFromCookie = useCallback(
@@ -119,71 +136,77 @@ export const AppContextProvider = props => {
 				'POST',
 				{ cookie: cookie['longlived-auth'], grant_type: 'password' },
 				'oauth/token',
-				null,
 				(resp, parsedResp) => {
-					if (resp.status === 200)
+					if (resp.status === 200) {
+						setTokens({ accessToken: parsedResp.access_token, refreshToken: parsedResp.refresh_token })
 						setGlobals(g => {
 							return {
 								...g,
 								isUserLoggedIn: true,
-								userToken: parsedResp.access_token,
-								userRefreshToken: parsedResp.refresh_token,
 								userEmail: parsedResp.email,
 								bannerMessage: `Welcome back ${parsedResp.email}!`,
 								bannerType: 'success',
 								bannerTime: 3000,
 							}
 						})
-					else {
+					} else {
+						setTokens({ accessToken: '', refreshToken: '' })
 						setGlobals(g => {
-							return { ...g, isUserLoggedIn: false, userToken: '', userRefreshToken: '', userEmail: '' }
+							return { ...g, isUserLoggedIn: false, userEmail: '' }
 						})
 						removeCookieAuth() // Delete cookie because it seems invalid
 					}
-				}
+				},
+				false
 			),
 		[cookie, fetchRequest, removeCookieAuth]
 	)
 
 	const logOut = (callback = null) => {
 		removeCookieAuth()
-		fetchRequest('POST', { token: globals.userToken }, 'oauth/revoke', null, (r, pR) => {
-			setGlobals({
-				...globals,
-				isUserLoggedIn: false,
-				userToken: '',
-				userRefreshToken: '',
-				userEmail: '',
-				bannerMessage: 'See you soon!',
-				bannerType: 'success',
-				bannerTime: 3000,
-			})
-			if (callback) callback(r, pR)
-		})
+		fetchRequest(
+			'POST',
+			{ token: tokensRef.current.accessToken },
+			'oauth/revoke',
+			(r, pR) => {
+				setTokens({ accessToken: '', refreshToken: '' })
+				setGlobals({
+					...globals,
+					isUserLoggedIn: false,
+					userEmail: '',
+					bannerMessage: 'See you soon!',
+					bannerType: 'success',
+					bannerTime: 3000,
+				})
+				if (callback) callback(r, pR)
+			},
+			false
+		)
 	}
 
 	const refreshToken = useCallback(
-		(token, callback = null) =>
+		(token, callback = null) => {
 			fetchRequest(
 				'POST',
 				{ grant_type: 'refresh_token', refresh_token: token },
 				'oauth/token',
-				null,
 				(r, pR) => {
-					setGlobals(g =>
-						r.status === 200
-							? {
-									...g,
-									isUserLoggedIn: true,
-									userToken: pR.access_token,
-									userRefreshToken: pR.refresh_token,
-									userEmail: pR.email,
-							  }
-							: { ...g, isUserLoggedIn: false, userToken: '', userRefreshToken: '', userEmail: '' }
-					)
+					if (r.status === 200) {
+						setTokens({ accessToken: pR.access_token, refreshToken: pR.refresh_token })
+						setGlobals(g => {
+							return { ...g, isUserLoggedIn: true, userEmail: pR.email }
+						})
+					} else {
+						setTokens({ accessToken: '', refreshToken: '' })
+						setGlobals(g => {
+							return { ...g, isUserLoggedIn: false, userEmail: '' }
+						})
+					}
 					if (callback) callback(r, pR)
-				}
-			),
+				},
+				false
+			)
+		},
 		[fetchRequest]
 	)
 
@@ -198,9 +221,8 @@ export const AppContextProvider = props => {
 		bannerTimestamp: '',
 		toggleBanner: toggleBanner,
 		fetchRequest: fetchRequest,
+		fetchFileRequest: fetchFileRequest,
 		isUserLoggedIn: false,
-		userToken: '',
-		userRefreshToken: undefined,
 		userEmail: '',
 		logIn: logIn,
 		logOut: logOut,
@@ -208,29 +230,29 @@ export const AppContextProvider = props => {
 
 	// Handle session auth
 	useEffect(() => {
-		if (globals.userRefreshToken !== undefined) {
-			if (globals.userRefreshToken === '') sessionStorage.removeItem('shortlived-auth')
-			else sessionStorage.setItem('shortlived-auth', globals.userRefreshToken)
+		if (tokens.refreshToken !== undefined) {
+			if (tokens.refreshToken === '') sessionStorage.removeItem('shortlived-auth')
+			else sessionStorage.setItem('shortlived-auth', tokens.refreshToken)
 		}
-	}, [globals.userRefreshToken])
+	}, [tokens.refreshToken])
 
 	// Attempt to authenticate user automatically
 	useEffect(() => {
 		if (!globals.isUserLoggedIn) {
 			const token = sessionStorage.getItem('shortlived-auth')
-			if (token && globals.userRefreshToken !== '')
+			if (token && tokensRef.current.refreshToken !== '') {
 				refreshToken(token, (r, pR) => r.status !== 200 && logInFromCookie())
-			else logInFromCookie()
+			} else logInFromCookie()
 		}
-	}, [globals.isUserLoggedIn, globals.userRefreshToken, cookie, logInFromCookie, refreshToken])
+	}, [globals.isUserLoggedIn, cookie, logInFromCookie, refreshToken])
 
 	// Automatic token refresh
 	useEffect(() => {
 		let intervalId
-		if (!isBlank(globals.userRefreshToken) && globals.isUserLoggedIn)
-			intervalId = setInterval(() => refreshToken(globals.userRefreshToken), 600000) // Runs every 10 min because token expires after 15 min
+		if (!isBlank(tokens.refreshToken) && globals.isUserLoggedIn)
+			intervalId = setInterval(() => refreshToken(tokens.refreshToken), 600000) // Runs every 10 min because token expires after 15 min
 		return () => clearInterval(intervalId)
-	}, [globals.userRefreshToken, globals.isUserLoggedIn, refreshToken])
+	}, [tokens.refreshToken, globals.isUserLoggedIn, refreshToken])
 
 	return <AppContext.Provider value={globals}>{props.children}</AppContext.Provider>
 }

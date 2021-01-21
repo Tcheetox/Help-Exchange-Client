@@ -1,9 +1,9 @@
 import React from 'react'
 
 import DoublePane from '../components/decorations/DoublePane'
-import RemoveUser from '../components/forms/RemoveUser'
-import EditCredentials from '../components/forms/EditCredentials'
-import EditAccount from '../components/forms/EditAccount'
+import RemoveUser from '../components/forms/user/Delete'
+import EditCredentials from '../components/forms/user/EditCredentials'
+import EditAccount from '../components/forms/user/EditAccount'
 
 export default function EditProfile() {
 	return (

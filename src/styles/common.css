@@ -18,12 +18,42 @@ button {
 	--default-transition-duration: 100ms;
 	--lightgray: #fafafa;
 	--lesslightgray: #f5f5f5;
+	--darkergray: #3e3e3e;
+	--overlay: rgba(255, 255, 255, 0.7);
 }
 
 /* SPACING */
 .core-wrapper {
 	padding-top: 4.2rem;
 	padding-bottom: 3rem;
+}
+
+/* GLOBAL STUFF */
+.bold {
+	font-weight: 600;
+}
+.close-wrapper {
+	position: absolute;
+	top: 0;
+	right: 0.1rem;
+	z-index: 10;
+}
+/* GLOBAL STUFF: LOADING SPINNER */
+.spinner-wrapper {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+}
+.spinner-wrapper.overlay {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	background-color: var(--overlay);
+	pointer-events: none;
+}
+.spinner-wrapper.overlay > div {
+	margin: auto;
 }
 
 /* BANNER */
@@ -35,8 +65,9 @@ button {
 }
 
 /* Specific BS adjustments */
+.error,
 .invalid.form-text {
-	color: rgb(220, 53, 69); /* BS color for invalid input */
+	color: rgb(220, 53, 69) !important; /* BS color for invalid input */
 }
 .valid.form-text {
 	color: #28a745;
@@ -84,4 +115,69 @@ button {
 }
 .double-pane .tab-title {
 	border-bottom: 1px solid lightgray;
+}
+
+/* CUSTOM DROP AREA - IMAGE UPLOAD */
+.droppable-area {
+	background-color: white;
+	border-radius: 0.25rem;
+	border: 1px dashed lightgray;
+	cursor: pointer;
+	position: relative;
+	height: 200px;
+	display: flex;
+}
+.droppable-area.dragging {
+	background-color: var(--lesslightgray);
+}
+.droppable-area .zone-info {
+	padding: 0.6rem;
+	width: min-content;
+	margin: auto;
+	pointer-events: none;
+}
+.droppable-area .zone-info > * {
+	width: max-content;
+	margin: auto;
+}
+.droppable-area svg.icon {
+	width: 3rem;
+	height: auto;
+	display: flex;
+	color: var(--darkergray);
+	transition: all var(--default-transition-duration);
+}
+.droppable-area .label {
+	padding-top: 0.2rem;
+	padding-bottom: 0.3rem;
+}
+.droppable-area .file-upload {
+	display: none;
+}
+.droppable-area img {
+	margin: auto;
+	max-height: 100%;
+	max-width: 100%;
+}
+.droppable-area svg {
+	margin-left: auto;
+	margin-right: auto;
+}
+.droppable-area .file-info {
+	color: gray;
+	font-size: 0.8rem;
+}
+.droppable-area.disabled {
+	cursor: unset;
+	pointer-events: none;
+	border-radius: 0.25rem;
+	border-style: solid;
+}
+.droppable-area.disabled:after {
+	content: '';
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	z-index: 11;
+	background-color: rgba(224, 228, 232, 0.7);
 }

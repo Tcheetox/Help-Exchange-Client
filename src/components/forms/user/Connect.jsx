@@ -1,10 +1,10 @@
 import React, { useState, useContext } from 'react'
-import { shouldShowInvalid, shouldShowValid, isBlank } from '../../utilities'
-import { AppContext } from '../../AppContext'
+import { shouldShowInvalid, shouldShowValid, isBlank } from '../../../utilities'
+import { AppContext } from '../../../AppContext'
 import Form from 'react-bootstrap/Form'
-import LoadingButton from '../decorations/LoadingButton'
+import LoadingButton from '../../decorations/LoadingButton'
 
-export default function ConnectUser({ title = '' }) {
+export default function Connect({ title = '' }) {
 	const { logIn } = useContext(AppContext)
 	const [display, setDisplay] = useState(0)
 	const [data, setData] = useState({
