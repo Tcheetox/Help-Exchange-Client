@@ -38,7 +38,7 @@ export default function Connect({ title = '' }) {
 		if (Object.values(errorsAssessed).filter(x => x === '').length === Object.keys(errors).length) {
 			setDisplay(1)
 			logIn(data.email, data.password, data.rememberMe, (r, pR) => {
-				if (r && r.status === 200) setDisplay(2)
+				if (r.status === 200) setDisplay(2)
 				else {
 					if (r.status === 500) setErrors({ email: undefined, password: undefined })
 					else setErrors({ email: rej, password: rej })

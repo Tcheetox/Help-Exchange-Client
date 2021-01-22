@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, useCallback, useRef } from 'react'
 import { useCookies } from 'react-cookie'
 import { logError, isBlank } from './utilities'
+import { AutomaticMessage, WelcomeBack, InvalidCredentials, GoodBye } from './components/bannerMessages'
 
 export const AppContext = createContext()
 
@@ -29,38 +30,47 @@ export const AppContextProvider = props => {
 	])
 	const removeCookieAuth = useCallback(() => handleCookie('longlived-auth', false), [handleCookie])
 
-	// TODO: submitFetchRequest && fetchRequest could probably be refactored nicely
-	const submitFetchRequest = useCallback(async (reqOptions, uriSuffix, callback = null) => {
-		let resp
-		let parsedResp
-		let error
-		console.log(reqOptions)
-		try {
-			resp = uriSuffix.includes('oauth')
-				? await fetch(`http://localhost:3000/${uriSuffix}`, reqOptions)
-				: await fetch(`http://localhost:3000/api/v1/${uriSuffix}`, reqOptions)
-			parsedResp = await resp.json()
-		} catch (_error) {
-			// TODO: do something when there's no body, e.g. 401
-			error = _error
-			logError(error)
-		}
-		// Display error message automatically by triggering a banner update if server provided a display message or if try-catch is triggered
-		if ((!resp && error) || (resp && 'error' in resp))
+	const toggleBanner = useCallback(
+		args =>
 			setGlobals(g => {
 				return {
 					...g,
-					bannerMessage:
-						!parsedResp || isBlank(parsedResp.error.display_message)
-							? 'An unexpected error has occured, please try again later.'
-							: parsedResp.error.display_message,
-					bannerType: 'danger',
-					bannerTime: 5000,
-					bannerTimestamp: isBlank(parsedResp) ? new Date().getTime() : parsedResp.error.timestamp,
+					bannerMessage: args[0],
+					bannerType: args[1],
+					bannerTime: args.length > 2 ? args[2] : 5000,
+					bannerTimestamp: args.length > 3 ? args[3] : new Date().getTime(),
 				}
-			})
-		if (callback) callback(!resp ? { status: 500 } : resp, isBlank(parsedResp) ? {} : parsedResp)
-	}, [])
+			}),
+		[]
+	)
+
+	const submitFetchRequest = useCallback(
+		async (reqOptions, uriSuffix, callback = null) => {
+			let resp
+			let parsedResp
+			let error
+			console.log(reqOptions)
+			try {
+				resp = uriSuffix.includes('oauth')
+					? await fetch(`http://localhost:3000/${uriSuffix}`, reqOptions)
+					: await fetch(`http://localhost:3000/api/v1/${uriSuffix}`, reqOptions)
+				parsedResp = await resp.json()
+			} catch (_error) {
+				error = _error
+				logError(error)
+			}
+			// Display error message automatically by triggering a banner update if server provided a display message or if try-catch is triggered
+			if ((!resp && error) || (resp && parsedResp && 'error' in parsedResp)) {
+				toggleBanner(
+					parsedResp && 'error' in parsedResp
+						? AutomaticMessage(parsedResp.error.display_message, parsedResp.error.timestamp)
+						: AutomaticMessage()
+				)
+			}
+			if (callback) callback(!resp ? { status: 500 } : resp, isBlank(parsedResp) ? {} : parsedResp)
+		},
+		[toggleBanner]
+	)
 
 	const fetchRequest = useCallback(
 		async (method, body, uriSuffix, callback = null, useToken = true) => {
@@ -101,27 +111,27 @@ export const AppContextProvider = props => {
 			(resp, parsedResp) => {
 				if (resp.status === 200) {
 					setTokens({ accessToken: parsedResp.access_token, refreshToken: parsedResp.refresh_token })
-					setGlobals({
-						...globals,
-						isUserLoggedIn: true,
-						userEmail: email,
-						bannerMessage: `Welcome back ${email}!`,
-						bannerType: 'success',
-						bannerTime: 3000,
+					setGlobals(g => {
+						return {
+							...g,
+							isUserLoggedIn: true,
+							userEmail: email,
+						}
 					})
+					toggleBanner(WelcomeBack(email, parsedResp.completed))
 					// Adjust cookies
 					if (rememberMe) createCookieAuth(parsedResp.cookie)
 					else removeCookieAuth()
 				} else {
 					setTokens({ accessToken: '', refreshToken: '' })
-					setGlobals({
-						...globals,
-						isUserLoggedIn: false,
-						userEmail: '',
-						bannerMessage: `Invalid username and/or password`,
-						bannerType: 'danger',
-						bannerTime: 4000,
+					setGlobals(g => {
+						return {
+							...g,
+							isUserLoggedIn: false,
+							userEmail: '',
+						}
 					})
+					if (resp.status === 400 || resp.status === 401) toggleBanner(InvalidCredentials())
 				}
 				if (callback) callback(resp, parsedResp)
 			},
@@ -144,11 +154,9 @@ export const AppContextProvider = props => {
 								...g,
 								isUserLoggedIn: true,
 								userEmail: parsedResp.email,
-								bannerMessage: `Welcome back ${parsedResp.email}!`,
-								bannerType: 'success',
-								bannerTime: 3000,
 							}
 						})
+						toggleBanner(WelcomeBack(parsedResp.email, parsedResp.completed))
 					} else {
 						setTokens({ accessToken: '', refreshToken: '' })
 						setGlobals(g => {
@@ -159,7 +167,7 @@ export const AppContextProvider = props => {
 				},
 				false
 			),
-		[cookie, fetchRequest, removeCookieAuth]
+		[cookie, fetchRequest, removeCookieAuth, toggleBanner]
 	)
 
 	const logOut = (callback = null) => {
@@ -174,10 +182,8 @@ export const AppContextProvider = props => {
 					...globals,
 					isUserLoggedIn: false,
 					userEmail: '',
-					bannerMessage: 'See you soon!',
-					bannerType: 'success',
-					bannerTime: 3000,
 				})
+				toggleBanner(GoodBye())
 				if (callback) callback(r, pR)
 			},
 			false
@@ -209,9 +215,6 @@ export const AppContextProvider = props => {
 		},
 		[fetchRequest]
 	)
-
-	const toggleBanner = (bM, bType, bTime = 5000) =>
-		setGlobals({ ...globals, bannerMessage: bM, bannerType: bType, bannerTime: bTime })
 
 	// The globals object is accessible through the whole app through useContext
 	const [globals, setGlobals] = useState({
