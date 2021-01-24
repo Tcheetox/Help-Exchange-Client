@@ -4,8 +4,6 @@ export const isValidEmail = email => {
 }
 
 export const isBlank = str => !str || /^\s*$/.test(str)
-export const shouldShowInvalid = err => err !== undefined && err.length > 0
-export const shouldShowValid = (err, display = 0) => err !== undefined && err === '' && display !== 1
 
 export const logError = err =>
 	console.log(

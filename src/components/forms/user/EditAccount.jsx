@@ -3,9 +3,8 @@ import React, { useState, useEffect, useContext, useCallback } from 'react'
 import { AppContext } from '../../../AppContext'
 import Form from 'react-bootstrap/Form'
 import LoadingButton from '../../decorations/LoadingButton'
-import FileUpload from '../../decorations/FileUpload'
-
-// TODO: disabled state for FileUpload + success + error?!
+import InputForm from '../../decorations/InputForm'
+import FileForm from '../../decorations/FileForm'
 
 export default function EditAccount() {
 	const { fetchRequest, fetchFileRequest, isUserLoggedIn } = useContext(AppContext)
@@ -63,107 +62,95 @@ export default function EditAccount() {
 	}, [fetchRequest, isUserLoggedIn])
 
 	const handleFileChange = useCallback(
-		(file, callback = null) =>
-			file
-				? fetchFileRequest('PATCH', 'government_id', file, 'users/edit', (r, pR) => {
-						if (callback) callback(r, pR)
-						if (r.status === 200)
-							setData(d => {
-								return { ...d, govId: pR.gov_id }
-							})
-				  })
-				: setData(d => {
-						return { ...d, govId: null }
-				  }),
+		(file, callback = null) => {
+			if (file)
+				fetchFileRequest('PATCH', 'government_id', file, 'users/edit', (r, pR) => {
+					if (r.status === 200)
+						setData(d => {
+							return { ...d, govId: pR.gov_id }
+						})
+					if (callback) callback(r, pR)
+				})
+			else {
+				setData(d => {
+					return { ...d, govId: null }
+				})
+				if (callback) callback({ status: 0 }, {})
+				console.log('ICI')
+			}
+		},
 		[fetchFileRequest]
 	)
 
 	return (
 		<Form onSubmit={handleSubmit}>
 			<Form.Row>
-				<Form.Group>
-					<Form.Label>First name</Form.Label>
-					<Form.Control
-						type='text'
-						name='firstName'
-						placeholder='First name'
-						value={data.firstName}
-						onChange={handleChange}
-						isValid={display === 2}
-						disabled={display === 1 || display === 2}
-					/>
-				</Form.Group>
-				<Form.Group>
-					<Form.Label>Last name</Form.Label>
-					<Form.Control
-						type='text'
-						name='lastName'
-						placeholder='Last name'
-						value={data.lastName}
-						onChange={handleChange}
-						isValid={display === 2}
-						disabled={display === 1 || display === 2}
-					/>
-				</Form.Group>
+				<InputForm
+					label='First name'
+					name='firstName'
+					placeholder='First name'
+					value={data.firstName}
+					onChange={handleChange}
+					display={display}
+					canBeInvalid={false}
+				/>
+				<InputForm
+					label='Last name'
+					name='lastName'
+					placeholder='Last name'
+					value={data.lastName}
+					onChange={handleChange}
+					display={display}
+					canBeInvalid={false}
+				/>
 			</Form.Row>
-			<Form.Group>
-				<FileUpload
-					allowedExtensions={['.jpg', '.jpeg', '.png', '.pdf']}
-					maxSize={3145728}
-					defaultUrl={data.govId}
-					onChange={handleFileChange}
-					disabled={display === 1 || display === 2}
-				/>
-			</Form.Group>
-			<Form.Group>
-				<Form.Label>Phone</Form.Label>
-				<Form.Control
-					type='tel'
-					name='phone'
-					placeholder='Phone'
-					value={data.phone}
-					onChange={handleChange}
-					isValid={display === 2}
-					disabled={display === 1 || display === 2}
-				/>
-			</Form.Group>
-			<Form.Group>
-				<Form.Label>Address</Form.Label>
-				<Form.Control
-					type='text'
-					name='address'
-					placeholder='Address'
-					value={data.address}
-					onChange={handleChange}
-					isValid={display === 2}
-					disabled={display === 1 || display === 2}
-				/>
-			</Form.Group>
+			<FileForm
+				allowedExtensions={['.jpg', '.jpeg', '.png', '.pdf']}
+				maxSize={3145728}
+				defaultUrl={data.govId}
+				onChange={handleFileChange}
+				display={display}
+				label='Government ID'
+				text='An official proof of identity is required to use our services'
+			/>
+			<InputForm
+				label='Phone'
+				name='phone'
+				type='tel'
+				placeholder='Phone'
+				value={data.phone}
+				onChange={handleChange}
+				display={display}
+				canBeInvalid={false}
+			/>
+			<InputForm
+				label='Address'
+				name='address'
+				placeholder='Address'
+				value={data.address}
+				onChange={handleChange}
+				display={display}
+				canBeInvalid={false}
+			/>
 			<Form.Row>
-				<Form.Group>
-					<Form.Label>Post code</Form.Label>
-					<Form.Control
-						type='text'
-						name='postCode'
-						placeholder='Post code'
-						value={data.postCode}
-						onChange={handleChange}
-						isValid={display === 2}
-						disabled={display === 1 || display === 2}
-					/>
-				</Form.Group>
-				<Form.Group>
-					<Form.Label>Country</Form.Label>
-					<Form.Control
-						type='text'
-						name='country'
-						placeholder='Country'
-						value={data.country}
-						onChange={handleChange}
-						isValid={display === 2}
-						disabled={display === 1 || display === 2}
-					/>
-				</Form.Group>
+				<InputForm
+					label='Post code'
+					name='postCode'
+					placeholder='Post code'
+					value={data.postCode}
+					onChange={handleChange}
+					display={display}
+					canBeInvalid={false}
+				/>
+				<InputForm
+					label='Country'
+					name='country'
+					placeholder='Country'
+					value={data.country}
+					onChange={handleChange}
+					display={display}
+					canBeInvalid={false}
+				/>
 			</Form.Row>
 			<LoadingButton variant='primary' type='submit' display={display}>
 				Submit

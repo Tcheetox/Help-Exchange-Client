@@ -10,7 +10,7 @@ export const AppContextProvider = props => {
 	const tokensRef = useRef()
 	tokensRef.current = tokens
 
-	const [cookie, setCookie, removeCookie] = useCookies(['longlived-auth', 'test'])
+	const [cookie, setCookie, removeCookie] = useCookies(['longlived-auth'])
 	const handleCookie = useCallback(
 		(name, create, val = null) => {
 			const date = new Date()
@@ -60,7 +60,7 @@ export const AppContextProvider = props => {
 				logError(error)
 			}
 			// Display error message automatically by triggering a banner update if server provided a display message or if try-catch is triggered
-			if ((!resp && error) || (resp && parsedResp && 'error' in parsedResp)) {
+			if ((!resp && error) || (resp && resp.status === 500)) {
 				toggleBanner(
 					parsedResp && 'error' in parsedResp
 						? AutomaticMessage(parsedResp.error.display_message, parsedResp.error.timestamp)

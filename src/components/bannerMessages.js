@@ -26,4 +26,10 @@ export const WelcomeBack = (email, completed) => {
 
 export const InvalidCredentials = () => [`Invalid username and/or password.`, 'danger', 4000]
 
+export const SuccessCredentialsChanged = () => [
+	`Credentials have been successfully changed.`,
+	'success',
+	4000,
+]
+
 export const GoodBye = () => [`See you soon!`, 'success', 3000]

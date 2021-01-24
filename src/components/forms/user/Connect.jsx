@@ -1,8 +1,9 @@
 import React, { useState, useContext } from 'react'
-import { shouldShowInvalid, shouldShowValid, isBlank } from '../../../utilities'
+import { isBlank } from '../../../utilities'
 import { AppContext } from '../../../AppContext'
 import Form from 'react-bootstrap/Form'
 import LoadingButton from '../../decorations/LoadingButton'
+import InputForm from '../../decorations/InputForm'
 
 export default function Connect({ title = '' }) {
 	const { logIn } = useContext(AppContext)
@@ -28,7 +29,7 @@ export default function Connect({ title = '' }) {
 	const handleSubmit = e => {
 		e.preventDefault()
 		// Check empty fields
-		const rej = 'Rejected'
+		const rej = ' '
 		const errorsAssessed = {
 			email: isBlank(data.email) ? rej : '',
 			password: isBlank(data.password) ? rej : '',
@@ -51,45 +52,34 @@ export default function Connect({ title = '' }) {
 	return (
 		<Form onSubmit={handleSubmit} validated={false}>
 			<h2>{title}</h2>
-			<Form.Group>
-				<Form.Label>Email</Form.Label>
-				<Form.Control
-					type='email'
-					name='email'
-					placeholder='Enter email'
-					value={data.email}
-					onChange={handleChange}
-					isInvalid={shouldShowInvalid(errors.email)}
-					isValid={shouldShowValid(errors.email, display)}
-					disabled={display === 1 || display === 2}
-				/>
-			</Form.Group>
-			<Form.Group>
-				<Form.Label>Password</Form.Label>
-				<Form.Control
-					type='password'
-					name='password'
-					placeholder='Password'
-					value={data.password}
-					onChange={handleChange}
-					isInvalid={shouldShowInvalid(errors.password)}
-					isValid={shouldShowValid(errors.password, display)}
-					disabled={display === 1 || display === 2}
-				/>
-			</Form.Group>
-
-			<Form.Group>
-				<Form.Check
-					type='checkbox'
-					id='formConditions'
-					name='rememberMe'
-					checked={data.rememberMe}
-					onChange={handleChange}
-					label='Remember me'
-					disabled={display === 1 || display === 2}
-					custom
-				/>
-			</Form.Group>
+			<InputForm
+				label='Email'
+				name='email'
+				error={errors.email}
+				placeholder='Enter email'
+				value={data.email}
+				onChange={handleChange}
+				display={display}
+			/>
+			<InputForm
+				label='Password'
+				type='password'
+				name='password'
+				error={errors.password}
+				placeholder='Password'
+				value={data.password}
+				onChange={handleChange}
+				display={display}
+			/>
+			<InputForm
+				type='checkbox'
+				name='rememberMe'
+				text='Remember me'
+				value={data.rememberMe}
+				onChange={handleChange}
+				display={display}
+				canBeInvalid={false}
+			/>
 			<LoadingButton variant='primary' type='submit' display={display}>
 				Submit
 			</LoadingButton>

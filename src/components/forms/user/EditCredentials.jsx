@@ -1,16 +1,13 @@
 import React, { useState, useContext } from 'react'
-import { isBlank, shouldShowValid, shouldShowInvalid } from '../../../utilities'
+import { isBlank } from '../../../utilities'
 import { AppContext } from '../../../AppContext'
 import Form from 'react-bootstrap/Form'
 import LoadingButton from '../../decorations/LoadingButton'
-
-// TODO: verify behavior without server -> adjust banner, etc.
-// Next user related forms under specific folder
-// Smartly refactor Form.Control <=> Think about data validation beforehand!
-// Perhaps TODO: add banner when password has changed!
+import InputForm from '../../decorations/InputForm'
+import { SuccessCredentialsChanged } from '../../bannerMessages'
 
 export default function EditCredentials() {
-	const { fetchRequest } = useContext(AppContext)
+	const { fetchRequest, toggleBanner } = useContext(AppContext)
 	const [display, setDisplay] = useState(0)
 	const [data, setData] = useState({ currentPassword: '', password: '', passwordConfirmation: '' })
 	const [errors, setErrors] = useState({
@@ -25,14 +22,13 @@ export default function EditCredentials() {
 	}
 	const handleSubmit = e => {
 		e.preventDefault()
-		// Check validity
 		const errorsAssessed = { ...errors }
 		Object.keys(errorsAssessed).forEach(k => (errorsAssessed[k] = ''))
 		if (isBlank(data.password) || data.password.length < 6)
 			errorsAssessed.password = 'A valid password must contain at least 6 characters'
-		if (isBlank(data.currentPassword.length))
+		if (isBlank(data.currentPassword))
 			errorsAssessed.currentPassword = 'Current password cannot be left empty'
-		if (isBlank(data.passwordConfirmation.length))
+		if (isBlank(data.passwordConfirmation))
 			errorsAssessed.passwordConfirmation = 'Confirmation password cannot be left empty'
 		else if (data.password !== data.passwordConfirmation)
 			errorsAssessed.passwordConfirmation = "Confirmation password doesn't match"
@@ -46,8 +42,10 @@ export default function EditCredentials() {
 				{ current_password: data.currentPassword, password: data.password },
 				'users/edit',
 				(r, pR) => {
-					if (r.status === 204) setDisplay(2)
-					else {
+					if (r.status === 204) {
+						setDisplay(2)
+						toggleBanner(SuccessCredentialsChanged())
+					} else {
 						if (r.status === 403 && 'error' in pR) {
 							setErrors({
 								...errors,
@@ -65,72 +63,39 @@ export default function EditCredentials() {
 
 	return (
 		<Form onSubmit={handleSubmit}>
-			<Form.Group>
-				<Form.Label>Current password</Form.Label>
-				<Form.Control
-					type='password'
-					name='currentPassword'
-					placeholder='Current password'
-					value={data.currentPassword}
-					onChange={handleChange}
-					isInvalid={shouldShowInvalid(errors.currentPassword)}
-					isValid={shouldShowValid(errors.currentPassword, display)}
-					disabled={display === 1 || display === 2}
-				/>
-				<Form.Text
-					className={
-						shouldShowInvalid(errors.currentPassword)
-							? 'invalid'
-							: shouldShowValid(errors.currentPassword, display)
-							? 'valid'
-							: ''
-					}>
-					{shouldShowInvalid(errors.currentPassword)
-						? errors.currentPassword
-						: 'Your current password is mandatory to validate the change'}
-				</Form.Text>
-			</Form.Group>
+			<InputForm
+				label='Current password'
+				type='password'
+				name='currentPassword'
+				placeholder='Current password'
+				value={data.currentPassword}
+				error={errors.currentPassword}
+				onChange={handleChange}
+				text='Your current password is mandatory to validate the change'
+				display={display}
+			/>
 			<hr />
-			<Form.Group>
-				<Form.Label>New password</Form.Label>
-				<Form.Control
-					type='password'
-					name='password'
-					placeholder='Password'
-					value={data.password}
-					onChange={handleChange}
-					isInvalid={shouldShowInvalid(errors.password)}
-					isValid={shouldShowValid(errors.password, display)}
-					disabled={display === 1 || display === 2}
-				/>
-				<Form.Text
-					className={
-						shouldShowInvalid(errors.password)
-							? 'invalid'
-							: shouldShowValid(errors.password, display)
-							? 'valid'
-							: ''
-					}>
-					{shouldShowInvalid(errors.password)
-						? errors.password
-						: 'Choose a strong password with 6 characters minimum'}
-				</Form.Text>
-			</Form.Group>
-
-			<Form.Group>
-				<Form.Label>Confirm new password</Form.Label>
-				<Form.Control
-					type='password'
-					name='passwordConfirmation'
-					placeholder='Password'
-					value={data.passwordConfirmation}
-					onChange={handleChange}
-					isInvalid={shouldShowInvalid(errors.passwordConfirmation)}
-					isValid={shouldShowValid(errors.passwordConfirmation, display)}
-					disabled={display === 1 || display === 2}
-				/>
-				<Form.Control.Feedback type='invalid'>{errors.passwordConfirmation}</Form.Control.Feedback>
-			</Form.Group>
+			<InputForm
+				label='New password'
+				type='password'
+				name='password'
+				placeholder='Password'
+				value={data.password}
+				error={errors.password}
+				onChange={handleChange}
+				text='Choose a strong password with 6 characters minimum'
+				display={display}
+			/>
+			<InputForm
+				label='Confirm new password'
+				type='password'
+				name='passwordConfirmation'
+				placeholder='Password'
+				value={data.passwordConfirmation}
+				error={errors.passwordConfirmation}
+				onChange={handleChange}
+				display={display}
+			/>
 			<LoadingButton variant='primary' type='submit' display={display}>
 				Submit
 			</LoadingButton>

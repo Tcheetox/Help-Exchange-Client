@@ -1,9 +1,10 @@
 import React, { useState, useContext } from 'react'
 import { Link } from 'react-router-dom'
-import { isValidEmail, isBlank, shouldShowValid, shouldShowInvalid } from '../../../utilities'
+import { isValidEmail, isBlank } from '../../../utilities'
 import { AppContext } from '../../../AppContext'
 import Form from 'react-bootstrap/Form'
 import LoadingButton from '../../decorations/LoadingButton'
+import InputForm from '../../decorations/InputForm'
 
 export default function Create({ title = '' }) {
 	const { fetchRequest, logIn } = useContext(AppContext)
@@ -12,13 +13,13 @@ export default function Create({ title = '' }) {
 		email: '',
 		password: '',
 		passwordConfirmation: '',
-		conditions: false,
+		condition: false,
 	})
 	const [errors, setErrors] = useState({
 		email: undefined,
 		password: undefined,
 		passwordConfirmation: undefined,
-		conditions: undefined,
+		condition: undefined,
 	})
 
 	const handleChange = e => {
@@ -39,7 +40,7 @@ export default function Create({ title = '' }) {
 			errorsAssessed.passwordConfirmation = 'Confirmation password cannot be left empty'
 		else if (data.password !== data.passwordConfirmation)
 			errorsAssessed.passwordConfirmation = "Confirmation password doesn't match"
-		if (data.conditions !== true) errorsAssessed.conditions = 'Unchecked'
+		if (data.condition !== true) errorsAssessed.condition = 'Unchecked'
 		setErrors(errorsAssessed)
 
 		// Submit form if no errors
@@ -63,7 +64,7 @@ export default function Create({ title = '' }) {
 								email: undefined,
 								password: undefined,
 								passwordConfirmation: undefined,
-								conditions: undefined,
+								condition: undefined,
 							})
 						setDisplay(0)
 					}
@@ -76,80 +77,50 @@ export default function Create({ title = '' }) {
 	return (
 		<Form onSubmit={handleSubmit}>
 			<h2>{title}</h2>
-			<Form.Group>
-				<Form.Label>Email</Form.Label>
-				<Form.Control
-					type='email'
-					name='email'
-					placeholder='Enter email'
-					value={data.email}
-					onChange={handleChange}
-					isInvalid={shouldShowInvalid(errors.email)}
-					isValid={shouldShowValid(errors.email, display)}
-					disabled={display === 1 || display === 2}
-				/>
-				<Form.Control.Feedback type='invalid'>{errors.email}</Form.Control.Feedback>
-			</Form.Group>
-			<Form.Group>
-				<Form.Label>Password</Form.Label>
-				<Form.Control
-					type='password'
-					name='password'
-					placeholder='Password'
-					value={data.password}
-					onChange={handleChange}
-					isInvalid={shouldShowInvalid(errors.password)}
-					isValid={shouldShowValid(errors.password, display)}
-					disabled={display === 1 || display === 2}
-				/>
-				<Form.Text
-					className={
-						shouldShowInvalid(errors.password)
-							? 'invalid'
-							: shouldShowValid(errors.password, display)
-							? 'valid'
-							: ''
-					}>
-					{shouldShowInvalid(errors.password)
-						? errors.password
-						: 'Choose a strong password with 6 characters minimum'}
-				</Form.Text>
-			</Form.Group>
-
-			<Form.Group>
-				<Form.Label>Confirm password</Form.Label>
-				<Form.Control
-					type='password'
-					name='passwordConfirmation'
-					placeholder='Password'
-					value={data.passwordConfirmation}
-					onChange={handleChange}
-					isInvalid={shouldShowInvalid(errors.passwordConfirmation)}
-					isValid={shouldShowValid(errors.passwordConfirmation, display)}
-					disabled={display === 1 || display === 2}
-				/>
-				<Form.Control.Feedback type='invalid'>{errors.passwordConfirmation}</Form.Control.Feedback>
-			</Form.Group>
-
-			<Form.Group>
-				<Form.Check
-					type='checkbox'
-					id='formConditions'
-					name='conditions'
-					checked={data.conditions}
-					onChange={handleChange}
-					isInvalid={shouldShowInvalid(errors.conditions)}
-					isValid={shouldShowValid(errors.conditions, display)}
-					label={
-						<>
-							By signing up to Fish For Help, you agree to the <Link to='/'>Terms of Service</Link>. View our{' '}
-							<Link to='/'>Privacy Policy</Link>.
-						</>
-					}
-					disabled={display === 1 || display === 2}
-					custom
-				/>
-			</Form.Group>
+			<InputForm
+				label='Email'
+				name='email'
+				placeholder='Enter email'
+				value={data.email}
+				onChange={handleChange}
+				error={errors.email}
+				display={display}
+			/>
+			<InputForm
+				label='Password'
+				type='password'
+				name='password'
+				placeholder='Password'
+				value={data.password}
+				onChange={handleChange}
+				error={errors.password}
+				display={display}
+				text='Choose a strong password with 6 characters minimum'
+			/>
+			<InputForm
+				label='Confirm password'
+				type='password'
+				name='passwordConfirmation'
+				placeholder='Password'
+				value={data.passwordConfirmation}
+				onChange={handleChange}
+				error={errors.passwordConfirmation}
+				display={display}
+			/>
+			<InputForm
+				type='checkbox'
+				name='condition'
+				value={data.condition}
+				onChange={handleChange}
+				error={errors.condition}
+				display={display}
+				text={
+					<>
+						By signing up to Fish For Help, you agree to the <Link to='/'>Terms of Service</Link>. View our{' '}
+						<Link to='/'>Privacy Policy</Link>.
+					</>
+				}
+			/>
 			<LoadingButton variant='primary' type='submit' display={display}>
 				Register
 			</LoadingButton>
