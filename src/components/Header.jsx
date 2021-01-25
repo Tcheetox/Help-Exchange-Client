@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import { AppContext } from '../AppContext'
+
 import Navbar from 'react-bootstrap/Navbar'
 import Container from 'react-bootstrap/Container'
 import Nav from 'react-bootstrap/Nav'
@@ -61,6 +62,7 @@ export default function Header() {
 									onMouseLeave={() => setDropdown(false)}
 									onMouseEnter={() => setDropdown(true)}>
 									<Dropdown.Item onClick={() => history.push('/users/edit')}>Profile</Dropdown.Item>
+									<Dropdown.Item onClick={() => history.push('/users/dashboard')}>Dashboard</Dropdown.Item>
 									<Dropdown.Divider />
 									<Dropdown.Item onClick={() => logOut()}>
 										Logout <ExitIcon />

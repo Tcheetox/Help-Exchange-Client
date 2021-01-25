@@ -74,7 +74,7 @@ export default function FileForm({
 				onDragOver={e => e.preventDefault()}
 				onDrop={onDrop}
 				className={`droppable-area ${
-					display === 1 || display === 2 ? 'disabled' : dragging ? 'dragging' : ''
+					display === 1 ? 'disabled' : dragging ? 'dragging' : display === 2 ? 'disabled valid' : ''
 				}`}
 				onClick={() => inputFileButton && inputFileButton.current && inputFileButton.current.click()}>
 				{inputFile || (defaultUrl && defaultUrl !== '' && useDefault) ? (

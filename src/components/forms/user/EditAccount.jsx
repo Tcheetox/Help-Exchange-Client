@@ -6,6 +6,8 @@ import LoadingButton from '../../decorations/LoadingButton'
 import InputForm from '../../decorations/InputForm'
 import FileForm from '../../decorations/FileForm'
 
+import { geocode } from '../../../utilities'
+
 export default function EditAccount() {
 	const { fetchRequest, fetchFileRequest, isUserLoggedIn } = useContext(AppContext)
 	const [display, setDisplay] = useState(0)
@@ -14,6 +16,8 @@ export default function EditAccount() {
 		lastName: '',
 		phone: '',
 		address: '',
+		lat: null,
+		lng: null,
 		postCode: '',
 		country: '',
 		govId: '',
@@ -26,6 +30,8 @@ export default function EditAccount() {
 				lastName: pR.last_name,
 				phone: pR.phone,
 				address: pR.address,
+				lat: pR.lat,
+				lng: pR.lng,
 				postCode: pR.post_code,
 				country: pR.country,
 				govId: pR.gov_id,
@@ -37,23 +43,27 @@ export default function EditAccount() {
 	const handleSubmit = e => {
 		e.preventDefault()
 		setDisplay(1)
-		fetchRequest(
-			'PUT',
-			{
-				first_name: data.firstName,
-				last_name: data.lastName,
-				phone: data.phone,
-				address: data.address,
-				post_code: data.postCode,
-				country: data.country,
-				gov_id: data.govId,
-			},
-			'users/edit',
-			(r, pR) => {
-				refreshData(r, pR)
-				if (r.status === 200) setDisplay(2)
-				else setDisplay(0)
-			}
+		geocode(data.address, ({ lat, lng }) =>
+			fetchRequest(
+				'PUT',
+				{
+					first_name: data.firstName,
+					last_name: data.lastName,
+					phone: data.phone,
+					address: data.address,
+					lat: lat,
+					lng: lng,
+					post_code: data.postCode,
+					country: data.country,
+					gov_id: data.govId,
+				},
+				'users/edit',
+				(r, pR) => {
+					refreshData(r, pR)
+					if (r.status === 200) setDisplay(2)
+					else setDisplay(0)
+				}
+			)
 		)
 	}
 

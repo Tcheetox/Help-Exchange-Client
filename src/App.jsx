@@ -8,11 +8,13 @@ import Container from 'react-bootstrap/Container'
 import Header from './components/Header'
 import Banner from './components/Banner'
 import Footer from './components/Footer'
+
 import Home from './pages/Home'
 import About from './pages/About'
 import Signup from './pages/Signup'
 import Login from './pages/Login'
-import EditProfile from './pages/EditProfile'
+import Profile from './pages/Profile'
+import Dashboard from './pages/Dashboard'
 
 export default function App() {
 	return (
@@ -26,7 +28,8 @@ export default function App() {
 						<Route path='/about' component={About} exact />
 						<Route path='/users/signup' component={Signup} exact />
 						<Route path='/users/login' component={Login} exact />
-						<Route path='/users/edit' component={EditProfile} exact />
+						<Route path='/users/edit' component={Profile} exact />
+						<Route path='/users/dashboard' component={Dashboard} exact />
 						<Route component={Error} />
 					</Switch>
 				</Container>

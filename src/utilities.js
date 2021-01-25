@@ -9,3 +9,40 @@ export const logError = err =>
 	console.log(
 		`! ERROR (${'name' in err ? err.name : 'UNKNOWN'}):\n${'message' in err ? err.message : 'UNKNOWN'}`
 	)
+
+export const geocode = async (address, callback) => {
+	let location = { lat: null, lng: null }
+	if (address.length > 0) {
+		try {
+			const resp = await fetch(
+				`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURI(address)}&key=${
+					process.env.REACT_APP_GOOGLE_KEY
+				}`
+			)
+			const parsedResp = await resp.json()
+			location = {
+				lat: parsedResp.results[0].geometry.location.lat,
+				lng: parsedResp.results[0].geometry.location.lng,
+			}
+		} catch (error) {
+			logError(error)
+		}
+	}
+	callback(location)
+}
+
+export const reverseGeocode = async ({ lat, lng }, callback) => {
+	let address = ''
+	if (lat.length > 0 && lng.length > 0) {
+		try {
+			const resp = await fetch(
+				`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${process.env.REACT_APP_GOOGLE_KEY}`
+			)
+			const parsedResp = await resp.json()
+			address = parsedResp.results[0].formatted_address
+		} catch (error) {
+			logError(error)
+		}
+	}
+	callback(address)
+}

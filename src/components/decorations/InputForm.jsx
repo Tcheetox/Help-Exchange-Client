@@ -7,11 +7,13 @@ export default function InputForm({
 	value,
 	error,
 	onChange,
+	children,
 	type = 'text',
 	placeholder = '',
 	label = '',
 	text = '',
 	display = 0,
+	rows = 0,
 	canBeInvalid = true,
 	canBeValid = true,
 	canBeDisabled = true,
@@ -20,39 +22,85 @@ export default function InputForm({
 	const shouldShowValid = () =>
 		(error !== undefined && error === '' && display !== 1) || (error === undefined && display === 2)
 
-	return (
-		<Form.Group>
-			{label !== '' ? <Form.Label>{label}</Form.Label> : null}
-			{type !== 'checkbox' ? (
-				<>
-					<Form.Control
-						type={type}
+	const renderText = () => (
+		<Form.Text className={shouldShowInvalid() ? 'invalid' : shouldShowValid() ? 'valid' : ''}>
+			{shouldShowInvalid() ? error : text}
+		</Form.Text>
+	)
+
+	const renderSwitch = () => {
+		switch (type) {
+			case 'checkbox':
+				return (
+					<Form.Check
+						type='checkbox'
+						id={name}
 						name={name}
-						placeholder={placeholder}
-						value={value}
+						checked={value}
 						onChange={onChange}
 						isInvalid={canBeInvalid && shouldShowInvalid()}
 						isValid={canBeValid && shouldShowValid()}
+						label={text}
 						disabled={canBeDisabled ? display === 1 || display === 2 : false}
+						custom
 					/>
-					<Form.Text className={shouldShowInvalid() ? 'invalid' : shouldShowValid() ? 'valid' : ''}>
-						{shouldShowInvalid() ? error : text}
-					</Form.Text>
-				</>
-			) : (
-				<Form.Check
-					type='checkbox'
-					id={name}
-					name={name}
-					checked={value}
-					onChange={onChange}
-					isInvalid={canBeInvalid && shouldShowInvalid()}
-					isValid={canBeValid && shouldShowValid()}
-					label={text}
-					disabled={canBeDisabled ? display === 1 || display === 2 : false}
-					custom
-				/>
-			)}
+				)
+			case 'textarea':
+				return (
+					<>
+						<Form.Control
+							as={type}
+							name={name}
+							placeholder={placeholder}
+							value={value}
+							onChange={onChange}
+							isInvalid={canBeInvalid && shouldShowInvalid()}
+							isValid={canBeValid && shouldShowValid()}
+							disabled={canBeDisabled ? display === 1 || display === 2 : false}
+							rows={rows}
+						/>
+						{renderText()}
+					</>
+				)
+			case 'select':
+				return (
+					<>
+						<Form.Control
+							as={type}
+							name={name}
+							onChange={onChange}
+							value={value}
+							isInvalid={canBeInvalid && shouldShowInvalid()}
+							isValid={canBeValid && shouldShowValid()}
+							disabled={canBeDisabled ? display === 1 || display === 2 : false}>
+							{children}
+						</Form.Control>
+						{renderText()}
+					</>
+				)
+			default:
+				return (
+					<>
+						<Form.Control
+							type={type}
+							name={name}
+							placeholder={placeholder}
+							value={value}
+							onChange={onChange}
+							isInvalid={canBeInvalid && shouldShowInvalid()}
+							isValid={canBeValid && shouldShowValid()}
+							disabled={canBeDisabled ? display === 1 || display === 2 : false}
+						/>
+						{renderText()}
+					</>
+				)
+		}
+	}
+
+	return (
+		<Form.Group>
+			{label !== '' ? <Form.Label>{label}</Form.Label> : null}
+			{renderSwitch()}
 		</Form.Group>
 	)
 }
