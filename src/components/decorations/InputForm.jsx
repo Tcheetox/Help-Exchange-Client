@@ -2,6 +2,7 @@ import React from 'react'
 
 import Form from 'react-bootstrap/Form'
 
+// TODO: maxChar(255) by default
 export default function InputForm({
 	name,
 	value,

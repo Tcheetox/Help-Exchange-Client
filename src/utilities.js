@@ -5,6 +5,8 @@ export const isValidEmail = email => {
 
 export const isBlank = str => !str || /^\s*$/.test(str)
 
+export const titleize = str => str.charAt(0).toUpperCase() + str.slice(1)
+
 export const logError = err =>
 	console.log(
 		`! ERROR (${'name' in err ? err.name : 'UNKNOWN'}):\n${'message' in err ? err.message : 'UNKNOWN'}`
@@ -33,7 +35,7 @@ export const geocode = async (address, callback) => {
 
 export const reverseGeocode = async ({ lat, lng }, callback) => {
 	let address = ''
-	if (lat.length > 0 && lng.length > 0) {
+	if (lat && lng) {
 		try {
 			const resp = await fetch(
 				`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${process.env.REACT_APP_GOOGLE_KEY}`

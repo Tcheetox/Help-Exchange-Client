@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 
-import { geocode, reverseGeocode } from '../../utilities'
+import { geocode, reverseGeocode, titleize } from '../../utilities'
 
 import Form from 'react-bootstrap/Form'
 import InputForm from '../decorations/InputForm'
@@ -8,14 +8,15 @@ import LoadingButton from '../decorations/LoadingButton'
 import Button from 'react-bootstrap/Button'
 import ExploreIcon from '@material-ui/icons/Explore'
 import { AppContext } from '../../AppContext'
+import { AutomaticMessage } from '../bannerMessages'
 
 export default function CreateRequest() {
-	const { fetchRequest, isUserLoggedIn } = useContext(AppContext)
+	const { fetchRequest, isUserLoggedIn, toggleBanner } = useContext(AppContext)
 	const [display, setDisplay] = useState(0)
 	const [data, setData] = useState({
 		title: '',
 		description: '',
-		type: '',
+		help_type: 'One-time help',
 		address: '',
 		lng: null,
 		lat: null,
@@ -23,6 +24,7 @@ export default function CreateRequest() {
 	const [errors, setErrors] = useState({
 		title: undefined,
 		description: undefined,
+		help_type: undefined,
 		address: undefined,
 	})
 
@@ -41,39 +43,47 @@ export default function CreateRequest() {
 			e.target.name !== 'description' ||
 			(e.target.name === 'description' && e.target.value.length <= 300)
 		) {
-			setData({ ...data, [e.target.name]: e.target.value })
+			if (e.target.name === 'address') setData({ ...data, address: e.target.value, lat: null, lng: null })
+			else setData({ ...data, [e.target.name]: e.target.value })
 			setErrors({ ...errors, [e.target.name]: undefined })
-			// TODO: make sure the lat and lng always represent the provided location
 		}
 	}
 
 	const onSubmit = e => {
 		e.preventDefault()
+		const _errors = { ...errors }
+		Object.keys(_errors).forEach(k =>
+			data[k].length > 0 ? (_errors[k] = '') : (_errors[k] = `${titleize(k)} cannot be left empty`)
+		)
+		setErrors(_errors)
+		// Submit form if no errors
+		if (
+			Object.values(_errors).filter(x => x === '').length === Object.keys(errors).length &&
+			isUserLoggedIn
+		) {
+			setDisplay(1)
+			if (!data.lng || !data.lat)
+				geocode(data.address, ({ lat, lng }) =>
+					fetchRequest('POST', { ...data, lng: lng, lat: lat }, 'help_requests', fetchCallback)
+				)
+			else fetchRequest('POST', data, 'help_requests', fetchCallback)
+		}
 	}
 
-	//const [location, setLocation] = useState({})
-	//const testLocation = () => navigator.geolocation.getCurrentPosition(pos => setLocation(pos))
-
-	// useEffect(() => {
-	// 	console.log('LOCATION HAS CHANGED')
-	// 	console.log(location)
-	// }, [location])
-
-	const acquireLocation = () => {
-		//geocode(data.address, r => alert(r.lng))
-		reverseGeocode({ lat: 40.714232, lng: -73.9612889 }, a => alert(a))
-		// navigator.geolocation.getCurrentPosition(pos => {
-		// 	const geocoder = new google.maps.Geocoder()
-		// 	geocoder.geocode({ address: data.address }, function (results, status) {
-		// 		if (status == 'OK') {
-		// 			console.log(results)
-		// 			alert('OK check console!')
-		// 		} else {
-		// 			alert('Geocode was not successful for the following reason: ' + status)
-		// 		}
-		// 	})
-		// })
+	const fetchCallback = (r, pR) => {
+		if (r.status === 201) setDisplay(2)
+		else {
+			setDisplay(0)
+			toggleBanner(AutomaticMessage())
+		}
 	}
+
+	const acquireLocation = () =>
+		navigator.geolocation.getCurrentPosition(pos =>
+			reverseGeocode({ lat: pos.coords.latitude, lng: pos.coords.longitude }, addr =>
+				setData({ ...data, address: addr, lat: pos.coords.latitude, lng: pos.coords.longitude })
+			)
+		)
 
 	return (
 		<Form onSubmit={onSubmit}>
@@ -88,10 +98,11 @@ export default function CreateRequest() {
 			/>
 			<InputForm
 				label='Request type'
-				name='type'
+				name='help_type'
 				type='select'
-				value={data.type}
+				value={data.help_type}
 				onChange={onChange}
+				error={errors.help_type}
 				display={display}>
 				<option>One-time help</option>
 				<option>Material</option>
@@ -106,9 +117,11 @@ export default function CreateRequest() {
 					onChange={onChange}
 					display={display}
 				/>
-				<Button onClick={acquireLocation}>
-					<ExploreIcon />
-				</Button>
+				<Form.Group>
+					<Button onClick={acquireLocation}>
+						<ExploreIcon />
+					</Button>
+				</Form.Group>
 			</Form.Row>
 			<InputForm
 				label='Description'
@@ -117,7 +130,7 @@ export default function CreateRequest() {
 				type='textarea'
 				rows={5}
 				value={data.description}
-				error={errors.title}
+				error={errors.description}
 				onChange={onChange}
 				display={display}
 				text={
