@@ -41,20 +41,20 @@ button {
 	z-index: 10;
 }
 /* GLOBAL STUFF: LOADING SPINNER */
-.spinner-wrapper {
+.spinner {
 	position: absolute;
 	left: 50%;
 	top: 50%;
 	transform: translate(-50%, -50%);
 }
-.spinner-wrapper.overlay {
+.spinner.overlay {
 	width: 100%;
 	height: 100%;
 	display: flex;
 	background-color: var(--overlay);
 	pointer-events: none;
 }
-.spinner-wrapper.overlay > div {
+.spinner.overlay > div {
 	margin: auto;
 }
 /* Replicate Bootstrap input form validation */
@@ -208,4 +208,34 @@ button {
 	width: 100%;
 	z-index: 11;
 	background-color: rgba(224, 228, 232, 0.7);
+}
+
+/* OVERVIEW PANE */
+
+.overview-pane .spinner {
+	position: relative;
+	width: min-content;
+	margin-top: 1.5rem;
+	margin-bottom: 1rem;
+}
+
+/* HELP REQUEST */
+.help-request {
+	font-size: 0.95rem;
+}
+.help-request .card-header {
+	display: flex;
+}
+.help-request .info {
+	width: 85%;
+}
+.help-request .date {
+	color: gray;
+	font-size: 0.92rem;
+}
+.help-request .badges {
+	width: 15%;
+	/* align-self: center; */
+	display: flex;
+	justify-content: right;
 }

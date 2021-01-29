@@ -16,6 +16,11 @@ import Login from './pages/Login'
 import Profile from './pages/Profile'
 import Dashboard from './pages/Dashboard'
 
+// TODO: -wrapper -> nasty
+// TODO: 'request' folder -> nasty
+// TODO: all the imports above -> nasty
+// TODO: debug when no valid address is found!
+
 export default function App() {
 	return (
 		<>

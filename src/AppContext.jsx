@@ -49,7 +49,6 @@ export const AppContextProvider = props => {
 			let resp
 			let parsedResp
 			let error
-			console.log(reqOptions)
 			try {
 				resp = uriSuffix.includes('oauth')
 					? await fetch(`http://localhost:3000/${uriSuffix}`, reqOptions)
@@ -115,6 +114,7 @@ export const AppContextProvider = props => {
 						return {
 							...g,
 							isUserLoggedIn: true,
+							userId: parsedResp.id,
 							userEmail: email,
 						}
 					})
@@ -128,6 +128,7 @@ export const AppContextProvider = props => {
 						return {
 							...g,
 							isUserLoggedIn: false,
+							userId: -1,
 							userEmail: '',
 						}
 					})
@@ -153,6 +154,7 @@ export const AppContextProvider = props => {
 							return {
 								...g,
 								isUserLoggedIn: true,
+								userId: parsedResp.id,
 								userEmail: parsedResp.email,
 							}
 						})
@@ -160,7 +162,7 @@ export const AppContextProvider = props => {
 					} else {
 						setTokens({ accessToken: '', refreshToken: '' })
 						setGlobals(g => {
-							return { ...g, isUserLoggedIn: false, userEmail: '' }
+							return { ...g, isUserLoggedIn: false, userId: -1, userEmail: '' }
 						})
 						removeCookieAuth() // Delete cookie because it seems invalid
 					}
@@ -181,6 +183,7 @@ export const AppContextProvider = props => {
 				setGlobals({
 					...globals,
 					isUserLoggedIn: false,
+					userId: -1,
 					userEmail: '',
 				})
 				toggleBanner(GoodBye())
@@ -200,12 +203,12 @@ export const AppContextProvider = props => {
 					if (r.status === 200) {
 						setTokens({ accessToken: pR.access_token, refreshToken: pR.refresh_token })
 						setGlobals(g => {
-							return { ...g, isUserLoggedIn: true, userEmail: pR.email }
+							return { ...g, isUserLoggedIn: true, userId: pR.id, userEmail: pR.email }
 						})
 					} else {
 						setTokens({ accessToken: '', refreshToken: '' })
 						setGlobals(g => {
-							return { ...g, isUserLoggedIn: false, userEmail: '' }
+							return { ...g, isUserLoggedIn: false, userId: -1, userEmail: '' }
 						})
 					}
 					if (callback) callback(r, pR)
@@ -226,6 +229,7 @@ export const AppContextProvider = props => {
 		fetchRequest: fetchRequest,
 		fetchFileRequest: fetchFileRequest,
 		isUserLoggedIn: false,
+		userId: -1,
 		userEmail: '',
 		logIn: logIn,
 		logOut: logOut,

@@ -10,6 +10,8 @@ import ExploreIcon from '@material-ui/icons/Explore'
 import { AppContext } from '../../AppContext'
 import { AutomaticMessage } from '../bannerMessages'
 
+// TODO: address geocode failure to handle
+
 export default function CreateRequest() {
 	const { fetchRequest, isUserLoggedIn, toggleBanner } = useContext(AppContext)
 	const [display, setDisplay] = useState(0)

@@ -86,7 +86,6 @@ export default function EditAccount() {
 					return { ...d, govId: null }
 				})
 				if (callback) callback({ status: 0 }, {})
-				console.log('ICI')
 			}
 		},
 		[fetchFileRequest]
