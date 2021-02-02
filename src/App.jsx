@@ -15,6 +15,7 @@ import Signup from './pages/Signup'
 import Login from './pages/Login'
 import Profile from './pages/Profile'
 import Dashboard from './pages/Dashboard'
+import Messenger from './pages/Messenger'
 
 // TODO: -wrapper -> nasty
 // TODO: 'request' folder -> nasty
@@ -35,6 +36,7 @@ export default function App() {
 						<Route path='/users/login' component={Login} exact />
 						<Route path='/users/edit' component={Profile} exact />
 						<Route path='/users/dashboard' component={Dashboard} exact />
+						<Route path='/users/messenger' component={Messenger} exact />
 						<Route component={Error} />
 					</Switch>
 				</Container>

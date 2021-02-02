@@ -63,6 +63,7 @@ export default function Header() {
 									onMouseEnter={() => setDropdown(true)}>
 									<Dropdown.Item onClick={() => history.push('/users/edit')}>Profile</Dropdown.Item>
 									<Dropdown.Item onClick={() => history.push('/users/dashboard')}>Dashboard</Dropdown.Item>
+									<Dropdown.Item onClick={() => history.push('/users/messenger')}>Messenger</Dropdown.Item>
 									<Dropdown.Divider />
 									<Dropdown.Item onClick={() => logOut()}>
 										Logout <ExitIcon />
