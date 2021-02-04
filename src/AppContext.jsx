@@ -2,6 +2,7 @@ import React, { createContext, useState, useEffect, useCallback, useRef } from '
 import { useCookies } from 'react-cookie'
 import { logError, isBlank } from './utilities'
 import { AutomaticMessage, WelcomeBack, InvalidCredentials, GoodBye } from './components/bannerMessages'
+import ActionCable from 'actioncable'
 
 export const AppContext = createContext()
 
@@ -51,8 +52,11 @@ export const AppContextProvider = props => {
 			let error
 			try {
 				resp = uriSuffix.includes('oauth')
-					? await fetch(`http://localhost:3000/${uriSuffix}`, reqOptions)
-					: await fetch(`http://localhost:3000/api/v1/${uriSuffix}`, reqOptions)
+					? await fetch(`${process.env.REACT_APP_API_PREFIX}/${uriSuffix}`, reqOptions)
+					: await fetch(
+							`${process.env.REACT_APP_API_PREFIX}/api/${process.env.REACT_APP_API_VERSION}/${uriSuffix}`,
+							reqOptions
+					  )
 				parsedResp = await resp.json()
 			} catch (_error) {
 				error = _error
@@ -107,34 +111,17 @@ export const AppContextProvider = props => {
 			'POST',
 			{ email: email, password: password, grant_type: 'password' },
 			'oauth/token',
-			(resp, parsedResp) => {
-				if (resp.status === 200) {
-					setTokens({ accessToken: parsedResp.access_token, refreshToken: parsedResp.refresh_token })
-					setGlobals(g => {
-						return {
-							...g,
-							isUserLoggedIn: true,
-							userId: parsedResp.id,
-							userEmail: email,
-						}
-					})
-					toggleBanner(WelcomeBack(email, parsedResp.completed))
-					// Adjust cookies
-					if (rememberMe) createCookieAuth(parsedResp.cookie)
+			(r, pR) => {
+				if (r.status === 200) {
+					storeLogIn(pR.id, pR.email, pR.access_token, pR.refresh_token)
+					toggleBanner(WelcomeBack(email, pR.completed))
+					if (rememberMe) createCookieAuth(pR.cookie)
 					else removeCookieAuth()
 				} else {
-					setTokens({ accessToken: '', refreshToken: '' })
-					setGlobals(g => {
-						return {
-							...g,
-							isUserLoggedIn: false,
-							userId: -1,
-							userEmail: '',
-						}
-					})
-					if (resp.status === 400 || resp.status === 401) toggleBanner(InvalidCredentials())
+					storeLogOut()
+					if (r.status === 400 || r.status === 401) toggleBanner(InvalidCredentials())
 				}
-				if (callback) callback(resp, parsedResp)
+				if (callback) callback(r, pR)
 			},
 			false
 		)
@@ -147,23 +134,12 @@ export const AppContextProvider = props => {
 				'POST',
 				{ cookie: cookie['longlived-auth'], grant_type: 'password' },
 				'oauth/token',
-				(resp, parsedResp) => {
-					if (resp.status === 200) {
-						setTokens({ accessToken: parsedResp.access_token, refreshToken: parsedResp.refresh_token })
-						setGlobals(g => {
-							return {
-								...g,
-								isUserLoggedIn: true,
-								userId: parsedResp.id,
-								userEmail: parsedResp.email,
-							}
-						})
-						toggleBanner(WelcomeBack(parsedResp.email, parsedResp.completed))
+				(r, pR) => {
+					if (r.status === 200) {
+						storeLogIn(pR.id, pR.email, pR.access_token, pR.refresh_token)
+						toggleBanner(WelcomeBack(pR.email, pR.completed))
 					} else {
-						setTokens({ accessToken: '', refreshToken: '' })
-						setGlobals(g => {
-							return { ...g, isUserLoggedIn: false, userId: -1, userEmail: '' }
-						})
+						storeLogOut()
 						removeCookieAuth() // Delete cookie because it seems invalid
 					}
 				},
@@ -179,13 +155,7 @@ export const AppContextProvider = props => {
 			{ token: tokensRef.current.accessToken },
 			'oauth/revoke',
 			(r, pR) => {
-				setTokens({ accessToken: '', refreshToken: '' })
-				setGlobals({
-					...globals,
-					isUserLoggedIn: false,
-					userId: -1,
-					userEmail: '',
-				})
+				storeLogOut()
 				toggleBanner(GoodBye())
 				if (callback) callback(r, pR)
 			},
@@ -200,17 +170,8 @@ export const AppContextProvider = props => {
 				{ grant_type: 'refresh_token', refresh_token: token },
 				'oauth/token',
 				(r, pR) => {
-					if (r.status === 200) {
-						setTokens({ accessToken: pR.access_token, refreshToken: pR.refresh_token })
-						setGlobals(g => {
-							return { ...g, isUserLoggedIn: true, userId: pR.id, userEmail: pR.email }
-						})
-					} else {
-						setTokens({ accessToken: '', refreshToken: '' })
-						setGlobals(g => {
-							return { ...g, isUserLoggedIn: false, userId: -1, userEmail: '' }
-						})
-					}
+					if (r.status === 200) storeLogIn(pR.id, pR.email, pR.access_token, pR.refresh_token)
+					else storeLogOut()
 					if (callback) callback(r, pR)
 				},
 				false
@@ -218,6 +179,46 @@ export const AppContextProvider = props => {
 		},
 		[fetchRequest]
 	)
+
+	// Update an existing conversation with new messages
+	const setConversationMessages = (convId, messages) =>
+		setGlobals(g => {
+			const convCopy = [...g.conversations]
+			const convIndex = convCopy.findIndex(c => c.id === convId)
+			if (convIndex !== -1) {
+				if (Array.isArray(messages)) {
+					convCopy[convIndex].messages = messages
+					convCopy[convIndex].total_messages = convCopy[convIndex].messages.length
+				} else {
+					convCopy[convIndex].messages.push(messages)
+					convCopy[convIndex].total_messages += 1
+				}
+				let unreadMessages = 0
+				convCopy[convIndex].messages.forEach(m =>
+					m.status === 'unread' && m.user_id !== g.userId ? (unreadMessages += 1) : null
+				)
+				convCopy[convIndex].unread_messages = unreadMessages
+				convCopy[convIndex].updated_at =
+					convCopy[convIndex].messages[convCopy[convIndex].messages.length - 1].updated_at
+			}
+			return {
+				...g,
+				conversations: convCopy,
+			}
+		})
+
+	const storeLogIn = (id, email, access_token, refresh_token) => {
+		setTokens({ accessToken: access_token, refreshToken: refresh_token })
+		setGlobals(g => {
+			return { ...g, isUserLoggedIn: true, userId: id, userEmail: email }
+		})
+	}
+	const storeLogOut = () => {
+		setTokens({ accessToken: '', refreshToken: '' })
+		setGlobals(g => {
+			return { ...g, isUserLoggedIn: false, userId: -1, userEmail: '', conversations: [] }
+		})
+	}
 
 	// The globals object is accessible through the whole app through useContext
 	const [globals, setGlobals] = useState({
@@ -231,9 +232,66 @@ export const AppContextProvider = props => {
 		isUserLoggedIn: false,
 		userId: -1,
 		userEmail: '',
+		cable: null,
+		conversations: [],
+		setConversationMessages: setConversationMessages,
 		logIn: logIn,
 		logOut: logOut,
 	})
+
+	// Handle conversations update
+	useEffect(
+		() =>
+			globals.isUserLoggedIn &&
+			globals.cable &&
+			fetchRequest('GET', null, 'conversations', (r, pR) => {
+				if (r.status === 200 && Array.isArray(pR) && pR.length)
+					setGlobals(g => {
+						// Subscribe to conversation each MessagesChannel to receive new messages
+						pR.forEach(c => {
+							globals.cable.subscriptions.create(
+								{ channel: 'MessagesChannel', conversation: c.id },
+								{ received: m => setConversationMessages(c.id, m) }
+							)
+						})
+						return { ...g, conversations: pR.map(c => ({ ...c, messages: [] })) }
+					})
+				// Subscribe to ConversationsChannel to be notified of newly created conversation
+				globals.cable.subscriptions.create(
+					{ channel: 'ConversationsChannel' },
+					{
+						received: c =>
+							setGlobals(g => {
+								const conversationsCopy = g.conversations
+								const convIndex = conversationsCopy.findIndex(co => co.id === c.id)
+								if (!g.conversations.length || convIndex !== -1)
+									conversationsCopy.push({ ...c, messages: [] })
+								else conversationsCopy[convIndex] = { ...c, messages: [] }
+								return { ...g, conversations: conversationsCopy }
+							}),
+					}
+				)
+			}),
+		[globals.isUserLoggedIn, globals.cable, fetchRequest]
+	)
+
+	// Handle Websocket connection
+	useEffect(() => {
+		if (globals.isUserLoggedIn && !globals.cable) {
+			let appCable = {}
+			appCable.cable = ActionCable.createConsumer(
+				`${process.env.REACT_APP_WS_API_PREFIX}/api/${process.env.REACT_APP_API_VERSION}/users/${tokensRef.current.accessToken}/cable`
+			)
+			setGlobals(g => {
+				return { ...g, cable: appCable.cable }
+			})
+		} else if (!globals.isUserLoggedIn && globals.cable) {
+			globals.cable.disconnect()
+			setGlobals(g => {
+				return { ...g, cable: null }
+			})
+		}
+	}, [globals.isUserLoggedIn, globals.cable])
 
 	// Handle session auth
 	useEffect(() => {
@@ -248,7 +306,7 @@ export const AppContextProvider = props => {
 		if (!globals.isUserLoggedIn) {
 			const token = sessionStorage.getItem('shortlived-auth')
 			if (token && tokensRef.current.refreshToken !== '') {
-				refreshToken(token, (r, pR) => r.status !== 200 && logInFromCookie())
+				refreshToken(token, r => r.status !== 200 && logInFromCookie())
 			} else logInFromCookie()
 		}
 	}, [globals.isUserLoggedIn, cookie, logInFromCookie, refreshToken])

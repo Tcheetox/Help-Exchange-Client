@@ -6,6 +6,7 @@ import Navbar from 'react-bootstrap/Navbar'
 import Container from 'react-bootstrap/Container'
 import Nav from 'react-bootstrap/Nav'
 import Dropdown from 'react-bootstrap/Dropdown'
+import UnreadMessagesBadge from '../components/decorations/UnreadMessagesBadge'
 import DropdownButton from 'react-bootstrap/DropdownButton'
 import AccountIcon from '@material-ui/icons/AccountCircle'
 import ExitIcon from '@material-ui/icons/ExitToApp'
@@ -63,7 +64,9 @@ export default function Header() {
 									onMouseEnter={() => setDropdown(true)}>
 									<Dropdown.Item onClick={() => history.push('/users/edit')}>Profile</Dropdown.Item>
 									<Dropdown.Item onClick={() => history.push('/users/dashboard')}>Dashboard</Dropdown.Item>
-									<Dropdown.Item onClick={() => history.push('/users/messenger')}>Messenger</Dropdown.Item>
+									<Dropdown.Item onClick={() => history.push('/users/messenger')}>
+										Messenger <UnreadMessagesBadge />
+									</Dropdown.Item>
 									<Dropdown.Divider />
 									<Dropdown.Item onClick={() => logOut()}>
 										Logout <ExitIcon />

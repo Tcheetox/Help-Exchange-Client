@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import Card from 'react-bootstrap/Card'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 
-export default function DoublePane({ children, title = '', leftPane = 3 }) {
+export default function DoublePane({ children, title = '', leftPane = 3, setActivePane = null }) {
 	const [display, setDisplay] = useState(0)
 
 	const tabTitle = (x, i) => (
@@ -12,6 +12,11 @@ export default function DoublePane({ children, title = '', leftPane = 3 }) {
 			<Card.Title>{x}</Card.Title>
 		</div>
 	)
+
+	useEffect(() => children.length && setActivePane && setActivePane(children[display].props), [
+		display,
+		children,
+	])
 
 	return (
 		<Card className={`double-pane ${title}`}>

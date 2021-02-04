@@ -1,23 +1,17 @@
 import React from 'react'
-import NewMessageForm from './NewMessageForm'
 
-const MessagesArea = ({ conversation: { id, title, messages } }) => {
+export default function MessageArea({ conversation }) {
 	return (
-		<div className='messagesArea'>
-			<h2>{title}</h2>
-			<ul>{orderedMessages(messages)}</ul>
-			<NewMessageForm conversation_id={id} />
+		<div className='messages-area'>
+			{conversation.messages.length ? (
+				conversation.messages.map((m, k) => (
+					<div key={k}>
+						{m.message} ({m.user_first_name} {m.user_last_name} @{m.updated_at})
+					</div>
+				))
+			) : (
+				<h4>You're yet to communicate with this guy!</h4>
+			)}
 		</div>
 	)
-}
-
-export default MessagesArea
-
-// helpers
-
-const orderedMessages = messages => {
-	const sortedMessages = messages.sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-	return sortedMessages.map(message => {
-		return <li key={message.id}>{message.text}</li>
-	})
 }

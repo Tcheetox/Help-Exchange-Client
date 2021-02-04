@@ -5,17 +5,14 @@ import App from './App'
 
 import { BrowserRouter } from 'react-router-dom'
 import { AppContextProvider } from './AppContext'
-import { ActionCableProvider } from 'react-actioncable-provider' // TODO: move
 
 //import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
 	<BrowserRouter>
-		<ActionCableProvider url='ws://localhost:3000/api/v1/cable'>
-			<AppContextProvider>
-				<App />
-			</AppContextProvider>
-		</ActionCableProvider>
+		<AppContextProvider>
+			<App />
+		</AppContextProvider>
 	</BrowserRouter>,
 	document.getElementById('root')
 )
