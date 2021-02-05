@@ -47,8 +47,7 @@ export default function Header() {
 				<Navbar.Collapse id='basic-navbar-nav'>
 					<Nav className='mr-auto'>
 						<FoldLink to='/about'>About</FoldLink>
-						<FoldLink to='/about'>FAQ</FoldLink>
-						<FoldLink to='/about'>Contact</FoldLink>
+						<FoldLink to='/faq'>FAQ</FoldLink>
 					</Nav>
 					{isUserLoggedIn}
 					<Nav className='account-navigation ml-auto'>

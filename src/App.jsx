@@ -16,6 +16,7 @@ import Login from './pages/Login'
 import Profile from './pages/Profile'
 import Dashboard from './pages/Dashboard'
 import Messenger from './pages/Messenger'
+import Faq from './pages/Faq'
 
 // TODO: -wrapper -> nasty
 // TODO: 'request' folder -> nasty
@@ -32,6 +33,7 @@ export default function App() {
 					<Switch>
 						<Route path='/' component={Home} exact />
 						<Route path='/about' component={About} exact />
+						<Route path='/faq' component={Faq} exact />
 						<Route path='/users/signup' component={Signup} exact />
 						<Route path='/users/login' component={Login} exact />
 						<Route path='/users/edit' component={Profile} exact />
