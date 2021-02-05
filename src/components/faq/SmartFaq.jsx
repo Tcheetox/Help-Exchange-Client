@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from 'react'
 
 import { search } from 'ss-search'
 import { AppContext } from '../../AppContext'
+import Item from './Item'
 import InputForm from '../decorations/InputForm'
 
 export default function SmartFaq() {
@@ -36,7 +37,7 @@ export default function SmartFaq() {
 	}
 
 	return (
-		<div classNAme='faq'>
+		<div className='faq'>
 			<h1>FAQ</h1>
 			<InputForm
 				name='searchField'
@@ -45,10 +46,7 @@ export default function SmartFaq() {
 				onChange={handleSearch}
 			/>
 			{filteredData.map((q, i) => (
-				<div className='element' key={i}>
-					<div classname='question'>{q.question}</div>
-					<div className='response'>{q.response}</div>
-				</div>
+				<Item key={i} question={q.question} response={q.response} />
 			))}
 		</div>
 	)
