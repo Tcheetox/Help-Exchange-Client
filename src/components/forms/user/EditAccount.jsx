@@ -5,11 +5,10 @@ import Form from 'react-bootstrap/Form'
 import LoadingButton from '../../common/LoadingButton'
 import InputForm from '../../common/InputForm'
 import FileForm from '../../common/FileForm'
-
 import { geocode } from '../../../utilities'
 
 export default function EditAccount() {
-	const { fetchRequest, fetchFileRequest, isUserLoggedIn } = useContext(AppContext)
+	const { fetchRequest, fetchFileRequest, isUserLoggedIn, userProfile } = useContext(AppContext)
 	const [display, setDisplay] = useState(0)
 	const [data, setData] = useState({
 		firstName: '',
@@ -23,21 +22,18 @@ export default function EditAccount() {
 		govId: '',
 	})
 
-	const refreshData = (r, pR) => {
-		if (r.status === 200) {
-			setData({
-				firstName: pR.first_name,
-				lastName: pR.last_name,
-				phone: pR.phone,
-				address: pR.address,
-				lat: pR.lat,
-				lng: pR.lng,
-				postCode: pR.post_code,
-				country: pR.country,
-				govId: pR.gov_id,
-			})
-		}
-	}
+	const refreshData = pR =>
+		setData({
+			firstName: pR.first_name,
+			lastName: pR.last_name,
+			phone: pR.phone,
+			address: pR.address,
+			lat: pR.lat,
+			lng: pR.lng,
+			postCode: pR.post_code,
+			country: pR.country,
+			govId: pR.gov_id,
+		})
 
 	const handleChange = e => setData({ ...data, [e.target.name]: e.target.value })
 	const handleSubmit = e => {
@@ -59,17 +55,20 @@ export default function EditAccount() {
 				},
 				'users/edit',
 				(r, pR) => {
-					refreshData(r, pR)
-					if (r.status === 200) setDisplay(2)
-					else setDisplay(0)
+					if (r.status === 200) {
+						setDisplay(2)
+						refreshData(pR)
+					} else setDisplay(0)
 				}
 			)
 		)
 	}
 
-	useEffect(() => {
-		if (isUserLoggedIn) fetchRequest('GET', null, 'users/edit', (r, pR) => refreshData(r, pR))
-	}, [fetchRequest, isUserLoggedIn])
+	useEffect(() => isUserLoggedIn && userProfile && refreshData(userProfile), [
+		fetchRequest,
+		isUserLoggedIn,
+		userProfile,
+	])
 
 	const handleFileChange = useCallback(
 		(file, callback = null) => {
@@ -125,7 +124,6 @@ export default function EditAccount() {
 			<InputForm
 				label='Phone'
 				name='phone'
-				type='tel'
 				placeholder='Phone'
 				value={data.phone}
 				onChange={handleChange}

@@ -16,12 +16,9 @@ export default function EditCredentials() {
 		passwordConfirmation: undefined,
 	})
 
-	const handleChange = e => {
-		setData({ ...data, [e.target.name]: e.target.value })
-		setErrors({ ...errors, [e.target.name]: undefined })
-	}
 	const handleSubmit = e => {
 		e.preventDefault()
+		// Data validation
 		const errorsAssessed = { ...errors }
 		Object.keys(errorsAssessed).forEach(k => (errorsAssessed[k] = ''))
 		if (isBlank(data.password) || data.password.length < 6)
@@ -59,6 +56,11 @@ export default function EditCredentials() {
 				}
 			)
 		}
+	}
+
+	const handleChange = e => {
+		setData({ ...data, [e.target.name]: e.target.value })
+		setErrors({ ...errors, [e.target.name]: undefined })
 	}
 
 	return (

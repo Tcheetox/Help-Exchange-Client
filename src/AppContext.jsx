@@ -213,10 +213,11 @@ export const AppContextProvider = props => {
 			return { ...g, isUserLoggedIn: true, userId: id, userEmail: email }
 		})
 	}
+
 	const storeLogOut = () => {
 		setTokens({ accessToken: '', refreshToken: '' })
 		setGlobals(g => {
-			return { ...g, isUserLoggedIn: false, userId: -1, userEmail: '', conversations: [] }
+			return { ...g, isUserLoggedIn: false, userId: -1, userEmail: '', conversations: [], userProfile: null }
 		})
 	}
 
@@ -232,12 +233,30 @@ export const AppContextProvider = props => {
 		isUserLoggedIn: false,
 		userId: -1,
 		userEmail: '',
+		userProfile: null,
 		cable: null,
 		conversations: [],
 		setConversationMessages: setConversationMessages,
 		logIn: logIn,
 		logOut: logOut,
 	})
+
+	// Fetch and store profile
+	useEffect(
+		() =>
+			globals.isUserLoggedIn &&
+			fetchRequest(
+				'GET',
+				null,
+				'users/edit',
+				(r, pR) =>
+					r.status === 200 &&
+					setGlobals(g => {
+						return { ...g, userProfile: pR }
+					})
+			),
+		[globals.isUserLoggedIn, fetchRequest]
+	)
 
 	// Handle conversations update
 	useEffect(

@@ -2,7 +2,6 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 export default function Item({ question, response }) {
-	const regex = /(your profile)|(configuration)/
 	const hyperlinks = [
 		{ tag: 'your profile', compo: <Link to={'users/edit'}>your profile</Link> },
 		{ tag: 'configuration', compo: <Link to={'users/edit'}>configuration</Link> },
@@ -10,7 +9,9 @@ export default function Item({ question, response }) {
 
 	const renderHyperlinks = () => {
 		let responseElements = []
-		const splittedRepsonse = response.split(regex).filter(Boolean)
+		const splittedRepsonse = response
+			.split(new RegExp(hyperlinks.map(h => `(${h.tag})`).join('|'), 'g'))
+			.filter(Boolean)
 		splittedRepsonse.forEach((e, i) => {
 			const hyperIndex = hyperlinks.findIndex(h => h.tag.toLowerCase() === e.toLowerCase())
 			if (hyperIndex !== -1) responseElements.push(<span key={i}>{hyperlinks[hyperIndex].compo}</span>)

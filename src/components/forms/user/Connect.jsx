@@ -28,7 +28,7 @@ export default function Connect({ title = '' }) {
 
 	const handleSubmit = e => {
 		e.preventDefault()
-		// Check empty fields
+		// Data validation, simply check for empty fields
 		const rej = ' '
 		const errorsAssessed = {
 			email: isBlank(data.email) ? rej : '',

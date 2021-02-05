@@ -29,7 +29,7 @@ export default function App() {
 				<Banner />
 				<Switch>
 					<Route path='/' component={Home} exact />
-					<Route path='/about' component={Map} exact />
+					<Route path='/map' component={Map} exact />
 					<Route path='/faq' component={Faq} exact />
 					<Route path='/users/signup' component={Signup} exact />
 					<Route path='/users/login' component={Login} exact />

@@ -239,3 +239,9 @@ button {
 	display: flex;
 	justify-content: right;
 }
+
+/* MAP */
+.map {
+	height: 100vh !important;
+	width: 100% !important;
+}

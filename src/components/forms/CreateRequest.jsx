@@ -13,7 +13,7 @@ import { AutomaticMessage } from '../bannerMessages'
 // TODO: address geocode failure to handle
 
 export default function CreateRequest() {
-	const { fetchRequest, isUserLoggedIn, toggleBanner } = useContext(AppContext)
+	const { fetchRequest, isUserLoggedIn, userProfile, toggleBanner } = useContext(AppContext)
 	const [display, setDisplay] = useState(0)
 	const [data, setData] = useState({
 		title: '',
@@ -30,15 +30,15 @@ export default function CreateRequest() {
 		address: undefined,
 	})
 
-	useEffect(() => {
-		if (isUserLoggedIn)
-			fetchRequest('GET', null, 'users/edit', (r, pR) => {
-				if (r.status === 200)
-					setData(d => {
-						return { ...d, address: pR.address, lng: pR.lng, lat: pR.lat }
-					})
-			})
-	}, [fetchRequest, isUserLoggedIn])
+	useEffect(
+		() =>
+			isUserLoggedIn &&
+			userProfile &&
+			setData(d => {
+				return { ...d, address: userProfile.address, lng: userProfile.lng, lat: userProfile.lat }
+			}),
+		[fetchRequest, isUserLoggedIn, userProfile]
+	)
 
 	const onChange = e => {
 		if (
@@ -72,7 +72,7 @@ export default function CreateRequest() {
 		}
 	}
 
-	const fetchCallback = (r, pR) => {
+	const fetchCallback = r => {
 		if (r.status === 201) setDisplay(2)
 		else {
 			setDisplay(0)

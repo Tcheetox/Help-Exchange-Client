@@ -45,7 +45,7 @@ export default function Header() {
 				</Navbar.Toggle>
 				<Navbar.Collapse id='basic-navbar-nav'>
 					<Nav className='mr-auto'>
-						<FoldLink to='/about'>About</FoldLink>
+						<FoldLink to='/map'>Map</FoldLink>
 						<FoldLink to='/faq'>FAQ</FoldLink>
 					</Nav>
 					{isUserLoggedIn}
