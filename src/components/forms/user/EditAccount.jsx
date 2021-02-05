@@ -2,9 +2,9 @@ import React, { useState, useEffect, useContext, useCallback } from 'react'
 
 import { AppContext } from '../../../AppContext'
 import Form from 'react-bootstrap/Form'
-import LoadingButton from '../../decorations/LoadingButton'
-import InputForm from '../../decorations/InputForm'
-import FileForm from '../../decorations/FileForm'
+import LoadingButton from '../../common/LoadingButton'
+import InputForm from '../../common/InputForm'
+import FileForm from '../../common/FileForm'
 
 import { geocode } from '../../../utilities'
 

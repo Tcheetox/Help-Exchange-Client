@@ -1,12 +1,12 @@
 import React, { useContext, useState, useEffect } from 'react'
 
-import { AppContext } from '../../AppContext'
+import { AppContext } from '../../../AppContext'
 import Card from 'react-bootstrap/Card'
 import Accordion from 'react-bootstrap/Accordion'
 import Tooltip from 'react-bootstrap/Tooltip'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 
-import LoadingButton from '../decorations/LoadingButton'
+import LoadingButton from '../../common/LoadingButton'
 
 import PinIcon from '@material-ui/icons/PinDrop'
 import OwnerIcon from '@material-ui/icons/RecordVoiceOver'

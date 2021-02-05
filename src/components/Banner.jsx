@@ -18,7 +18,7 @@ export default function Banner() {
 	}, [bannerMessage, bannerTime, bannerTimestamp])
 
 	return display ? (
-		<Container className='banner-wrapper'>
+		<Container className='banner'>
 			<Alert variant={bannerType} onClose={() => setDisplay(false)} dismissible>
 				{bannerMessage}
 			</Alert>

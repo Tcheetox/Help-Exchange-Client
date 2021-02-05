@@ -3,7 +3,7 @@ import Container from 'react-bootstrap/Container'
 
 export default function Footer() {
 	return (
-		<footer id='Footer' className='footer-wrapper bg-dark'>
+		<footer className='footer bg-dark'>
 			<Container className='text-center'>
 				<ul className='socials list-unstyled list-inline'>
 					<li className='list-inline-item'>

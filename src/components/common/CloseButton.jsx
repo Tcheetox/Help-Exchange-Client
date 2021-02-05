@@ -9,7 +9,7 @@ export default function CloseButton({ onClick }) {
 	}
 
 	return (
-		<div className='close-wrapper' onClick={handleClick}>
+		<div className='close' onClick={handleClick}>
 			<CloseIcon />
 		</div>
 	)

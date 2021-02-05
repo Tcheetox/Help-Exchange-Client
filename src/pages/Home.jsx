@@ -1,7 +1,11 @@
 import React from 'react'
 
-import Map from '../components/Map'
+import Container from 'react-bootstrap/Container'
 
 export default function Home() {
-	return <h1>HELLO FROM REACT</h1>
+	return (
+		<Container className='core'>
+			<h1>HELLO FROM REACT</h1>
+		</Container>
+	)
 }

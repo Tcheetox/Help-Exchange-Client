@@ -6,7 +6,7 @@ import Navbar from 'react-bootstrap/Navbar'
 import Container from 'react-bootstrap/Container'
 import Nav from 'react-bootstrap/Nav'
 import Dropdown from 'react-bootstrap/Dropdown'
-import UnreadMessagesBadge from '../components/decorations/UnreadMessagesBadge'
+import UnreadMessagesBadge from '../components/common/UnreadMessagesBadge'
 import DropdownButton from 'react-bootstrap/DropdownButton'
 import AccountIcon from '@material-ui/icons/AccountCircle'
 import ExitIcon from '@material-ui/icons/ExitToApp'
@@ -28,9 +28,8 @@ export default function Header() {
 	return (
 		<Navbar
 			expand='md'
-			id='Header'
 			// fixed='top'
-			className='header-wrapper'
+			className='header'
 			bg='dark'
 			expanded={expanded}>
 			<Container>

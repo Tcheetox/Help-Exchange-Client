@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react'
 
-import Paginator from '../components/requests/Paginator'
-import { AppContext } from '../AppContext'
-import LoadingSpinner from '../components/decorations/LoadingSpinner'
+import Paginator from './help_request/Paginator'
+import { AppContext } from '../../AppContext'
+import LoadingSpinner from '../common/LoadingSpinner'
 
 export default function Overview() {
 	const { fetchRequest, isUserLoggedIn } = useContext(AppContext)
