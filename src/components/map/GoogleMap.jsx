@@ -3,6 +3,8 @@ import React, { useState, useEffect, useContext, useRef } from 'react'
 import { AppContext } from '../../AppContext'
 import GoogleMapReact from 'google-map-react'
 import Marker from './Marker'
+import { logError } from '../../utilities'
+import publicIP from 'react-native-public-ip'
 
 // https://github.com/google-map-react/google-map-react/blob/HEAD/API.md
 // https://developers.google.com/maps/documentation/javascript/controls
@@ -11,9 +13,9 @@ import Marker from './Marker'
 // TODO: create setting button: terrains - fullscreen - use current position (>>> Bottom position fixed/static but above HEADER!!!)
 
 export default function GoogleMap() {
-	const { fetchRequest, isUserLoggedIn, userProfile } = useContext(AppContext)
+	const { fetchRequest, userProfile } = useContext(AppContext)
 	const [data, setData] = useState([])
-	const [center, setCenter] = useState({ lat: 46.2044, lng: 6.1432 })
+	const [center, setCenter] = useState()
 	const centerRef = useRef()
 	centerRef.current = center
 
@@ -23,27 +25,50 @@ export default function GoogleMap() {
 		[fetchRequest]
 	)
 
-	// Center map: use profile info otherwise attempt to find IP location
-	useEffect(() => {
-		if (isUserLoggedIn && userProfile && userProfile.lat && userProfile.lng)
-			setCenter({ lat: userProfile.lat, lng: userProfile.lng })
-		else {
-			if (!centerRef.current || !centerRef.current.lat || !centerRef.current.lng)
-				console.log('CHANGE THE CENTER BY THE NEWLY OBTAINE VALUE HERE!!!!')
+	const hasGeolocationPermission = () => {
+		try {
+			navigator.permissions
+				.query({
+					name: 'geolocation',
+				})
+				.then(perm => {
+					return perm.state === 'granted' ? true : false
+				})
+		} catch (error) {
+			logError(error)
+			return false
 		}
-	}, [isUserLoggedIn, userProfile])
+	}
 
-	// TODO: IT FUCKING COESN4T CHANGE THE CENTER!!!!!!
+	// Center map: use profile info (1) otherwise check if the browser shares the info (2), fallback to ip geolocation (3)
 	useEffect(() => {
-		console.log('MAP CENTER SHOULD BE:')
-		console.log(center)
-	}, [center])
+		if (userProfile && userProfile.lat && userProfile.lng)
+			setCenter({ lat: userProfile.lat, lng: userProfile.lng })
+		else if (hasGeolocationPermission())
+			navigator.geolocation.getCurrentPosition(pos =>
+				setCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude })
+			)
+		else if (!centerRef.current || !centerRef.current.lat || !centerRef.current.lng) {
+			try {
+				publicIP().then(ip =>
+					fetch(
+						`https://api.ipgeolocation.io/ipgeo?apiKey=${process.env.REACT_APP_IP_GEOLOCATION_KEY}&ip=${ip}`
+					)
+						.then(resp => resp.json())
+						.then(pos => setCenter({ lat: parseFloat(pos.latitude), lng: parseFloat(pos.longitude) }))
+				)
+			} catch (error) {
+				logError(error)
+			}
+		}
+	}, [userProfile])
 
 	return (
 		<div className='map'>
 			<GoogleMapReact
 				bootstrapURLKeys={{ key: process.env.REACT_APP_GOOGLE_KEY }}
-				defaultCenter={center}
+				defaultCenter={{ lat: 46.2044, lng: 6.1432 }} // Default to Geneva (must never change this props)
+				center={center}
 				options={{ zoomControl: false, fullscreenControl: false }}
 				//defaultMapTypeId={'TERRAIN'}
 				zoomControl={false}

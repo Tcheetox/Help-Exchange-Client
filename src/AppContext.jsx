@@ -217,7 +217,14 @@ export const AppContextProvider = props => {
 	const storeLogOut = () => {
 		setTokens({ accessToken: '', refreshToken: '' })
 		setGlobals(g => {
-			return { ...g, isUserLoggedIn: false, userId: -1, userEmail: '', conversations: [], userProfile: null }
+			return {
+				...g,
+				isUserLoggedIn: false,
+				userId: -1,
+				userEmail: '',
+				conversations: [],
+				userProfile: { lat: g.userProfile.lat, lng: g.userProfile.lng }, //TODO: doesn't work
+			}
 		})
 	}
 
