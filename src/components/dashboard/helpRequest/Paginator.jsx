@@ -4,7 +4,7 @@ import Pagination from 'react-bootstrap/Pagination'
 import HelpRequest from './HelpRequest'
 import Accordion from 'react-bootstrap/Accordion'
 
-export default function Paginator({ onRequestUpdated, data }) {
+export default function Paginator({ data }) {
 	const itemsPerPage = 5
 	const [activePage, setActivePage] = useState(0)
 	const pages = [...Array(Math.ceil(data.length / itemsPerPage)).keys()]
@@ -13,7 +13,7 @@ export default function Paginator({ onRequestUpdated, data }) {
 		<div className='paginator'>
 			<Accordion>
 				{data.slice(activePage * itemsPerPage, (activePage + 1) * itemsPerPage).map((x, k) => (
-					<HelpRequest onRequestUpdated={onRequestUpdated} eventKey={k + 1} key={k} data={x} />
+					<HelpRequest eventKey={k + 1} key={k} data={x} />
 				))}
 			</Accordion>
 			<Pagination size='sm'>

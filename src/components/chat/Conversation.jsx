@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from 'react'
 
 import { AppContext } from '../../AppContext'
+import { AppData } from '../../AppData'
 import DoublePane from '../common/DoublePane'
 import MessagesArea from './MessagesArea'
 import InputForm from '../common/InputForm'
@@ -15,15 +16,15 @@ import Form from 'react-bootstrap/Form'
 export default function Conversation() {
 	const leftPaneWidth = 3
 	const subscriptionRef = useRef()
-	const { fetchRequest, isUserLoggedIn, userId, cable, conversations, setConversationMessages } = useContext(
-		AppContext
-	)
+	const { fetchRequest, isUserLoggedIn, userId, cable } = useContext(AppContext)
+	const { conversations, setConversationMessages } = useContext(AppData)
 	const [activeConversation, setActiveConversation] = useState(0)
 	const [message, setMessage] = useState('')
 
 	// TODO: loading spinner
+	// TODO: message as component with useMemo
 
-	// Fetch full conversation if necessary, restore subscription
+	// Fetch full conversation if necessary, switch to proper subscription to be able to send messages
 	useEffect(() => {
 		if (isUserLoggedIn && activeConversation > 0) {
 			const conversation = conversations.find(c => c.id === activeConversation)
@@ -44,7 +45,7 @@ export default function Conversation() {
 
 	// Mark active conversation messages as read
 	useEffect(() => {
-		if (isUserLoggedIn && subscriptionRef.current && activeConversation > 0) {
+		if (isUserLoggedIn && userId !== -1 && subscriptionRef.current && activeConversation > 0) {
 			const conversation = { ...conversations.find(c => c.id === activeConversation) }
 			let conversationUpdated = false
 			if (conversation && conversation.messages.length)

@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect, useCallback, useRef } from 'react'
+import { AppDataProvider } from './AppData'
 import { useCookies } from 'react-cookie'
 import { logError, isBlank } from './utilities'
 import { AutomaticMessage, WelcomeBack, InvalidCredentials, GoodBye } from './components/bannerMessages'
@@ -180,52 +181,24 @@ export const AppContextProvider = props => {
 		[fetchRequest]
 	)
 
-	// Update an existing conversation with new messages
-	const setConversationMessages = (convId, messages) =>
-		setGlobals(g => {
-			const convCopy = [...g.conversations]
-			const convIndex = convCopy.findIndex(c => c.id === convId)
-			if (convIndex !== -1) {
-				if (Array.isArray(messages)) {
-					convCopy[convIndex].messages = messages
-					convCopy[convIndex].total_messages = convCopy[convIndex].messages.length
-				} else {
-					convCopy[convIndex].messages.push(messages)
-					convCopy[convIndex].total_messages += 1
-				}
-				let unreadMessages = 0
-				convCopy[convIndex].messages.forEach(m =>
-					m.status === 'unread' && m.user_id !== g.userId ? (unreadMessages += 1) : null
-				)
-				convCopy[convIndex].unread_messages = unreadMessages
-				convCopy[convIndex].updated_at =
-					convCopy[convIndex].messages[convCopy[convIndex].messages.length - 1].updated_at
-			}
-			return {
-				...g,
-				conversations: convCopy,
-			}
-		})
-
 	const storeLogIn = (id, email, access_token, refresh_token) => {
 		setTokens({ accessToken: access_token, refreshToken: refresh_token })
-		setGlobals(g => {
-			return { ...g, isUserLoggedIn: true, userId: id, userEmail: email }
-		})
+		setGlobals(g => ({ ...g, isUserLoggedIn: true, userId: id, userEmail: email }))
 	}
 
+	// TODO: nasty
 	const storeLogOut = () => {
 		setTokens({ accessToken: '', refreshToken: '' })
-		setGlobals(g => {
-			return {
-				...g,
-				isUserLoggedIn: false,
-				userId: -1,
-				userEmail: '',
-				conversations: [],
-				userProfile: { lat: g.userProfile.lat, lng: g.userProfile.lng }, //TODO: doesn't work
-			}
-		})
+		setGlobals(g => ({
+			...g,
+			isUserLoggedIn: false,
+			userId: -1,
+			userEmail: '',
+			userProfile:
+				g.userProfile && g.userProfile.lat && g.userProfile.lng
+					? { lat: g.userProfile.lat, lng: g.userProfile.lng }
+					: { lat: null, lng: null },
+		}))
 	}
 
 	// The globals object is accessible through the whole app through useContext
@@ -242,8 +215,6 @@ export const AppContextProvider = props => {
 		userEmail: '',
 		userProfile: null,
 		cable: null,
-		conversations: [],
-		setConversationMessages: setConversationMessages,
 		logIn: logIn,
 		logOut: logOut,
 	})
@@ -256,49 +227,9 @@ export const AppContextProvider = props => {
 				'GET',
 				null,
 				'users/edit',
-				(r, pR) =>
-					r.status === 200 &&
-					setGlobals(g => {
-						return { ...g, userProfile: pR }
-					})
+				(r, pR) => r.status === 200 && setGlobals(g => ({ ...g, userProfile: pR }))
 			),
 		[globals.isUserLoggedIn, fetchRequest]
-	)
-
-	// Handle conversations update
-	useEffect(
-		() =>
-			globals.isUserLoggedIn &&
-			globals.cable &&
-			fetchRequest('GET', null, 'conversations', (r, pR) => {
-				if (r.status === 200 && Array.isArray(pR) && pR.length)
-					setGlobals(g => {
-						// Subscribe to conversation each MessagesChannel to receive new messages
-						pR.forEach(c => {
-							globals.cable.subscriptions.create(
-								{ channel: 'MessagesChannel', conversation: c.id },
-								{ received: m => setConversationMessages(c.id, m) }
-							)
-						})
-						return { ...g, conversations: pR.map(c => ({ ...c, messages: [] })) }
-					})
-				// Subscribe to ConversationsChannel to be notified of newly created conversation
-				globals.cable.subscriptions.create(
-					{ channel: 'ConversationsChannel' },
-					{
-						received: c =>
-							setGlobals(g => {
-								const conversationsCopy = g.conversations
-								const convIndex = conversationsCopy.findIndex(co => co.id === c.id)
-								if (!g.conversations.length || convIndex !== -1)
-									conversationsCopy.push({ ...c, messages: [] })
-								else conversationsCopy[convIndex] = { ...c, messages: [] }
-								return { ...g, conversations: conversationsCopy }
-							}),
-					}
-				)
-			}),
-		[globals.isUserLoggedIn, globals.cable, fetchRequest]
 	)
 
 	// Handle Websocket connection
@@ -308,14 +239,10 @@ export const AppContextProvider = props => {
 			appCable.cable = ActionCable.createConsumer(
 				`${process.env.REACT_APP_WS_API_PREFIX}/api/${process.env.REACT_APP_API_VERSION}/users/${tokensRef.current.accessToken}/cable`
 			)
-			setGlobals(g => {
-				return { ...g, cable: appCable.cable }
-			})
+			setGlobals(g => ({ ...g, cable: appCable.cable }))
 		} else if (!globals.isUserLoggedIn && globals.cable) {
 			globals.cable.disconnect()
-			setGlobals(g => {
-				return { ...g, cable: null }
-			})
+			setGlobals(g => ({ ...g, cable: null }))
 		}
 	}, [globals.isUserLoggedIn, globals.cable])
 
@@ -345,5 +272,9 @@ export const AppContextProvider = props => {
 		return () => clearInterval(intervalId)
 	}, [tokens.refreshToken, globals.isUserLoggedIn, refreshToken])
 
-	return <AppContext.Provider value={globals}>{props.children}</AppContext.Provider>
+	return (
+		<AppContext.Provider value={globals}>
+			<AppDataProvider>{props.children}</AppDataProvider>
+		</AppContext.Provider>
+	)
 }

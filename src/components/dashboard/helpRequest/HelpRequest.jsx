@@ -22,7 +22,6 @@ import CancelIcon from '@material-ui/icons/Cancel'
 import CheckCircleIcon from '@material-ui/icons/CheckCircle'
 
 export default function HelpRequest({
-	onRequestUpdated,
 	eventKey,
 	data: { id, title, description, status, help_type, users, created_at, pending_at, address },
 }) {
@@ -44,7 +43,7 @@ export default function HelpRequest({
 			'PUT',
 			{ subaction: e.target.name },
 			`help_requests/${id}`,
-			(r, pR) => r.status === 200 && onRequestUpdated(pR)
+			(r, pR) => console.log('coucou') //r.status === 200 && onRequestUpdated(pR)
 		)
 
 	return (

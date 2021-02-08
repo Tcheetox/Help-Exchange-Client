@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react'
 
-import { AppContext } from '../../AppContext'
+import { AppData } from '../../AppData'
 import Badge from 'react-bootstrap/Badge'
 
 export default function UnreadMessagesBadge({ convId = -1 }) {
-	const { conversations } = useContext(AppContext)
+	const { conversations } = useContext(AppData)
 	const [unreadMessages, setUnreadMessages] = useState(0)
 	useEffect(() => {
 		if (conversations.length) {
