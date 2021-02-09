@@ -52,7 +52,7 @@ export default function Header() {
 					<Nav className='account-navigation ml-auto'>
 						{isUserLoggedIn ? (
 							<>
-								<FoldLink to='/users/edit'>{userEmail}</FoldLink>
+								<FoldLink to='/users/account'>{userEmail}</FoldLink>
 								<DropdownButton
 									className={`account-dropdown ${dropdown}`}
 									title={<AccountIcon />}
@@ -60,7 +60,7 @@ export default function Header() {
 									show={dropdown}
 									onMouseLeave={() => setDropdown(false)}
 									onMouseEnter={() => setDropdown(true)}>
-									<Dropdown.Item onClick={() => history.push('/users/edit')}>Profile</Dropdown.Item>
+									<Dropdown.Item onClick={() => history.push('/users/account')}>Profile</Dropdown.Item>
 									<Dropdown.Item onClick={() => history.push('/users/dashboard')}>Dashboard</Dropdown.Item>
 									<Dropdown.Item onClick={() => history.push('/users/messenger')}>
 										Messenger <UnreadMessagesBadge />

@@ -1,14 +1,15 @@
 import React from 'react'
 
-export default function MessageArea({ conversation }) {
+import { MessageMemo } from './Message'
+import LoadingSpinner from '../common/LoadingSpinner'
+
+export default function MessageArea({ conversation, loading }) {
 	return (
 		<div className='messages-area'>
-			{conversation.messages.length ? (
-				conversation.messages.map((m, k) => (
-					<div key={k}>
-						{m.message} ({m.user_first_name} {m.user_last_name} @{m.updated_at})
-					</div>
-				))
+			{loading ? (
+				<LoadingSpinner />
+			) : conversation.messages.length ? (
+				conversation.messages.map((m, k) => <MessageMemo props={m} key={k} />)
 			) : (
 				<h4>You're yet to communicate with this guy!</h4>
 			)}

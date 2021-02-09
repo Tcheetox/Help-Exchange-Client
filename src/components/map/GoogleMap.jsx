@@ -3,13 +3,15 @@ import React, { useState, useEffect, useContext, useRef } from 'react'
 import { AppData } from '../../AppData'
 import { AppContext } from '../../AppContext'
 import GoogleMapReact from 'google-map-react'
-import Marker from './Marker'
+import { MarkerMemo } from './Marker'
 import { logError } from '../../utilities'
 import publicIP from 'react-native-public-ip'
 
 // https://github.com/google-map-react/google-map-react/blob/HEAD/API.md
 // https://developers.google.com/maps/documentation/javascript/controls
 
+// TODO: center should adapt dynamically to uesr location -> UE!!!
+// TODO: user current location icon
 // TODO: create setting button: terrains - fullscreen - use current position (>>> Bottom position fixed/static but above HEADER!!!)
 
 export default function GoogleMap() {
@@ -20,7 +22,7 @@ export default function GoogleMap() {
 	userProfileRef.current = userProfile
 
 	// Trigger refresh of help requests (filtered from the backend by status: published)
-	useEffect(() => refreshHelpRequests(), [])
+	useEffect(() => refreshHelpRequests(), [refreshHelpRequests])
 
 	const hasGeolocationPermission = () => {
 		try {
@@ -65,6 +67,7 @@ export default function GoogleMap() {
 			}
 		}
 	}, [userProfile])
+
 	return (
 		<div className='map'>
 			<GoogleMapReact
@@ -75,7 +78,7 @@ export default function GoogleMap() {
 				zoomControl={false}
 				defaultZoom={12}>
 				{helpRequests.map((h, i) => (
-					<Marker key={i} lat={h.lat} lng={h.lng} helpRequest={h} />
+					<MarkerMemo key={i} lat={h.lat} lng={h.lng} helpRequest={h} />
 				))}
 			</GoogleMapReact>
 		</div>

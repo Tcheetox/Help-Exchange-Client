@@ -30,6 +30,8 @@ export const AppDataProvider = ({ children }) => {
 				} else {
 					convCopy[convIndex].messages.push(messages)
 					convCopy[convIndex].total_messages += 1
+					//console.log('ARE WE HERE?')
+					//console.log(convCopy[convIndex])
 				}
 				let unreadMessages = 0
 				convCopy[convIndex].messages.forEach(m =>
@@ -58,7 +60,11 @@ export const AppDataProvider = ({ children }) => {
 			cable.subscriptions.create(
 				{ channel: 'MessagesChannel', conversation: convId },
 				{
-					received: m => setConversationMessages(convId, m),
+					received: m => {
+						console.log('> CHAT MESSAGE received from socket')
+						console.log(m)
+						setConversationMessages(convId, m)
+					},
 				}
 			),
 		[cable]
@@ -79,16 +85,19 @@ export const AppDataProvider = ({ children }) => {
 				cable.subscriptions.create(
 					{ channel: 'ConversationsChannel' },
 					{
-						received: c =>
+						received: c => {
+							console.log('> CONVERSATION UPDATE from socket')
+							console.log(c)
 							setData(d => {
 								const conversationsCopy = d.conversations
 								const convIndex = conversationsCopy.findIndex(co => co.id === c.id)
-								if (!d.conversations.length || convIndex !== -1) {
+								if (!convIndex || convIndex === -1) {
 									conversationsCopy.push({ ...c, messages: [] })
-									if (convIndex === -1) subToConvMessages(c.id)
+									subToConvMessages(c.id)
 								} else conversationsCopy[convIndex] = { ...c, messages: [] }
 								return { ...d, conversations: conversationsCopy }
-							}),
+							})
+						},
 					}
 				)
 			}),
@@ -119,7 +128,11 @@ export const AppDataProvider = ({ children }) => {
 					cable.subscriptions.create(
 						{ channel: 'HelpRequestsChannel' },
 						{
-							received: h => handleHelpRequest(h),
+							received: h => {
+								console.log('> HELP REQUEST UPDATE from socket')
+								console.log(h)
+								handleHelpRequest(h)
+							},
 						}
 					)
 				}

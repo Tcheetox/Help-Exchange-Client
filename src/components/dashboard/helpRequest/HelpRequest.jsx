@@ -1,13 +1,13 @@
 import React, { useContext, useState, useEffect } from 'react'
+import { useHistory } from 'react-router-dom'
 
 import { AppContext } from '../../../AppContext'
+import { AppData } from '../../../AppData'
 import Card from 'react-bootstrap/Card'
 import Accordion from 'react-bootstrap/Accordion'
 import Tooltip from 'react-bootstrap/Tooltip'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
-
 import LoadingButton from '../../common/LoadingButton'
-
 import PinIcon from '@material-ui/icons/PinDrop'
 import OwnerIcon from '@material-ui/icons/RecordVoiceOver'
 import PersonIcon from '@material-ui/icons/Person'
@@ -26,7 +26,9 @@ export default function HelpRequest({
 	data: { id, title, description, status, help_type, users, created_at, pending_at, address },
 }) {
 	const { fetchRequest, isUserLoggedIn, userId, toggleBanner } = useContext(AppContext)
+	const { conversations } = useContext(AppData)
 	const [role, setRole] = useState('')
+	const history = useHistory()
 
 	useEffect(
 		() =>
@@ -37,14 +39,25 @@ export default function HelpRequest({
 		[users, userId]
 	)
 
-	const handleClick = e =>
-		isUserLoggedIn &&
-		fetchRequest(
-			'PUT',
-			{ subaction: e.target.name },
-			`help_requests/${id}`,
-			(r, pR) => console.log('coucou') //r.status === 200 && onRequestUpdated(pR)
-		)
+	const isChattable = user_type =>
+		(role === 'owner' && user_type !== 'owner') || (role === 'respondent' && user_type === 'owner')
+
+	const handleClick = e => isUserLoggedIn && fetchRequest('PUT', null, `help_requests/${id}/${e.target.name}`)
+
+	const handleConversation = t => {
+		if ((role === 'owner' && t.user_type !== 'owner') || (role === 'respondent' && t.user_type === 'owner')) {
+			const convo = conversations.find(c => c.help_request_id === id && c.target_user_id === t.id)
+			if (isUserLoggedIn && !convo)
+				fetchRequest(
+					'POST',
+					{ help_request_id: id, target_user_id: t.id },
+					'conversations',
+					(r, pR) => r.status === 201 && history.push(`/users/messenger/${pR.id}`)
+				)
+			else if (convo) history.push(`/users/messenger/${convo.id}`)
+			else history.push('/users/messenger')
+		}
+	}
 
 	return (
 		<Card className={`help-request ${role}`}>
@@ -83,11 +96,6 @@ export default function HelpRequest({
 								Cancel
 							</LoadingButton>
 						) : null}
-						{role === '' ? (
-							<LoadingButton variant='warning' name='subscribe' onClick={handleClick}>
-								Subscribe
-							</LoadingButton>
-						) : null}
 						{role === 'respondent' ? (
 							<LoadingButton variant='secondary' name='unsubscribe' onClick={handleClick}>
 								Unsubscribe
@@ -111,16 +119,23 @@ export default function HelpRequest({
 								overlay={
 									<Tooltip>
 										{x.first_name} {x.last_name}
-										{(role === 'owner' && x.user_type !== 'owner') ||
-										(role === 'respondent' && x.user_type === 'owner') ? (
-											<ChatIcon />
-										) : null}
+										{isChattable(x.user_type) ? <ChatIcon /> : null}
 									</Tooltip>
 								}>
 								{x.user_type === 'owner' ? (
-									<OwnerIcon className={`owner ${x.id === userId ? 'current' : ''}`} />
+									<OwnerIcon
+										className={`owner ${x.id === userId ? 'current' : ''} ${
+											isChattable(x.user_type) ? 'chattable' : ''
+										}`}
+										onClick={() => handleConversation(x)}
+									/>
 								) : (
-									<PersonIcon className={`respondent ${x.id === userId ? 'current' : ''}`} />
+									<PersonIcon
+										className={`respondent ${x.id === userId ? 'current' : ''} ${
+											isChattable(x.user_type) ? 'chattable' : ''
+										}`}
+										onClick={() => handleConversation(x)}
+									/>
 								)}
 							</OverlayTrigger>
 						))}

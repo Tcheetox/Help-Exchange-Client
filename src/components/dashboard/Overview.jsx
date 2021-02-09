@@ -3,7 +3,7 @@ import React, { useState, useEffect, useContext } from 'react'
 import Paginator from './helpRequest/Paginator'
 import { AppData } from '../../AppData'
 
-export default function Overview() {
+export default function Overview({ showRequest }) {
 	const { userHelpRequests } = useContext(AppData)
 	const [data, setData] = useState([])
 	const [histoData, setHistoData] = useState([])
@@ -21,9 +21,17 @@ export default function Overview() {
 	return (
 		<div className='overview-pane'>
 			<h4>Pending requests</h4>
-			{data.length > 0 ? <Paginator data={data} /> : 'Nothing to show... lazy fucker!'}
+			{data.length > 0 ? (
+				<Paginator data={data} showRequest={showRequest} />
+			) : (
+				'Nothing to show... lazy fucker!'
+			)}
 			<h4>History</h4>
-			{histoData.length > 0 ? <Paginator data={histoData} /> : "You haven't done much have you?"}
+			{histoData.length > 0 ? (
+				<Paginator data={histoData} showRequest={showRequest} />
+			) : (
+				"You haven't done much have you?"
+			)}
 		</div>
 	)
 }

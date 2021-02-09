@@ -6,16 +6,16 @@ import DoublePane from '../common/DoublePane'
 import MessagesArea from './MessagesArea'
 import InputForm from '../common/InputForm'
 import LoadingButton from '../common/LoadingButton'
-import LoadingSpinner from '../common/LoadingSpinner'
 import UnreadMessagesBadge from '../common/UnreadMessagesBadge'
 import Card from 'react-bootstrap/Card'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import Form from 'react-bootstrap/Form'
 
-export default function Conversation() {
+export default function Conversation({ defaultActivePane }) {
 	const leftPaneWidth = 3
 	const subscriptionRef = useRef()
+	const [loading, setLoading] = useState(false)
 	const { fetchRequest, isUserLoggedIn, userId, cable } = useContext(AppContext)
 	const { conversations, setConversationMessages } = useContext(AppData)
 	const [activeConversation, setActiveConversation] = useState(0)
@@ -28,15 +28,15 @@ export default function Conversation() {
 	useEffect(() => {
 		if (isUserLoggedIn && activeConversation > 0) {
 			const conversation = conversations.find(c => c.id === activeConversation)
-			if (conversation && conversation.messages.length !== conversation.total_messages)
-				fetchRequest(
-					'GET',
-					null,
-					`conversations/${activeConversation}`,
-					(r, pR) => r.status === 200 && pR.length && setConversationMessages(activeConversation, pR)
-				)
+			if (conversation && conversation.messages.length !== conversation.total_messages) {
+				setLoading(true)
+				fetchRequest('GET', null, `conversations/${activeConversation}`, (r, pR) => {
+					if (r.status === 200 && pR.length) setConversationMessages(activeConversation, pR)
+					setLoading(false)
+				})
+			}
 			// Set reference to proper MessagesChannel
-			if (cable && !subscriptionRef.current)
+			if (cable)
 				subscriptionRef.current = cable.subscriptions.subscriptions.find(
 					sub => sub.identifier.includes('MessagesChannel') && sub.identifier.includes(activeConversation)
 				)
@@ -78,11 +78,21 @@ export default function Conversation() {
 		</div>
 	)
 
+	const defaultConversation = () => {
+		if (conversations.length) {
+			const convIndex = conversations.findIndex(c => c.id === defaultActivePane)
+			return convIndex !== -1 ? convIndex : 0
+		}
+	}
+
 	return (
 		<div className='conversation'>
-			<DoublePane leftPane={leftPaneWidth} setActivePane={p => setActiveConversation(p.conversation.id)}>
+			<DoublePane
+				leftPane={leftPaneWidth}
+				setActivePane={p => setActiveConversation(p.conversation.id)}
+				defaultActivePane={defaultConversation()}>
 				{conversations.map(c => (
-					<MessagesArea key={c.id} title={conversationTitle(c)} conversation={c} />
+					<MessagesArea key={c.id} title={conversationTitle(c)} conversation={c} loading={loading} />
 				))}
 			</DoublePane>
 			<Card className='input-area'>

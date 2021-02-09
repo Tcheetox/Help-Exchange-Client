@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useCallback, useRef } from 'react'
 import { AppDataProvider } from './AppData'
+import { useHistory } from 'react-router-dom'
 import { useCookies } from 'react-cookie'
 import { logError, isBlank } from './utilities'
 import { AutomaticMessage, WelcomeBack, InvalidCredentials, GoodBye } from './components/bannerMessages'
@@ -8,6 +9,7 @@ import ActionCable from 'actioncable'
 export const AppContext = createContext()
 
 export const AppContextProvider = props => {
+	const history = useHistory()
 	const [tokens, setTokens] = useState({ accessToken: '', refreshToken: undefined })
 	const tokensRef = useRef()
 	tokensRef.current = tokens
@@ -34,15 +36,13 @@ export const AppContextProvider = props => {
 
 	const toggleBanner = useCallback(
 		args =>
-			setGlobals(g => {
-				return {
-					...g,
-					bannerMessage: args[0],
-					bannerType: args[1],
-					bannerTime: args.length > 2 ? args[2] : 5000,
-					bannerTimestamp: args.length > 3 ? args[3] : new Date().getTime(),
-				}
-			}),
+			setGlobals(g => ({
+				...g,
+				bannerMessage: args[0],
+				bannerType: args[1],
+				bannerTime: args.length > 2 ? args[2] : 5000,
+				bannerTimestamp: args.length > 3 ? args[3] : new Date().getTime(),
+			})),
 		[]
 	)
 
@@ -114,7 +114,7 @@ export const AppContextProvider = props => {
 			'oauth/token',
 			(r, pR) => {
 				if (r.status === 200) {
-					storeLogIn(pR.id, pR.email, pR.access_token, pR.refresh_token)
+					storeLogIn(pR.id, pR.email, pR.completed, pR.access_token, pR.refresh_token)
 					toggleBanner(WelcomeBack(email, pR.completed))
 					if (rememberMe) createCookieAuth(pR.cookie)
 					else removeCookieAuth()
@@ -137,7 +137,7 @@ export const AppContextProvider = props => {
 				'oauth/token',
 				(r, pR) => {
 					if (r.status === 200) {
-						storeLogIn(pR.id, pR.email, pR.access_token, pR.refresh_token)
+						storeLogIn(pR.id, pR.email, pR.completed, pR.access_token, pR.refresh_token)
 						toggleBanner(WelcomeBack(pR.email, pR.completed))
 					} else {
 						storeLogOut()
@@ -149,7 +149,7 @@ export const AppContextProvider = props => {
 		[cookie, fetchRequest, removeCookieAuth, toggleBanner]
 	)
 
-	const logOut = (callback = null) => {
+	const logOut = () => {
 		removeCookieAuth()
 		fetchRequest(
 			'POST',
@@ -158,7 +158,7 @@ export const AppContextProvider = props => {
 			(r, pR) => {
 				storeLogOut()
 				toggleBanner(GoodBye())
-				if (callback) callback(r, pR)
+				history.push('/') // redirect
 			},
 			false
 		)
@@ -171,7 +171,7 @@ export const AppContextProvider = props => {
 				{ grant_type: 'refresh_token', refresh_token: token },
 				'oauth/token',
 				(r, pR) => {
-					if (r.status === 200) storeLogIn(pR.id, pR.email, pR.access_token, pR.refresh_token)
+					if (r.status === 200) storeLogIn(pR.id, pR.email, pR.completed, pR.access_token, pR.refresh_token)
 					else storeLogOut()
 					if (callback) callback(r, pR)
 				},
@@ -181,12 +181,17 @@ export const AppContextProvider = props => {
 		[fetchRequest]
 	)
 
-	const storeLogIn = (id, email, access_token, refresh_token) => {
+	const storeLogIn = (id, email, completed, access_token, refresh_token) => {
 		setTokens({ accessToken: access_token, refreshToken: refresh_token })
-		setGlobals(g => ({ ...g, isUserLoggedIn: true, userId: id, userEmail: email }))
+		setGlobals(g => ({
+			...g,
+			isUserLoggedIn: true,
+			userId: id,
+			userEmail: email,
+			userProfileCompleted: completed,
+		}))
 	}
 
-	// TODO: nasty
 	const storeLogOut = () => {
 		setTokens({ accessToken: '', refreshToken: '' })
 		setGlobals(g => ({
@@ -194,6 +199,7 @@ export const AppContextProvider = props => {
 			isUserLoggedIn: false,
 			userId: -1,
 			userEmail: '',
+			userProfileCompleted: false,
 			userProfile:
 				g.userProfile && g.userProfile.lat && g.userProfile.lng
 					? { lat: g.userProfile.lat, lng: g.userProfile.lng }
@@ -213,7 +219,10 @@ export const AppContextProvider = props => {
 		isUserLoggedIn: false,
 		userId: -1,
 		userEmail: '',
+		userProfileCompleted: false,
 		userProfile: null,
+		updateUserProfile: profile =>
+			setGlobals(g => ({ ...g, userProfileCompleted: profile.completed, userProfile: profile })),
 		cable: null,
 		logIn: logIn,
 		logOut: logOut,

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { isBlank } from '../../../utilities'
 import { AppContext } from '../../../AppContext'
 import Form from 'react-bootstrap/Form'
@@ -17,6 +17,12 @@ export default function Connect({ title = '' }) {
 		email: undefined,
 		password: undefined,
 	})
+
+	// Prevent modifying state on unmounted component
+	const [mounted, setMounted] = useState(true)
+	useEffect(() => {
+		return () => setMounted(false)
+	}, [])
 
 	const handleChange = e => {
 		if (e.currentTarget.type === 'checkbox') setData({ ...data, [e.target.name]: e.target.checked })
@@ -39,11 +45,13 @@ export default function Connect({ title = '' }) {
 		if (Object.values(errorsAssessed).filter(x => x === '').length === Object.keys(errors).length) {
 			setDisplay(1)
 			logIn(data.email, data.password, data.rememberMe, (r, pR) => {
-				if (r.status === 200) setDisplay(2)
-				else {
-					if (r.status === 500) setErrors({ email: undefined, password: undefined })
-					else setErrors({ email: rej, password: rej })
-					setDisplay(0)
+				if (mounted) {
+					if (r.status === 200) setDisplay(2)
+					else {
+						if (r.status === 500) setErrors({ email: undefined, password: undefined })
+						else setErrors({ email: rej, password: rej })
+						setDisplay(0)
+					}
 				}
 			})
 		}

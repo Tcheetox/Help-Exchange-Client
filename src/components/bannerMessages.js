@@ -11,7 +11,7 @@ export const WelcomeBack = (email, completed) => {
 			{!completed ? (
 				<>
 					Don't forget to{' '}
-					<Link to='/users/edit' className='bold'>
+					<Link to='/users/account' className='bold'>
 						complete your profile
 					</Link>{' '}
 					before using our services.
@@ -21,15 +21,39 @@ export const WelcomeBack = (email, completed) => {
 			)}
 		</span>
 	)
-	return completed ? [message, 'success', 3000] : [message, 'success', 6500]
+	return completed ? [message, 'success', 4000] : [message, 'success', 7000]
 }
 
-export const InvalidCredentials = () => [`Invalid username and/or password.`, 'danger', 4000]
+export const InvalidCredentials = () => [`Invalid username and/or password.`, 'danger', 5000]
 
 export const SuccessCredentialsChanged = () => [
 	`Credentials have been successfully changed.`,
 	'success',
-	4000,
+	5000,
 ]
 
-export const GoodBye = () => [`See you soon!`, 'success', 3000]
+export const ProfileIncomplete = () => [
+	<span>
+		You must{' '}
+		<Link to='/users/account' className='bold'>
+			complete your profile
+		</Link>{' '}
+		to access this service.
+	</span>,
+	'warning',
+	5000,
+]
+
+export const NotAuthenticated = () => [
+	<span>
+		You must be authenticated to view this page. Don't have an account yet?{' '}
+		<Link to='/users/signup' className='bold'>
+			Sign up
+		</Link>
+		!
+	</span>,
+	'warning',
+	5000,
+]
+
+export const GoodBye = () => [`See you soon!`, 'success', 4000]

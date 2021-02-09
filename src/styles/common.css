@@ -239,6 +239,9 @@ button {
 	display: flex;
 	justify-content: right;
 }
+svg.chattable {
+	cursor: pointer;
+}
 
 /* MAP */
 .map {

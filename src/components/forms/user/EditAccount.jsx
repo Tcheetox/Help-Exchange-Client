@@ -8,7 +8,9 @@ import FileForm from '../../common/FileForm'
 import { geocode } from '../../../utilities'
 
 export default function EditAccount() {
-	const { fetchRequest, fetchFileRequest, isUserLoggedIn, userProfile } = useContext(AppContext)
+	const { fetchRequest, fetchFileRequest, isUserLoggedIn, userProfile, updateUserProfile } = useContext(
+		AppContext
+	)
 	const [display, setDisplay] = useState(0)
 	const [data, setData] = useState({
 		firstName: '',
@@ -21,19 +23,6 @@ export default function EditAccount() {
 		country: '',
 		govId: '',
 	})
-
-	const refreshData = pR =>
-		setData({
-			firstName: pR.first_name,
-			lastName: pR.last_name,
-			phone: pR.phone,
-			address: pR.address,
-			lat: pR.lat,
-			lng: pR.lng,
-			postCode: pR.post_code,
-			country: pR.country,
-			govId: pR.gov_id,
-		})
 
 	const handleChange = e => setData({ ...data, [e.target.name]: e.target.value })
 	const handleSubmit = e => {
@@ -57,33 +46,39 @@ export default function EditAccount() {
 				(r, pR) => {
 					if (r.status === 200) {
 						setDisplay(2)
-						refreshData(pR)
+						updateUserProfile(pR)
 					} else setDisplay(0)
 				}
 			)
 		)
 	}
 
-	useEffect(() => isUserLoggedIn && userProfile && refreshData(userProfile), [
-		fetchRequest,
-		isUserLoggedIn,
-		userProfile,
-	])
+	// Update local state with AppContext userProfile
+	useEffect(() => {
+		isUserLoggedIn &&
+			userProfile &&
+			setData({
+				firstName: userProfile.first_name,
+				lastName: userProfile.last_name,
+				phone: userProfile.phone,
+				address: userProfile.address,
+				lat: userProfile.lat,
+				lng: userProfile.lng,
+				postCode: userProfile.post_code,
+				country: userProfile.country,
+				govId: userProfile.gov_id,
+			})
+	}, [isUserLoggedIn, userProfile])
 
 	const handleFileChange = useCallback(
 		(file, callback = null) => {
 			if (file)
 				fetchFileRequest('PATCH', 'government_id', file, 'users/edit', (r, pR) => {
-					if (r.status === 200)
-						setData(d => {
-							return { ...d, govId: pR.gov_id }
-						})
+					if (r.status === 200) setData(d => ({ ...d, govId: pR.gov_id }))
 					if (callback) callback(r, pR)
 				})
 			else {
-				setData(d => {
-					return { ...d, govId: null }
-				})
+				setData(d => ({ ...d, govId: null }))
 				if (callback) callback({ status: 0 }, {})
 			}
 		},
