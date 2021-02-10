@@ -5,25 +5,23 @@ import { AppContext } from '../AppContext'
 import Navbar from 'react-bootstrap/Navbar'
 import Container from 'react-bootstrap/Container'
 import Nav from 'react-bootstrap/Nav'
-import Dropdown from 'react-bootstrap/Dropdown'
-import UnreadMessagesBadge from '../components/common/UnreadMessagesBadge'
+import { UnreadMessagesBadge } from '../components/common/'
 import DropdownButton from 'react-bootstrap/DropdownButton'
+import Dropdown from 'react-bootstrap/Dropdown'
 import AccountIcon from '@material-ui/icons/AccountCircle'
 import ExitIcon from '@material-ui/icons/ExitToApp'
-
-// TODO: layout for user login/signup
-// TODO: login form + login form on mousehover
 
 export default function Header() {
 	const history = useHistory()
 	const { isUserLoggedIn, userEmail, logOut } = useContext(AppContext)
 	const [expanded, setExpanded] = useState(false)
+	const [dropdown, setDropdown] = useState(false)
+
 	const FoldLink = ({ to, children }) => (
 		<div onClick={() => setExpanded(false)}>
 			<Link to={to}>{children}</Link>
 		</div>
 	)
-	const [dropdown, setDropdown] = useState(false)
 
 	return (
 		<Navbar
@@ -54,7 +52,8 @@ export default function Header() {
 							<>
 								<FoldLink to='/users/account'>{userEmail}</FoldLink>
 								<DropdownButton
-									className={`account-dropdown ${dropdown}`}
+									id='AccountDropdown'
+									className='account-dropdown'
 									title={<AccountIcon />}
 									menuAlign='right'
 									show={dropdown}

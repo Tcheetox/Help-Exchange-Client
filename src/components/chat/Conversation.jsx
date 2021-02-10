@@ -2,11 +2,8 @@ import React, { useState, useEffect, useContext, useRef } from 'react'
 
 import { AppContext } from '../../AppContext'
 import { AppData } from '../../AppData'
-import DoublePane from '../common/DoublePane'
 import MessagesArea from './MessagesArea'
-import InputForm from '../common/InputForm'
-import LoadingButton from '../common/LoadingButton'
-import UnreadMessagesBadge from '../common/UnreadMessagesBadge'
+import { DoublePane, InputForm, LoadingButton, UnreadMessagesBadge } from '../common/'
 import Card from 'react-bootstrap/Card'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
@@ -20,9 +17,6 @@ export default function Conversation({ defaultActivePane }) {
 	const { conversations, setConversationMessages } = useContext(AppData)
 	const [activeConversation, setActiveConversation] = useState(0)
 	const [message, setMessage] = useState('')
-
-	// TODO: loading spinner
-	// TODO: message as component with useMemo
 
 	// Fetch full conversation if necessary, switch to proper subscription to be able to send messages
 	useEffect(() => {

@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom'
 import { isValidEmail, isBlank } from '../../../utilities'
 import { AppContext } from '../../../AppContext'
 import Form from 'react-bootstrap/Form'
-import LoadingButton from '../../common/LoadingButton'
-import InputForm from '../../common/InputForm'
+import { LoadingButton, InputForm } from '../../common/'
 
 export default function Create({ title = '' }) {
 	const { fetchRequest, logIn } = useContext(AppContext)

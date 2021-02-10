@@ -1,11 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react'
 
-import CloseButton from './CloseButton'
 import Form from 'react-bootstrap/Form'
 import BackupIcon from '@material-ui/icons/Backup'
 import DownloadIcon from '@material-ui/icons/CloudDownload'
 import { ReactComponent as PdfIcon } from '../../media/icons/pdf.svg'
-import LoadingSpinner from './LoadingSpinner'
+import { LoadingSpinner, CloseButton } from './'
 
 // TODO: In a perfect world, I should check the file through antivirus APIs (e.g. VirusTotal.com)
 

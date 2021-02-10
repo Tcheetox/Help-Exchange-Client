@@ -4,22 +4,23 @@ import { AppData } from '../../AppData'
 import { AppContext } from '../../AppContext'
 import GoogleMapReact from 'google-map-react'
 import { MarkerMemo } from './Marker'
+import { UserMarkerMemo } from './UserMarker'
+import Settings from './Settings'
 import { logError } from '../../utilities'
 import publicIP from 'react-native-public-ip'
 
 // https://github.com/google-map-react/google-map-react/blob/HEAD/API.md
 // https://developers.google.com/maps/documentation/javascript/controls
 
-// TODO: center should adapt dynamically to uesr location -> UE!!!
-// TODO: user current location icon
-// TODO: create setting button: terrains - fullscreen - use current position (>>> Bottom position fixed/static but above HEADER!!!)
-
 export default function GoogleMap() {
 	const { userProfile } = useContext(AppContext)
 	const { helpRequests, refreshHelpRequests } = useContext(AppData)
-	const [center, setCenter] = useState({ lat: null, lng: null })
+	const [center, setCenter] = useState({ lat: 46.2044, lng: 6.1432 })
+	const [mapType, setMapType] = useState('roadmap')
+	const [fullScreen, setFullScreen] = useState(null)
 	const userProfileRef = useRef()
 	userProfileRef.current = userProfile
+	const mapContainerRef = useRef()
 
 	// Trigger refresh of help requests (filtered from the backend by status: published)
 	useEffect(() => refreshHelpRequests(), [refreshHelpRequests])
@@ -39,10 +40,9 @@ export default function GoogleMap() {
 		}
 	}
 
-	// Center map: use profile info (1) otherwise check if the browser shares the info (2), fallback to ip geolocation (3)
+	// Automatically center map: use profile info (1) otherwise check if the browser shares the info (2), fallback to ip geolocation (3), default center set to Geneva (0)
 	useEffect(() => {
 		if (userProfile && userProfile.lat && userProfile.lng) {
-			setCenter({ lat: null, lng: null }) // TODO: test hijack this shitty module
 			setCenter({ lat: userProfile.lat, lng: userProfile.lng })
 		} else if (hasGeolocationPermission())
 			navigator.geolocation.getCurrentPosition(pos => {
@@ -62,21 +62,35 @@ export default function GoogleMap() {
 						})
 				)
 			} catch (error) {
-				setCenter({ lat: 46.2044, lng: 6.1432 }) // Default to Geneva
 				logError(error)
 			}
 		}
 	}, [userProfile])
 
+	// Trigger fullscreen mode
+	useEffect(() => {
+		if (mapContainerRef.current && fullScreen !== null) {
+			if (!window.fullScreen) mapContainerRef.current.requestFullscreen()
+			else document.exitFullscreen()
+		}
+	}, [fullScreen])
+
 	return (
-		<div className='map'>
+		<div className='map' ref={mapContainerRef}>
+			<Settings
+				setCenter={setCenter}
+				mapType={mapType}
+				setMapType={setMapType}
+				fullScreen={fullScreen}
+				setFullScreen={setFullScreen}
+			/>
 			<GoogleMapReact
 				bootstrapURLKeys={{ key: process.env.REACT_APP_GOOGLE_KEY }}
 				center={center}
-				options={{ zoomControl: false, fullscreenControl: false }}
-				//defaultMapTypeId={'TERRAIN'}
+				options={{ zoomControl: false, fullscreenControl: false, mapTypeId: mapType }}
 				zoomControl={false}
 				defaultZoom={12}>
+				<UserMarkerMemo lat={center.lat} lng={center.lng} />
 				{helpRequests.map((h, i) => (
 					<MarkerMemo key={i} lat={h.lat} lng={h.lng} helpRequest={h} />
 				))}

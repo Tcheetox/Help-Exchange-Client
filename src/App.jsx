@@ -8,17 +8,7 @@ import ProtectedRoute from './ProtectedRoute'
 import Header from './components/Header'
 import Banner from './components/Banner'
 import Footer from './components/Footer'
-
-import Home from './pages/Home'
-import Map from './pages/Map'
-import Signup from './pages/Signup'
-import Login from './pages/Login'
-import Profile from './pages/Profile'
-import Dashboard from './pages/Dashboard'
-import Messenger from './pages/Messenger'
-import Faq from './pages/Faq'
-
-// TODO: all the imports above -> nasty
+import { Home, Map, Signup, Login, Profile, Dashboard, Messenger, Faq } from './pages/'
 
 export default function App() {
 	return (

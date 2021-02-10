@@ -1,7 +1,7 @@
 import React from 'react'
 
 import Container from 'react-bootstrap/Container'
-import DoublePane from '../components/common/DoublePane'
+import { DoublePane } from '../components/common/'
 import Overview from '../components/dashboard/Overview'
 import CreateRequest from '../components/forms/CreateRequest'
 import Awards from '../components/dashboard/Awards'

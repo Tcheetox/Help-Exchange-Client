@@ -3,14 +3,11 @@ import React, { useState, useEffect, useContext } from 'react'
 import { geocode, reverseGeocode, titleize } from '../../utilities'
 
 import Form from 'react-bootstrap/Form'
-import InputForm from '../common/InputForm'
-import LoadingButton from '../common/LoadingButton'
+import { InputForm, LoadingButton } from '../common/'
 import Button from 'react-bootstrap/Button'
 import ExploreIcon from '@material-ui/icons/Explore'
 import { AppContext } from '../../AppContext'
 import { AutomaticMessage } from '../bannerMessages'
-
-// TODO: address geocode failure to handle
 
 export default function CreateRequest() {
 	const { fetchRequest, isUserLoggedIn, userProfile, toggleBanner } = useContext(AppContext)
@@ -41,14 +38,9 @@ export default function CreateRequest() {
 	)
 
 	const onChange = e => {
-		if (
-			e.target.name !== 'description' ||
-			(e.target.name === 'description' && e.target.value.length <= 300)
-		) {
-			if (e.target.name === 'address') setData({ ...data, address: e.target.value, lat: null, lng: null })
-			else setData({ ...data, [e.target.name]: e.target.value })
-			setErrors({ ...errors, [e.target.name]: undefined })
-		}
+		if (e.target.name === 'address') setData({ ...data, address: e.target.value, lat: null, lng: null })
+		else setData({ ...data, [e.target.name]: e.target.value })
+		setErrors({ ...errors, [e.target.name]: undefined })
 	}
 
 	const onSubmit = e => {
@@ -65,9 +57,14 @@ export default function CreateRequest() {
 		) {
 			setDisplay(1)
 			if (!data.lng || !data.lat)
-				geocode(data.address, ({ lat, lng }) =>
-					fetchRequest('POST', { ...data, lng: lng, lat: lat }, 'help_requests', fetchCallback)
-				)
+				geocode(data.address, ({ lat, lng }) => {
+					if (lat && lng)
+						fetchRequest('POST', { ...data, lng: lng, lat: lat }, 'help_requests', fetchCallback)
+					else {
+						setErrors(er => ({ ...er, address: 'Invalid address' }))
+						setDisplay(0)
+					}
+				})
 			else fetchRequest('POST', data, 'help_requests', fetchCallback)
 		}
 	}
@@ -135,6 +132,7 @@ export default function CreateRequest() {
 				error={errors.description}
 				onChange={onChange}
 				display={display}
+				maxChars={300}
 				text={
 					data.description.length > 0
 						? `${300 - data.description.length} characters remaining`

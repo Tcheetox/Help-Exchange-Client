@@ -22,10 +22,11 @@ export const geocode = async (address, callback) => {
 				}`
 			)
 			const parsedResp = await resp.json()
-			location = {
-				lat: parsedResp.results[0].geometry.location.lat,
-				lng: parsedResp.results[0].geometry.location.lng,
-			}
+			if (parsedResp.results[0])
+				location = {
+					lat: parsedResp.results[0].geometry.location.lat,
+					lng: parsedResp.results[0].geometry.location.lng,
+				}
 		} catch (error) {
 			logError(error)
 		}

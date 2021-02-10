@@ -1,7 +1,7 @@
 import React from 'react'
 
 import Container from 'react-bootstrap/Container'
-import DoublePane from '../components/common/DoublePane'
+import { DoublePane } from '../components/common/'
 import RemoveUser from '../components/forms/user/Delete'
 import EditCredentials from '../components/forms/user/EditCredentials'
 import EditAccount from '../components/forms/user/EditAccount'

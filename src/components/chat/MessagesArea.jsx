@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { MessageMemo } from './Message'
-import LoadingSpinner from '../common/LoadingSpinner'
+import { LoadingSpinner } from '../common/'
 
 export default function MessageArea({ conversation, loading }) {
 	return (

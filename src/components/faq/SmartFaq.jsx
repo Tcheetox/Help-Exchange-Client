@@ -3,7 +3,7 @@ import React, { useState, useContext, useEffect } from 'react'
 import { search } from 'ss-search'
 import { AppContext } from '../../AppContext'
 import Item from './Item'
-import InputForm from '../common/InputForm'
+import { InputForm } from '../common/'
 
 export default function SmartFaq() {
 	const { fetchRequest } = useContext(AppContext)

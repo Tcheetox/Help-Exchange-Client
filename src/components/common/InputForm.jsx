@@ -2,7 +2,6 @@ import React from 'react'
 
 import Form from 'react-bootstrap/Form'
 
-// TODO: maxChar(255) by default
 export default function InputForm({
 	name,
 	value,
@@ -15,6 +14,7 @@ export default function InputForm({
 	text = '',
 	display = 0,
 	rows = 0,
+	maxChars = 150,
 	canBeInvalid = true,
 	canBeValid = true,
 	canBeDisabled = true,
@@ -28,6 +28,11 @@ export default function InputForm({
 			{shouldShowInvalid() ? error : text}
 		</Form.Text>
 	)
+
+	const handleChange = e => {
+		if (e.target.value.length > maxChars) e.target.value = e.target.value.substring(0, maxChars)
+		onChange(e)
+	}
 
 	const renderSwitch = () => {
 		switch (type) {
@@ -54,7 +59,7 @@ export default function InputForm({
 							name={name}
 							placeholder={placeholder}
 							value={value}
-							onChange={onChange}
+							onChange={handleChange}
 							isInvalid={canBeInvalid && shouldShowInvalid()}
 							isValid={canBeValid && shouldShowValid()}
 							disabled={canBeDisabled ? display === 1 || display === 2 : false}
@@ -87,7 +92,7 @@ export default function InputForm({
 							name={name}
 							placeholder={placeholder}
 							value={value}
-							onChange={onChange}
+							onChange={handleChange}
 							isInvalid={canBeInvalid && shouldShowInvalid()}
 							isValid={canBeValid && shouldShowValid()}
 							disabled={canBeDisabled ? display === 1 || display === 2 : false}

@@ -2,9 +2,7 @@ import React, { useState, useEffect, useContext, useCallback } from 'react'
 
 import { AppContext } from '../../../AppContext'
 import Form from 'react-bootstrap/Form'
-import LoadingButton from '../../common/LoadingButton'
-import InputForm from '../../common/InputForm'
-import FileForm from '../../common/FileForm'
+import { LoadingButton, InputForm, FileForm } from '../../common/'
 import { geocode } from '../../../utilities'
 
 export default function EditAccount() {

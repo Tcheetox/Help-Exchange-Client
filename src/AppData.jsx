@@ -30,8 +30,6 @@ export const AppDataProvider = ({ children }) => {
 				} else {
 					convCopy[convIndex].messages.push(messages)
 					convCopy[convIndex].total_messages += 1
-					//console.log('ARE WE HERE?')
-					//console.log(convCopy[convIndex])
 				}
 				let unreadMessages = 0
 				convCopy[convIndex].messages.forEach(m =>

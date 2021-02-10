@@ -2,8 +2,7 @@ import React, { useContext, useEffect } from 'react'
 import { Route } from 'react-router-dom'
 
 import { AppContext } from './AppContext'
-import Login from './pages/Login'
-import Profile from './pages/Profile'
+import { Profile, Login } from './pages/'
 import { ProfileIncomplete, NotAuthenticated } from './components/bannerMessages'
 
 export default function ProtectedRoute({

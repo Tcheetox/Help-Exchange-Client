@@ -8,6 +8,9 @@ body,
 	height: inherit;
 	min-height: 100%;
 }
+body {
+	overflow-x: hidden;
+}
 
 /* BOOTSTRAP WEIRD BORDER REMOVAL */
 button {
@@ -89,6 +92,7 @@ button {
 .valid.form-text {
 	color: var(--bs-valid-color);
 }
+.settings-dropdown > button,
 .account-dropdown > button,
 .account-dropdown > button:active,
 .account-dropdown > button:focus,
@@ -101,6 +105,7 @@ button {
 .account-dropdown > button:hover {
 	color: lightgray !important;
 }
+.settings-dropdown > button::after,
 .account-dropdown > button::after {
 	display: none;
 }
@@ -247,4 +252,16 @@ svg.chattable {
 .map {
 	height: 100vh !important;
 	width: 100% !important;
+}
+/* MAP SETTINGS */
+.settings-dropdown {
+	position: absolute;
+	z-index: 1;
+	bottom: 1rem;
+	right: 1rem;
+}
+.settings-dropdown button > svg {
+	color: var(--darkergray);
+	height: 2.5rem;
+	width: auto;
 }

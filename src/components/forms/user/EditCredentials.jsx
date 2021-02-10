@@ -2,8 +2,7 @@ import React, { useState, useContext } from 'react'
 import { isBlank } from '../../../utilities'
 import { AppContext } from '../../../AppContext'
 import Form from 'react-bootstrap/Form'
-import LoadingButton from '../../common/LoadingButton'
-import InputForm from '../../common/InputForm'
+import { LoadingButton, InputForm } from '../../common/'
 import { SuccessCredentialsChanged } from '../../bannerMessages'
 
 export default function EditCredentials() {
