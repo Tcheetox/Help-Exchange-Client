@@ -265,3 +265,32 @@ svg.chattable {
 	height: 2.5rem;
 	width: auto;
 }
+
+/* LEFT MENU */
+.left-menu {
+	background-color: rgba(0, 0, 0, 0.1);
+	border-radius: 0.25rem;
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	z-index: 1;
+	padding: 0.35rem;
+	transform: translate3d(0, 0, 0);
+	/* Apparently the above triggers browser 3D accelerated graphics, that can improve perf on non-opaque items */
+}
+.left-menu > * {
+	position: relative;
+}
+.left-menu .badge {
+	position: absolute;
+	margin-right: -0.1rem;
+	top: -0.15rem;
+}
+.left-menu svg {
+	width: auto;
+	height: 1.8rem;
+}
+.left-menu > *:nth-child(2) {
+	margin-top: 0.2rem;
+	margin-bottom: 0.2rem;
+}

@@ -8,6 +8,7 @@ import ProtectedRoute from './ProtectedRoute'
 import Header from './components/Header'
 import Banner from './components/Banner'
 import Footer from './components/Footer'
+import LeftMenu from './components/LeftMenu'
 import { Home, Map, Signup, Login, Profile, Dashboard, Messenger, Faq } from './pages/'
 
 export default function App() {
@@ -16,6 +17,7 @@ export default function App() {
 			<div className='fullscreen'>
 				<Header />
 				<Banner />
+				<LeftMenu />
 				<Switch>
 					<Route path='/' component={Home} exact={true} />
 					<Route path='/map' component={Map} exact />
