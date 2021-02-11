@@ -267,13 +267,16 @@ svg.chattable {
 }
 
 /* LEFT MENU */
+.slider {
+	padding: 1rem 1.5rem 1rem 0rem;
+	position: absolute;
+	z-index: 1;
+}
 .left-menu {
 	background-color: rgba(0, 0, 0, 0.1);
 	border-radius: 0.25rem;
-	position: absolute;
 	display: flex;
 	flex-direction: column;
-	z-index: 1;
 	padding: 0.35rem;
 	transform: translate3d(0, 0, 0);
 	/* Apparently the above triggers browser 3D accelerated graphics, that can improve perf on non-opaque items */

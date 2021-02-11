@@ -22,33 +22,33 @@ export default function LeftMenu() {
 
 	const handleDrag = e => {
 		const newPosition = e.pageY - offset
-		if (footerRef.current && headerRef.current && menuRef.current) {
-			if (
-				headerRef.current.offsetHeight < newPosition &&
-				footerRef.current.offsetTop > newPosition + menuRef.current.offsetHeight
-			)
-				setTop(`${newPosition}px`)
-		} else setTop(`${newPosition}px`)
+		if (
+			headerRef.current.offsetHeight < newPosition &&
+			footerRef.current.offsetTop > newPosition + menuRef.current.offsetHeight
+		)
+			setTop(`${newPosition}px`)
 	}
 
 	return isUserLoggedIn ? (
 		<div
+			className='slider'
 			ref={menuRef}
-			className='left-menu'
 			style={{ top: `${top}` }}
 			onDragStart={e => setOffset(menuRef.current ? e.pageY - menuRef.current.offsetTop : 50)}
-			onDragEnd={() => setOffset(0)}
-			onDragOver={handleDrag}>
-			<Link to='/map'>
-				<MapIcon />
-			</Link>
-			<Link to='/users/dashboard/create'>
-				<CreateIcon />
-			</Link>
-			<Link to='/users/messenger'>
-				<UnreadMessagesBadge />
-				<MailIcon />
-			</Link>
+			onDragOver={handleDrag}
+			draggable>
+			<div className='left-menu'>
+				<Link to='/map'>
+					<MapIcon />
+				</Link>
+				<Link to='/users/dashboard/create'>
+					<CreateIcon />
+				</Link>
+				<Link to='/users/messenger'>
+					<UnreadMessagesBadge />
+					<MailIcon />
+				</Link>
+			</div>
 		</div>
 	) : null
 }
