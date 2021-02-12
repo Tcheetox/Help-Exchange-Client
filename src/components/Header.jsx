@@ -13,7 +13,7 @@ import ExitIcon from '@material-ui/icons/ExitToApp'
 
 export default function Header() {
 	const history = useHistory()
-	const { isUserLoggedIn, userEmail, logOut } = useContext(AppContext)
+	const { userLoggedIn, userEmail, logOut } = useContext(AppContext)
 	const [expanded, setExpanded] = useState(false)
 	const [dropdown, setDropdown] = useState(false)
 
@@ -46,9 +46,9 @@ export default function Header() {
 						<FoldLink to='/map'>Map</FoldLink>
 						<FoldLink to='/faq'>FAQ</FoldLink>
 					</Nav>
-					{isUserLoggedIn}
+					{userLoggedIn}
 					<Nav className='account-navigation ml-auto'>
-						{isUserLoggedIn ? (
+						{userLoggedIn ? (
 							<>
 								<FoldLink to='/users/account'>{userEmail}</FoldLink>
 								<DropdownButton

@@ -4,7 +4,7 @@ button.loading.button-check {
 	padding-top: 0;
 	padding-bottom: 0;
 }
-button.loading > .spinner {
+button.loading > .spinner-button {
 	height: 1.556rem;
 	width: 1.556rem;
 	border-width: 2px;
@@ -14,4 +14,15 @@ button.loading > .check {
 	width: 1.8rem;
 	height: 1.8rem;
 	margin: 0.225rem 0.378rem 0.225rem 0.378rem;
+}
+
+/* HELP COUNTER */
+.counter {
+	position: absolute;
+	z-index: 1;
+	background-color: rgba(255, 255, 255, 0.5);
+	margin-top: 1rem;
+	right: 1rem;
+	user-select: none;
+	pointer-events: none;
 }

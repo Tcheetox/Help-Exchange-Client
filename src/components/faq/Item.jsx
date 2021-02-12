@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 export default function Item({ question, response }) {
 	const hyperlinks = [
-		{ tag: 'your profile', compo: <Link to={'users/edit'}>your profile</Link> },
+		{ tag: 'your profile', compo: <Link to={'users/account/delete'}>your profile</Link> },
 		{ tag: 'configuration', compo: <Link to={'users/edit'}>configuration</Link> },
 	]
 

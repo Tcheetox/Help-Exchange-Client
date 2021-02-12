@@ -13,7 +13,7 @@ export default function LeftMenu() {
 	const headerRef = useRef()
 	const [top, setTop] = useState('40%')
 	const [offset, setOffset] = useState(0)
-	const { isUserLoggedIn } = useContext(AppContext)
+	const { userLoggedIn } = useContext(AppContext)
 
 	useEffect(() => {
 		footerRef.current = document.querySelector('.footer')
@@ -29,7 +29,7 @@ export default function LeftMenu() {
 			setTop(`${newPosition}px`)
 	}
 
-	return isUserLoggedIn ? (
+	return userLoggedIn ? (
 		<div
 			className='slider'
 			ref={menuRef}

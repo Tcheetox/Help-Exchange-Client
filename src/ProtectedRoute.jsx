@@ -3,31 +3,26 @@ import { Route } from 'react-router-dom'
 
 import { AppContext } from './AppContext'
 import { Profile, Login } from './pages/'
-import { ProfileIncomplete, NotAuthenticated } from './components/bannerMessages'
 
 export default function ProtectedRoute({
 	path,
 	component,
-	exact,
+	exact = false,
 	authenticated = false,
 	profileCompleted = false,
 }) {
-	const { isUserLoggedIn, userProfileCompleted, toggleBanner } = useContext(AppContext)
+	const { userLoggedIn, userProfileCompleted, triggerBanner } = useContext(AppContext)
 
-	// Banner must be triggered by UE absolutely!
-	// TODO: must be able to discard banner!!!
 	useEffect(() => {
-		if (authenticated && !isUserLoggedIn) toggleBanner(NotAuthenticated())
-		else if (authenticated && profileCompleted && !userProfileCompleted) {
-			toggleBanner(ProfileIncomplete())
-		}
-	}, [authenticated, profileCompleted, isUserLoggedIn, userProfileCompleted, toggleBanner])
+		if (authenticated && !userLoggedIn) triggerBanner('authentication_required')
+		else if (authenticated && profileCompleted && !userProfileCompleted) triggerBanner('incomplete_profile')
+	}, [authenticated, profileCompleted, userLoggedIn, userProfileCompleted, triggerBanner])
 
 	return (
 		<Route
 			path={path}
 			component={
-				authenticated && !isUserLoggedIn
+				authenticated && !userLoggedIn
 					? Login
 					: authenticated && profileCompleted && !userProfileCompleted
 					? Profile

@@ -21,7 +21,8 @@ export default function Profile({ match }) {
 
 	return (
 		<Container className='core'>
-			<DoublePane leftPane='2' defaultActivePane={activePane}>
+			<h1>Profile</h1>
+			<DoublePane leftPane='2' defaultActivePane={activePane()}>
 				<EditAccount title='Account information' />
 				<EditCredentials title='Credentials' />
 				<RemoveUser title='Delete account' />

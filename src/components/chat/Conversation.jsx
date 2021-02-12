@@ -13,14 +13,14 @@ export default function Conversation({ defaultActivePane }) {
 	const leftPaneWidth = 3
 	const subscriptionRef = useRef()
 	const [loading, setLoading] = useState(false)
-	const { fetchRequest, isUserLoggedIn, userId, cable } = useContext(AppContext)
+	const { fetchRequest, userLoggedIn, userId, cable } = useContext(AppContext)
 	const { conversations, setConversationMessages } = useContext(AppData)
 	const [activeConversation, setActiveConversation] = useState(0)
 	const [message, setMessage] = useState('')
 
 	// Fetch full conversation if necessary, switch to proper subscription to be able to send messages
 	useEffect(() => {
-		if (isUserLoggedIn && activeConversation > 0) {
+		if (userLoggedIn && activeConversation > 0) {
 			const conversation = conversations.find(c => c.id === activeConversation)
 			if (conversation && conversation.messages.length !== conversation.total_messages) {
 				setLoading(true)
@@ -35,11 +35,11 @@ export default function Conversation({ defaultActivePane }) {
 					sub => sub.identifier.includes('MessagesChannel') && sub.identifier.includes(activeConversation)
 				)
 		}
-	}, [isUserLoggedIn, fetchRequest, activeConversation, cable, setConversationMessages, conversations])
+	}, [userLoggedIn, fetchRequest, activeConversation, cable, setConversationMessages, conversations])
 
 	// Mark active conversation messages as read
 	useEffect(() => {
-		if (isUserLoggedIn && userId !== -1 && subscriptionRef.current && activeConversation > 0) {
+		if (userLoggedIn && userId !== -1 && subscriptionRef.current && activeConversation > 0) {
 			const conversation = { ...conversations.find(c => c.id === activeConversation) }
 			let conversationUpdated = false
 			if (conversation && conversation.messages.length)
@@ -52,11 +52,11 @@ export default function Conversation({ defaultActivePane }) {
 				})
 			if (conversationUpdated) setConversationMessages(activeConversation, conversation.messages)
 		}
-	}, [conversations, userId, isUserLoggedIn, setConversationMessages, activeConversation])
+	}, [conversations, userId, userLoggedIn, setConversationMessages, activeConversation])
 
 	const onSubmit = e => {
 		e.preventDefault()
-		if (message.length && isUserLoggedIn && subscriptionRef.current) {
+		if (message.length && userLoggedIn && subscriptionRef.current) {
 			setMessage('')
 			subscriptionRef.current.send({ action: 'new_message', content: message })
 		}
@@ -81,31 +81,37 @@ export default function Conversation({ defaultActivePane }) {
 
 	return (
 		<div className='conversation'>
-			<DoublePane
-				leftPane={leftPaneWidth}
-				setActivePane={p => setActiveConversation(p.conversation.id)}
-				defaultActivePane={defaultConversation()}>
-				{conversations.map(c => (
-					<MessagesArea key={c.id} title={conversationTitle(c)} conversation={c} loading={loading} />
-				))}
-			</DoublePane>
-			<Card className='input-area'>
-				<Row>
-					<Col lg={leftPaneWidth}></Col>
-					<Col lg={12 - leftPaneWidth}>
-						<Card.Body>
-							<Form onSubmit={onSubmit}>
-								<Row>
-									<InputForm name='message' value={message} onChange={e => setMessage(e.target.value)} />
-									<LoadingButton variant='primary' type='submit'>
-										Submit
-									</LoadingButton>
-								</Row>
-							</Form>
-						</Card.Body>
-					</Col>
-				</Row>
-			</Card>
+			{conversations.length ? (
+				<>
+					<DoublePane
+						leftPane={leftPaneWidth}
+						setActivePane={p => setActiveConversation(p.conversation.id)}
+						defaultActivePane={defaultConversation()}>
+						{conversations.map(c => (
+							<MessagesArea key={c.id} title={conversationTitle(c)} conversation={c} loading={loading} />
+						))}
+					</DoublePane>
+					<Card className='input-area'>
+						<Row>
+							<Col lg={leftPaneWidth}></Col>
+							<Col lg={12 - leftPaneWidth}>
+								<Card.Body>
+									<Form onSubmit={onSubmit}>
+										<Row>
+											<InputForm name='message' value={message} onChange={e => setMessage(e.target.value)} />
+											<LoadingButton variant='primary' type='submit'>
+												Submit
+											</LoadingButton>
+										</Row>
+									</Form>
+								</Card.Body>
+							</Col>
+						</Row>
+					</Card>
+				</>
+			) : (
+				<h4>You don't have any conversations yet</h4>
+			)}
 		</div>
 	)
 }

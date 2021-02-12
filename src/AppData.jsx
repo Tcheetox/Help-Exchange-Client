@@ -4,8 +4,7 @@ import { AppContext } from './AppContext'
 
 export const AppData = createContext()
 export const AppDataProvider = ({ children }) => {
-	const { fetchRequest, isUserLoggedIn, userId, cable } = useContext(AppContext)
-	const [fetchedHelpRequests, setFetchedHelpRequests] = useState([])
+	const { fetchRequest, userLoggedIn, userId, cable } = useContext(AppContext)
 	const userIdRef = useRef()
 	userIdRef.current = userId
 
@@ -14,7 +13,7 @@ export const AppDataProvider = ({ children }) => {
 			'GET',
 			null,
 			'help_requests',
-			(p, pR) => p.status === 200 && Array.isArray(pR) && setFetchedHelpRequests(pR),
+			(r, pR) => r.status === 200 && setData(d => ({ ...d, helpRequests: pR })),
 			false
 		)
 
@@ -71,7 +70,7 @@ export const AppDataProvider = ({ children }) => {
 	// Handle conversations update
 	useEffect(
 		() =>
-			isUserLoggedIn &&
+			userLoggedIn &&
 			cable &&
 			fetchRequest('GET', null, 'conversations', (r, pR) => {
 				if (r.status === 200 && pR.length) {
@@ -99,28 +98,15 @@ export const AppDataProvider = ({ children }) => {
 					}
 				)
 			}),
-		[isUserLoggedIn, cable, fetchRequest, subToConvMessages]
+		[userLoggedIn, cable, fetchRequest, subToConvMessages]
 	)
-
-	// Augment fetchedHelpRequests with user associated help requests
-	useEffect(() => {
-		const _helpRequests = !data.userHelpRequests.length
-			? !fetchedHelpRequests.length
-				? []
-				: fetchedHelpRequests.map(h => ({ ...h, managed: false }))
-			: fetchedHelpRequests.map(h => {
-					const index = data.userHelpRequests.find(uh => uh.id === h.id)
-					return { ...h, managed: !index || index === -1 ? false : true }
-			  })
-		setData(d => ({ ...d, helpRequests: _helpRequests }))
-	}, [fetchedHelpRequests, data.userHelpRequests])
 
 	// Fetch user associated help requests on mount
 	useEffect(
 		() =>
-			isUserLoggedIn &&
+			userLoggedIn &&
 			cable &&
-			fetchRequest('GET', null, 'help_requests/user', (p, pR) => {
+			fetchRequest('GET', null, 'help_requests/filter', (p, pR) => {
 				if (p.status === 200) {
 					setData(d => ({ ...d, userHelpRequests: pR }))
 					cable.subscriptions.create(
@@ -135,7 +121,7 @@ export const AppDataProvider = ({ children }) => {
 					)
 				}
 			}),
-		[isUserLoggedIn, fetchRequest, cable]
+		[userLoggedIn, fetchRequest, cable]
 	)
 
 	// Handle help request notification

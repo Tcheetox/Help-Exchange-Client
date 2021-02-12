@@ -25,7 +25,7 @@ export default function HelpRequest({
 	eventKey,
 	data: { id, title, description, status, help_type, users, created_at, pending_at, address },
 }) {
-	const { fetchRequest, isUserLoggedIn, userId, toggleBanner } = useContext(AppContext)
+	const { fetchRequest, userLoggedIn, userId, triggerBanner } = useContext(AppContext)
 	const { conversations } = useContext(AppData)
 	const [role, setRole] = useState('')
 	const history = useHistory()
@@ -42,12 +42,12 @@ export default function HelpRequest({
 	const isChattable = user_type =>
 		(role === 'owner' && user_type !== 'owner') || (role === 'respondent' && user_type === 'owner')
 
-	const handleClick = e => isUserLoggedIn && fetchRequest('PUT', null, `help_requests/${id}/${e.target.name}`)
+	const handleClick = e => userLoggedIn && fetchRequest('PUT', null, `help_requests/${id}/${e.target.name}`)
 
 	const handleConversation = t => {
 		if ((role === 'owner' && t.user_type !== 'owner') || (role === 'respondent' && t.user_type === 'owner')) {
 			const convo = conversations.find(c => c.help_request_id === id && c.target_user_id === t.id)
-			if (isUserLoggedIn && !convo)
+			if (userLoggedIn && !convo)
 				fetchRequest(
 					'POST',
 					{ help_request_id: id, target_user_id: t.id },
@@ -96,7 +96,7 @@ export default function HelpRequest({
 								Cancel
 							</LoadingButton>
 						) : null}
-						{role === 'respondent' ? (
+						{role === 'respondent' && status !== 'cancelled' && status !== 'fulfilled' ? (
 							<LoadingButton variant='secondary' name='unsubscribe' onClick={handleClick}>
 								Unsubscribe
 							</LoadingButton>

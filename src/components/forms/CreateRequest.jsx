@@ -1,16 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react'
 
 import { geocode, reverseGeocode, titleize } from '../../utilities'
-
 import Form from 'react-bootstrap/Form'
 import { InputForm, LoadingButton } from '../common/'
 import Button from 'react-bootstrap/Button'
 import ExploreIcon from '@material-ui/icons/Explore'
 import { AppContext } from '../../AppContext'
-import { AutomaticMessage } from '../bannerMessages'
 
 export default function CreateRequest() {
-	const { fetchRequest, isUserLoggedIn, userProfile, toggleBanner } = useContext(AppContext)
+	const { fetchRequest, userLoggedIn, userProfile, triggerBanner } = useContext(AppContext)
 	const [display, setDisplay] = useState(0)
 	const [data, setData] = useState({
 		title: '',
@@ -29,12 +27,12 @@ export default function CreateRequest() {
 
 	useEffect(
 		() =>
-			isUserLoggedIn &&
+			userLoggedIn &&
 			userProfile &&
 			setData(d => {
 				return { ...d, address: userProfile.address, lng: userProfile.lng, lat: userProfile.lat }
 			}),
-		[fetchRequest, isUserLoggedIn, userProfile]
+		[fetchRequest, userLoggedIn, userProfile]
 	)
 
 	const onChange = e => {
@@ -51,10 +49,7 @@ export default function CreateRequest() {
 		)
 		setErrors(_errors)
 		// Submit form if no errors
-		if (
-			Object.values(_errors).filter(x => x === '').length === Object.keys(errors).length &&
-			isUserLoggedIn
-		) {
+		if (Object.values(_errors).filter(x => x === '').length === Object.keys(errors).length && userLoggedIn) {
 			setDisplay(1)
 			if (!data.lng || !data.lat)
 				geocode(data.address, ({ lat, lng }) => {
@@ -70,10 +65,12 @@ export default function CreateRequest() {
 	}
 
 	const fetchCallback = r => {
-		if (r.status === 201) setDisplay(2)
-		else {
+		if (r.status === 201) {
+			triggerBanner('request_created')
+			setDisplay(2)
+		} else {
 			setDisplay(0)
-			toggleBanner(AutomaticMessage())
+			triggerBanner('unexpected_error')
 		}
 	}
 

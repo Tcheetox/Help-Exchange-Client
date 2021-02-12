@@ -1,11 +1,15 @@
 import React from 'react'
 
 import Container from 'react-bootstrap/Container'
+import Counter from '../components/Counter'
 
 export default function Home() {
 	return (
-		<Container className='core'>
-			<h1>HELLO FROM REACT</h1>
-		</Container>
+		<>
+			<Counter />
+			<Container className='core'>
+				<h1>Home</h1>
+			</Container>
+		</>
 	)
 }

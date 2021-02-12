@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from 'react'
 
+import Legend from './Legend'
 import { AppData } from '../../AppData'
 import { AppContext } from '../../AppContext'
 import GoogleMapReact from 'google-map-react'
@@ -84,6 +85,7 @@ export default function GoogleMap() {
 				fullScreen={fullScreen}
 				setFullScreen={setFullScreen}
 			/>
+			<Legend />
 			<GoogleMapReact
 				bootstrapURLKeys={{ key: process.env.REACT_APP_GOOGLE_KEY }}
 				center={center}
@@ -91,9 +93,9 @@ export default function GoogleMap() {
 				zoomControl={false}
 				defaultZoom={12}>
 				<UserMarkerMemo lat={center.lat} lng={center.lng} />
-				{helpRequests.map((h, i) => (
-					<MarkerMemo key={i} lat={h.lat} lng={h.lng} helpRequest={h} />
-				))}
+				{helpRequests.length
+					? helpRequests.map((h, i) => <MarkerMemo key={i} lat={h.lat} lng={h.lng} helpRequest={h} />)
+					: null}
 			</GoogleMapReact>
 		</div>
 	)

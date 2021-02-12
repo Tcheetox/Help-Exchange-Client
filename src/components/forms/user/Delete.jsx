@@ -16,7 +16,7 @@ export default function RemoveUser() {
 		else {
 			setConfirmationError('')
 			setDisplay(1)
-			fetchRequest('DELETE', null, 'users/edit', (r, pR) => {
+			fetchRequest('DELETE', null, 'users', (r, pR) => {
 				if (r.status === 204) {
 					logOut()
 					setDisplay(2)

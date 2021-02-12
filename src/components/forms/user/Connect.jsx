@@ -1,10 +1,11 @@
 import React, { useState, useContext, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { isBlank } from '../../../utilities'
 import { AppContext } from '../../../AppContext'
 import Form from 'react-bootstrap/Form'
 import { LoadingButton, InputForm } from '../../common/'
 
-export default function Connect({ title = '' }) {
+export default function Connect() {
 	const { logIn } = useContext(AppContext)
 	const [display, setDisplay] = useState(0)
 	const [data, setData] = useState({
@@ -18,8 +19,9 @@ export default function Connect({ title = '' }) {
 	})
 
 	// Prevent modifying state on unmounted component
-	const [mounted, setMounted] = useState(true)
+	const [mounted, setMounted] = useState(false)
 	useEffect(() => {
+		setMounted(true)
 		return () => setMounted(false)
 	}, [])
 
@@ -57,39 +59,46 @@ export default function Connect({ title = '' }) {
 	}
 
 	return (
-		<Form onSubmit={handleSubmit} validated={false}>
-			<h2>{title}</h2>
-			<InputForm
-				label='Email'
-				name='email'
-				error={errors.email}
-				placeholder='Enter email'
-				value={data.email}
-				onChange={handleChange}
-				display={display}
-			/>
-			<InputForm
-				label='Password'
-				type='password'
-				name='password'
-				error={errors.password}
-				placeholder='Password'
-				value={data.password}
-				onChange={handleChange}
-				display={display}
-			/>
-			<InputForm
-				type='checkbox'
-				name='rememberMe'
-				text='Remember me'
-				value={data.rememberMe}
-				onChange={handleChange}
-				display={display}
-				canBeInvalid={false}
-			/>
-			<LoadingButton variant='primary' type='submit' display={display}>
-				Submit
-			</LoadingButton>
-		</Form>
+		<div className='login'>
+			<Form onSubmit={handleSubmit} validated={false}>
+				<InputForm
+					label='Email'
+					name='email'
+					error={errors.email}
+					placeholder='Enter email'
+					value={data.email}
+					onChange={handleChange}
+					display={display}
+				/>
+				<InputForm
+					label='Password'
+					type='password'
+					name='password'
+					error={errors.password}
+					placeholder='Password'
+					value={data.password}
+					onChange={handleChange}
+					display={display}
+				/>
+				<InputForm
+					type='checkbox'
+					name='rememberMe'
+					text='Remember me'
+					value={data.rememberMe}
+					onChange={handleChange}
+					display={display}
+					canBeInvalid={false}
+				/>
+				<LoadingButton variant='primary' type='submit' display={display}>
+					Submit
+				</LoadingButton>
+			</Form>
+			<div className='links'>
+				<div>
+					Don't have an account yet? <Link to='signup'>Sign up</Link>
+				</div>
+				<Link to='/users/troubleshoot/password'>Forgot your password?</Link>
+			</div>
+		</div>
 	)
 }

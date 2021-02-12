@@ -286,7 +286,7 @@ svg.chattable {
 }
 .left-menu .badge {
 	position: absolute;
-	margin-right: -0.1rem;
+	right: -0.1rem;
 	top: -0.15rem;
 }
 .left-menu svg {
@@ -296,4 +296,15 @@ svg.chattable {
 .left-menu > *:nth-child(2) {
 	margin-top: 0.2rem;
 	margin-bottom: 0.2rem;
+}
+
+/* LOGIN */
+.links {
+	margin-top: 1rem;
+}
+.links > *:first-child {
+	float: left;
+}
+.login .links > *:last-child {
+	float: right;
 }

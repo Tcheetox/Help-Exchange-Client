@@ -1,27 +1,28 @@
 import React, { createContext, useState, useEffect, useCallback, useRef } from 'react'
+
 import { AppDataProvider } from './AppData'
 import { useHistory } from 'react-router-dom'
 import { useCookies } from 'react-cookie'
 import { logError, isBlank } from './utilities'
-import { AutomaticMessage, WelcomeBack, InvalidCredentials, GoodBye } from './components/bannerMessages'
 import ActionCable from 'actioncable'
 
 export const AppContext = createContext()
 
 export const AppContextProvider = props => {
 	const history = useHistory()
+	const authCookieName = 'longlived-auth'
+	const [cookies, setCookie, removeCookie] = useCookies([authCookieName])
 	const [tokens, setTokens] = useState({ accessToken: '', refreshToken: undefined })
 	const tokensRef = useRef()
 	tokensRef.current = tokens
 
-	const [cookie, setCookie, removeCookie] = useCookies(['longlived-auth'])
 	const handleCookie = useCallback(
 		(name, create, val = null) => {
 			const date = new Date()
 			const cookieOptions = {
 				path: '/',
-				secure: true,
-				sameSite: 'strict',
+				secure: process.env['REACT_APP_SECURED_COOKIE'],
+				sameSite: 'lax',
 				expires: new Date(date.setMonth(date.getMonth() + 2)),
 			}
 			if (create) setCookie(name, val, cookieOptions)
@@ -29,22 +30,10 @@ export const AppContextProvider = props => {
 		},
 		[setCookie, removeCookie]
 	)
-	const createCookieAuth = useCallback(_cookie => handleCookie('longlived-auth', true, _cookie), [
-		handleCookie,
-	])
-	const removeCookieAuth = useCallback(() => handleCookie('longlived-auth', false), [handleCookie])
+	const createCookieAuth = useCallback(_cookie => handleCookie(authCookieName, true, _cookie), [handleCookie])
+	const removeCookieAuth = useCallback(() => handleCookie(authCookieName, false), [handleCookie])
 
-	const toggleBanner = useCallback(
-		args =>
-			setGlobals(g => ({
-				...g,
-				bannerMessage: args[0],
-				bannerType: args[1],
-				bannerTime: args.length > 2 ? args[2] : 5000,
-				bannerTimestamp: args.length > 3 ? args[3] : new Date().getTime(),
-			})),
-		[]
-	)
+	const triggerBanner = useCallback(_banner => setGlobals(g => ({ ...g, banner: _banner })), [])
 
 	const submitFetchRequest = useCallback(
 		async (reqOptions, uriSuffix, callback = null) => {
@@ -58,22 +47,17 @@ export const AppContextProvider = props => {
 							`${process.env.REACT_APP_API_PREFIX}/api/${process.env.REACT_APP_API_VERSION}/${uriSuffix}`,
 							reqOptions
 					  )
-				parsedResp = await resp.json()
+				parsedResp = resp.status !== 204 ? await resp.json() : {}
 			} catch (_error) {
 				error = _error
 				logError(error)
 			}
 			// Display error message automatically by triggering a banner update if server provided a display message or if try-catch is triggered
-			if ((!resp && error) || (resp && resp.status === 500)) {
-				toggleBanner(
-					parsedResp && 'error' in parsedResp
-						? AutomaticMessage(parsedResp.error.display_message, parsedResp.error.timestamp)
-						: AutomaticMessage()
-				)
-			}
+			if ((!resp && error) || (resp && 'error' in parsedResp && parsedResp.error.server_code === 50000))
+				triggerBanner('unexpected_error')
 			if (callback) callback(!resp ? { status: 500 } : resp, isBlank(parsedResp) ? {} : parsedResp)
 		},
-		[toggleBanner]
+		[triggerBanner]
 	)
 
 	const fetchRequest = useCallback(
@@ -115,12 +99,12 @@ export const AppContextProvider = props => {
 			(r, pR) => {
 				if (r.status === 200) {
 					storeLogIn(pR.id, pR.email, pR.completed, pR.access_token, pR.refresh_token)
-					toggleBanner(WelcomeBack(email, pR.completed))
+					triggerBanner({ name: 'welcome', email: pR.email, profileCompleted: pR.completed })
 					if (rememberMe) createCookieAuth(pR.cookie)
 					else removeCookieAuth()
 				} else {
 					storeLogOut()
-					if (r.status === 400 || r.status === 401) toggleBanner(InvalidCredentials())
+					if (r.status === 400 || r.status === 401) triggerBanner('invalid_credentials')
 				}
 				if (callback) callback(r, pR)
 			},
@@ -129,16 +113,16 @@ export const AppContextProvider = props => {
 
 	const logInFromCookie = useCallback(
 		() =>
-			Object.keys(cookie).length > 0 &&
-			cookie['longlived-auth'] !== '' &&
+			Object.keys(cookies).length > 0 &&
+			cookies[authCookieName] !== '' &&
 			fetchRequest(
 				'POST',
-				{ cookie: cookie['longlived-auth'], grant_type: 'password' },
+				{ cookie: cookies[authCookieName], grant_type: 'password' },
 				'oauth/token',
 				(r, pR) => {
 					if (r.status === 200) {
 						storeLogIn(pR.id, pR.email, pR.completed, pR.access_token, pR.refresh_token)
-						toggleBanner(WelcomeBack(pR.email, pR.completed))
+						triggerBanner({ name: 'welcome', email: pR.email, profileCompleted: pR.completed })
 					} else {
 						storeLogOut()
 						removeCookieAuth() // Delete cookie because it seems invalid
@@ -146,7 +130,7 @@ export const AppContextProvider = props => {
 				},
 				false
 			),
-		[cookie, fetchRequest, removeCookieAuth, toggleBanner]
+		[cookies, fetchRequest, removeCookieAuth, triggerBanner]
 	)
 
 	const logOut = () => {
@@ -157,7 +141,7 @@ export const AppContextProvider = props => {
 			'oauth/revoke',
 			(r, pR) => {
 				storeLogOut()
-				toggleBanner(GoodBye())
+				triggerBanner('goodbye')
 				history.push('/') // redirect
 			},
 			false
@@ -185,7 +169,7 @@ export const AppContextProvider = props => {
 		setTokens({ accessToken: access_token, refreshToken: refresh_token })
 		setGlobals(g => ({
 			...g,
-			isUserLoggedIn: true,
+			userLoggedIn: true,
 			userId: id,
 			userEmail: email,
 			userProfileCompleted: completed,
@@ -196,7 +180,7 @@ export const AppContextProvider = props => {
 		setTokens({ accessToken: '', refreshToken: '' })
 		setGlobals(g => ({
 			...g,
-			isUserLoggedIn: false,
+			userLoggedIn: false,
 			userId: -1,
 			userEmail: '',
 			userProfileCompleted: false,
@@ -209,14 +193,11 @@ export const AppContextProvider = props => {
 
 	// The globals object is accessible through the whole app through useContext
 	const [globals, setGlobals] = useState({
-		bannerMessage: '',
-		bannerType: '',
-		bannerTime: 0,
-		bannerTimestamp: '',
-		toggleBanner: toggleBanner,
+		banner: null,
+		triggerBanner: triggerBanner,
 		fetchRequest: fetchRequest,
 		fetchFileRequest: fetchFileRequest,
-		isUserLoggedIn: false,
+		userLoggedIn: false,
 		userId: -1,
 		userEmail: '',
 		userProfileCompleted: false,
@@ -231,29 +212,29 @@ export const AppContextProvider = props => {
 	// Fetch and store profile
 	useEffect(
 		() =>
-			globals.isUserLoggedIn &&
+			globals.userLoggedIn &&
 			fetchRequest(
 				'GET',
 				null,
-				'users/edit',
+				'users',
 				(r, pR) => r.status === 200 && setGlobals(g => ({ ...g, userProfile: pR }))
 			),
-		[globals.isUserLoggedIn, fetchRequest]
+		[globals.userLoggedIn, fetchRequest]
 	)
 
 	// Handle Websocket connection
 	useEffect(() => {
-		if (globals.isUserLoggedIn && !globals.cable) {
+		if (globals.userLoggedIn && !globals.cable) {
 			let appCable = {}
 			appCable.cable = ActionCable.createConsumer(
 				`${process.env.REACT_APP_WS_API_PREFIX}/api/${process.env.REACT_APP_API_VERSION}/users/${tokensRef.current.accessToken}/cable`
 			)
 			setGlobals(g => ({ ...g, cable: appCable.cable }))
-		} else if (!globals.isUserLoggedIn && globals.cable) {
+		} else if (!globals.userLoggedIn && globals.cable) {
 			globals.cable.disconnect()
 			setGlobals(g => ({ ...g, cable: null }))
 		}
-	}, [globals.isUserLoggedIn, globals.cable])
+	}, [globals.userLoggedIn, globals.cable])
 
 	// Handle session auth
 	useEffect(() => {
@@ -265,21 +246,21 @@ export const AppContextProvider = props => {
 
 	// Attempt to authenticate user automatically
 	useEffect(() => {
-		if (!globals.isUserLoggedIn) {
+		if (!globals.userLoggedIn) {
 			const token = sessionStorage.getItem('shortlived-auth')
 			if (token && tokensRef.current.refreshToken !== '') {
 				refreshToken(token, r => r.status !== 200 && logInFromCookie())
 			} else logInFromCookie()
 		}
-	}, [globals.isUserLoggedIn, cookie, logInFromCookie, refreshToken])
+	}, [globals.userLoggedIn, cookies, logInFromCookie, refreshToken])
 
 	// Automatic token refresh
 	useEffect(() => {
 		let intervalId
-		if (!isBlank(tokens.refreshToken) && globals.isUserLoggedIn)
+		if (!isBlank(tokens.refreshToken) && globals.userLoggedIn)
 			intervalId = setInterval(() => refreshToken(tokens.refreshToken), 600000) // Runs every 10 min because token expires after 15 min
 		return () => clearInterval(intervalId)
-	}, [tokens.refreshToken, globals.isUserLoggedIn, refreshToken])
+	}, [tokens.refreshToken, globals.userLoggedIn, refreshToken])
 
 	return (
 		<AppContext.Provider value={globals}>

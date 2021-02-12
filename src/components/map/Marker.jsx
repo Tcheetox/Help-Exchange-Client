@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react'
 import { Link } from 'react-router-dom'
 
 import { AppContext } from '../../AppContext'
+import { AppData } from '../../AppData'
 import Popover from 'react-bootstrap/Popover'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import MaterialIcon from '@material-ui/icons/Widgets'
@@ -12,9 +13,10 @@ import ManageIcon from '@material-ui/icons/Launch'
 
 export const MarkerMemo = React.memo(Marker)
 export default function Marker({
-	helpRequest: { id, address, created_at, description, help_count, help_type, title, managed },
+	helpRequest: { id, address, created_at, description, help_count, help_type, title },
 }) {
-	const { isUserLoggedIn, fetchRequest } = useContext(AppContext)
+	const { userLoggedIn, fetchRequest } = useContext(AppContext)
+	const { userHelpRequests } = useContext(AppData)
 	const [preventClose, setPreventClose] = useState(undefined)
 
 	const popover = (
@@ -25,13 +27,13 @@ export default function Marker({
 			<Popover.Title>
 				{help_type === 'material' ? <MaterialIcon /> : <ImmaterialIcon />}
 				{title}
-				{managed ? (
+				{userHelpRequests.length && userHelpRequests.find(u => u.id === id) ? (
 					<Link to={`users/dashboard/overview/${id}`}>
 						<ManageIcon />
 					</Link>
 				) : (
 					<SubscribeIcon
-						onClick={() => isUserLoggedIn && fetchRequest('PUT', null, `help_requests/${id}/subscribe`)}
+						onClick={() => userLoggedIn && fetchRequest('PUT', null, `help_requests/${id}/subscribe`)}
 					/>
 				)}
 			</Popover.Title>

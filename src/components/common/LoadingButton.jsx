@@ -14,7 +14,7 @@ export default function LoadingButton({ children, variant, type, onClick, name, 
 			name={name}
 			className={display === 1 ? 'loading button-spin' : display === 2 ? 'loading button-check' : 'loading'}>
 			{display === 1 ? (
-				<Spinner className='spinner' animation='border' />
+				<Spinner className='spinner-button' animation='border' />
 			) : display === 2 ? (
 				<CheckIcon className='check' color='inherit' />
 			) : (

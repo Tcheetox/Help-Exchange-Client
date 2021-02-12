@@ -3,10 +3,9 @@ import { isBlank } from '../../../utilities'
 import { AppContext } from '../../../AppContext'
 import Form from 'react-bootstrap/Form'
 import { LoadingButton, InputForm } from '../../common/'
-import { SuccessCredentialsChanged } from '../../bannerMessages'
 
-export default function EditCredentials() {
-	const { fetchRequest, toggleBanner } = useContext(AppContext)
+export default function EditCredentials({ reset = false, token }) {
+	const { fetchRequest, triggerBanner } = useContext(AppContext)
 	const [display, setDisplay] = useState(0)
 	const [data, setData] = useState({ currentPassword: '', password: '', passwordConfirmation: '' })
 	const [errors, setErrors] = useState({
@@ -15,6 +14,20 @@ export default function EditCredentials() {
 		passwordConfirmation: undefined,
 	})
 
+	const handleResponse = (r, pR) => {
+		if (r.status === 403 && 'error' in pR) {
+			setErrors({
+				...errors,
+				password: pR.error.server_code === 40300 ? pR.error.description : errors.password,
+				currentPassword: pR.error.server_code === 40302 ? pR.error.description : errors.currentPassword,
+			})
+			setDisplay(0)
+		} else {
+			triggerBanner('changed_credentials')
+			setDisplay(2)
+		}
+	}
+
 	const handleSubmit = e => {
 		e.preventDefault()
 		// Data validation
@@ -22,7 +35,7 @@ export default function EditCredentials() {
 		Object.keys(errorsAssessed).forEach(k => (errorsAssessed[k] = ''))
 		if (isBlank(data.password) || data.password.length < 6)
 			errorsAssessed.password = 'A valid password must contain at least 6 characters'
-		if (isBlank(data.currentPassword))
+		if (!reset && isBlank(data.currentPassword))
 			errorsAssessed.currentPassword = 'Current password cannot be left empty'
 		if (isBlank(data.passwordConfirmation))
 			errorsAssessed.passwordConfirmation = 'Confirmation password cannot be left empty'
@@ -31,29 +44,27 @@ export default function EditCredentials() {
 		setErrors(errorsAssessed)
 
 		// Submit form if no errors
-		if (Object.values(errorsAssessed).filter(x => x === '').length === Object.keys(errors).length) {
+		if (
+			Object.values(errorsAssessed).filter(
+				x => x === '' && (!reset || (reset && x.name !== 'currentPassword'))
+			).length === Object.keys(errors).length
+		) {
 			setDisplay(1)
-			fetchRequest(
-				'PUT',
-				{ current_password: data.currentPassword, password: data.password },
-				'users/edit',
-				(r, pR) => {
-					if (r.status === 204) {
-						setDisplay(2)
-						toggleBanner(SuccessCredentialsChanged())
-					} else {
-						if (r.status === 403 && 'error' in pR) {
-							setErrors({
-								...errors,
-								password: pR.error.server_code === 40301 ? pR.error.description : errors.password,
-								currentPassword:
-									pR.error.server_code === 40302 ? pR.error.description : errors.currentPassword,
-							})
-						}
-						setDisplay(0)
-					}
-				}
-			)
+			if (reset)
+				fetchRequest(
+					'PUT',
+					{ password: data.password, reset_password_token: token },
+					`users/forgotten_password`,
+					(r, pR) => handleResponse(r, pR),
+					false
+				)
+			else
+				fetchRequest(
+					'PUT',
+					{ current_password: data.currentPassword, password: data.password },
+					'users',
+					(r, pR) => handleResponse(r, pR)
+				)
 		}
 	}
 
@@ -64,18 +75,22 @@ export default function EditCredentials() {
 
 	return (
 		<Form onSubmit={handleSubmit}>
-			<InputForm
-				label='Current password'
-				type='password'
-				name='currentPassword'
-				placeholder='Current password'
-				value={data.currentPassword}
-				error={errors.currentPassword}
-				onChange={handleChange}
-				text='Your current password is mandatory to validate the change'
-				display={display}
-			/>
-			<hr />
+			{!reset ? (
+				<>
+					<InputForm
+						label='Current password'
+						type='password'
+						name='currentPassword'
+						placeholder='Current password'
+						value={data.currentPassword}
+						error={errors.currentPassword}
+						onChange={handleChange}
+						text='Your current password is mandatory to validate the change'
+						display={display}
+					/>
+					<hr />
+				</>
+			) : null}
 			<InputForm
 				label='New password'
 				type='password'

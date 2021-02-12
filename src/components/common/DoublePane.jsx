@@ -11,7 +11,7 @@ export default function DoublePane({
 	defaultActivePane = 0,
 	setActivePane = null,
 }) {
-	const [pane, setPane] = useState(0)
+	const [pane, setPane] = useState(defaultActivePane)
 
 	const tabTitle = (x, i) => (
 		<div key={i} className={`tab-title ${i === pane ? 'active' : ''}`} onClick={() => setPane(i)}>
@@ -19,6 +19,7 @@ export default function DoublePane({
 		</div>
 	)
 
+	// The below useEffect is necessary to ensure we can navigate from a nested section to the parent
 	useEffect(() => setPane(defaultActivePane), [defaultActivePane])
 	// Trigger setActivePane callback to warn parent component of currently displayed item
 	useEffect(() => children.length && setActivePane && setActivePane(children[pane].props), [

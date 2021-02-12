@@ -6,9 +6,15 @@ import { LoadingButton, InputForm, FileForm } from '../../common/'
 import { geocode } from '../../../utilities'
 
 export default function EditAccount() {
-	const { fetchRequest, fetchFileRequest, isUserLoggedIn, userProfile, updateUserProfile } = useContext(
-		AppContext
-	)
+	const {
+		fetchRequest,
+		fetchFileRequest,
+		userLoggedIn,
+		userProfile,
+		updateUserProfile,
+		triggerBanner,
+	} = useContext(AppContext)
+
 	const [display, setDisplay] = useState(0)
 	const [data, setData] = useState({
 		firstName: '',
@@ -26,7 +32,7 @@ export default function EditAccount() {
 	const handleSubmit = e => {
 		e.preventDefault()
 		setDisplay(1)
-		geocode(data.address, ({ lat, lng }) =>
+		geocode(`${data.address}, ${data.postCode}, ${data.country}`, ({ lat, lng }) =>
 			fetchRequest(
 				'PUT',
 				{
@@ -40,10 +46,11 @@ export default function EditAccount() {
 					country: data.country,
 					gov_id: data.govId,
 				},
-				'users/edit',
+				'users',
 				(r, pR) => {
 					if (r.status === 200) {
 						setDisplay(2)
+						triggerBanner('profile_updated')
 						updateUserProfile(pR)
 					} else setDisplay(0)
 				}
@@ -53,26 +60,26 @@ export default function EditAccount() {
 
 	// Update local state with AppContext userProfile
 	useEffect(() => {
-		isUserLoggedIn &&
+		userLoggedIn &&
 			userProfile &&
 			setData({
-				firstName: userProfile.first_name,
-				lastName: userProfile.last_name,
-				phone: userProfile.phone,
-				address: userProfile.address,
+				firstName: userProfile.first_name ? userProfile.first_name : '',
+				lastName: userProfile.last_name ? userProfile.last_name : '',
+				phone: userProfile.phone ? userProfile.phone : '',
+				address: userProfile.address ? userProfile.address : '',
 				lat: userProfile.lat,
 				lng: userProfile.lng,
-				postCode: userProfile.post_code,
-				country: userProfile.country,
-				govId: userProfile.gov_id,
+				postCode: userProfile.post_code ? userProfile.post_code : '',
+				country: userProfile.country ? userProfile.country : '',
+				govId: userProfile.gov_id ? userProfile.gov_id : '',
 			})
-	}, [isUserLoggedIn, userProfile])
+	}, [userLoggedIn, userProfile])
 
 	const handleFileChange = useCallback(
 		(file, callback = null) => {
 			if (file)
-				fetchFileRequest('PATCH', 'government_id', file, 'users/edit', (r, pR) => {
-					if (r.status === 200) setData(d => ({ ...d, govId: pR.gov_id }))
+				fetchFileRequest('POST', 'government_id', file, 'users/storage', (r, pR) => {
+					if (r.status === 201) setData(d => ({ ...d, govId: pR.gov_id }))
 					if (callback) callback(r, pR)
 				})
 			else {

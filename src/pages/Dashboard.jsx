@@ -21,7 +21,8 @@ export default function Dashboard({ match }) {
 
 	return (
 		<Container className='core'>
-			<DoublePane leftPane='2' defaultActivePane={activePane}>
+			<h1>Dashboard</h1>
+			<DoublePane leftPane='2' defaultActivePane={activePane()}>
 				<Overview
 					title='Requests overview'
 					showRequest={
