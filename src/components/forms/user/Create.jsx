@@ -5,8 +5,8 @@ import { AppContext } from '../../../AppContext'
 import Form from 'react-bootstrap/Form'
 import { LoadingButton, InputForm } from '../../common/'
 
-export default function Create() {
-	const { fetchRequest, logIn, triggerBanner } = useContext(AppContext)
+export default function Create({ modalShow = null }) {
+	const { fetchRequest, triggerBanner } = useContext(AppContext)
 	const [display, setDisplay] = useState(0)
 	const [data, setData] = useState({
 		email: '',
@@ -50,24 +50,22 @@ export default function Create() {
 				{ email: data.email, password: data.password },
 				'users',
 				(r, pR) => {
-					if ('user' in pR && pR.user.access_token !== '') {
-						logIn(data.email, data.password, true)
+					if (r.status === 201) {
+						triggerBanner('send_confirmation')
 						setDisplay(2)
-					} else {
+						if (modalShow) modalShow(false)
 						// Check if the error is due to existing email, adjust data validation
-						if (r.status === 201) triggerBanner('send_confirmation')
-						else if ('error' in pR && pR.error.server_code === 42201)
-							setErrors({ ...errors, email: 'Email already in use' })
-						// Reset data validation
-						else
-							setErrors({
-								email: undefined,
-								password: undefined,
-								passwordConfirmation: undefined,
-								condition: undefined,
-							})
-						setDisplay(0)
-					}
+					} else if ('error' in pR && pR.error.server_code === 42201)
+						setErrors({ ...errors, email: 'Email already in use' })
+					// Reset data validation
+					else
+						setErrors({
+							email: undefined,
+							password: undefined,
+							passwordConfirmation: undefined,
+							condition: undefined,
+						})
+					setDisplay(0)
 				},
 				false // Don't use token because you don't have one (yet)
 			)
@@ -116,8 +114,15 @@ export default function Create() {
 					display={display}
 					text={
 						<>
-							By signing up to Fish For Help, you agree to the <Link to='/'>Terms of Service</Link>. View our{' '}
-							<Link to='/'>Privacy Policy</Link>.
+							By signing up to Fish For Help, you agree to the{' '}
+							<Link to='/' onClick={() => (modalShow ? modalShow(false) : null)}>
+								Terms of Service
+							</Link>
+							. View our{' '}
+							<Link to='/' onClick={() => (modalShow ? modalShow(false) : null)}>
+								Privacy Policy
+							</Link>
+							.
 						</>
 					}
 				/>
@@ -127,7 +132,11 @@ export default function Create() {
 			</Form>
 			<div className='links'>
 				<div>
-					Didn't get a confirmation link? <Link to='/users/troubleshoot/password'>Send again</Link>.
+					Didn't get a confirmation link?{' '}
+					<Link to='/users/troubleshoot/password' onClick={() => (modalShow ? modalShow(false) : null)}>
+						Send again
+					</Link>
+					.
 				</div>
 			</div>
 		</div>

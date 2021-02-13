@@ -4,8 +4,9 @@ import { isBlank } from '../../../utilities'
 import { AppContext } from '../../../AppContext'
 import Form from 'react-bootstrap/Form'
 import { LoadingButton, InputForm } from '../../common/'
+import { Modal } from 'bootstrap'
 
-export default function Connect() {
+export default function Connect({ modalShow = null }) {
 	const { logIn } = useContext(AppContext)
 	const [display, setDisplay] = useState(0)
 	const [data, setData] = useState({
@@ -47,8 +48,10 @@ export default function Connect() {
 			setDisplay(1)
 			logIn(data.email, data.password, data.rememberMe, (r, pR) => {
 				if (mounted) {
-					if (r.status === 200) setDisplay(2)
-					else {
+					if (r.status === 200) {
+						setDisplay(2)
+						if (modalShow) modalShow(false)
+					} else {
 						if (r.status === 500) setErrors({ email: undefined, password: undefined })
 						else setErrors({ email: rej, password: rej })
 						setDisplay(0)
@@ -95,9 +98,14 @@ export default function Connect() {
 			</Form>
 			<div className='links'>
 				<div>
-					Don't have an account yet? <Link to='signup'>Sign up</Link>
+					Don't have an account yet?{' '}
+					<Link to='/users/signup' onClick={() => (modalShow ? modalShow(false) : null)}>
+						Sign up
+					</Link>
 				</div>
-				<Link to='/users/troubleshoot/password'>Forgot your password?</Link>
+				<Link to='/users/troubleshoot/password' onClick={() => (modalShow ? modalShow(false) : null)}>
+					Forgot your password?
+				</Link>
 			</div>
 		</div>
 	)

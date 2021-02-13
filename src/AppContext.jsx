@@ -1,7 +1,6 @@
 import React, { createContext, useState, useEffect, useCallback, useRef } from 'react'
 
 import { AppDataProvider } from './AppData'
-import { useHistory } from 'react-router-dom'
 import { useCookies } from 'react-cookie'
 import { logError, isBlank } from './utilities'
 import ActionCable from 'actioncable'
@@ -9,7 +8,6 @@ import ActionCable from 'actioncable'
 export const AppContext = createContext()
 
 export const AppContextProvider = props => {
-	const history = useHistory()
 	const authCookieName = 'longlived-auth'
 	const [cookies, setCookie, removeCookie] = useCookies([authCookieName])
 	const [tokens, setTokens] = useState({ accessToken: '', refreshToken: undefined })
@@ -135,17 +133,9 @@ export const AppContextProvider = props => {
 
 	const logOut = () => {
 		removeCookieAuth()
-		fetchRequest(
-			'POST',
-			{ token: tokensRef.current.accessToken },
-			'oauth/revoke',
-			(r, pR) => {
-				storeLogOut()
-				triggerBanner('goodbye')
-				history.push('/') // redirect
-			},
-			false
-		)
+		fetchRequest('POST', { token: tokensRef.current.accessToken }, 'oauth/revoke', null, false)
+		storeLogOut()
+		triggerBanner('goodbye')
 	}
 
 	const refreshToken = useCallback(
