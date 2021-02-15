@@ -77,26 +77,28 @@ export default function GoogleMap() {
 	}, [fullScreen])
 
 	return (
-		<div className='map' ref={mapContainerRef}>
-			<Settings
-				setCenter={setCenter}
-				mapType={mapType}
-				setMapType={setMapType}
-				fullScreen={fullScreen}
-				setFullScreen={setFullScreen}
-			/>
-			<Legend />
-			<GoogleMapReact
-				bootstrapURLKeys={{ key: process.env.REACT_APP_GOOGLE_KEY }}
-				center={center}
-				options={{ zoomControl: false, fullscreenControl: false, mapTypeId: mapType }}
-				zoomControl={false}
-				defaultZoom={12}>
-				<UserMarkerMemo lat={center.lat} lng={center.lng} />
-				{helpRequests.length
-					? helpRequests.map((h, i) => <MarkerMemo key={i} lat={h.lat} lng={h.lng} helpRequest={h} />)
-					: null}
-			</GoogleMapReact>
-		</div>
+		<>
+			<div className='map' ref={mapContainerRef}>
+				<Settings
+					setCenter={setCenter}
+					mapType={mapType}
+					setMapType={setMapType}
+					fullScreen={fullScreen}
+					setFullScreen={setFullScreen}
+				/>
+				<Legend />
+				<GoogleMapReact
+					bootstrapURLKeys={{ key: process.env.REACT_APP_GOOGLE_KEY }}
+					center={center}
+					options={{ zoomControl: false, fullscreenControl: false, mapTypeId: mapType }}
+					zoomControl={false}
+					defaultZoom={12}>
+					<UserMarkerMemo lat={center.lat} lng={center.lng} />
+					{helpRequests.length
+						? helpRequests.map((h, i) => <MarkerMemo key={i} lat={h.lat} lng={h.lng} helpRequest={h} />)
+						: null}
+				</GoogleMapReact>
+			</div>
+		</>
 	)
 }

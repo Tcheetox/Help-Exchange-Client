@@ -1,5 +1,5 @@
-import React, { useState, useContext } from 'react'
-import { Link, useHistory } from 'react-router-dom'
+import React, { useState, useContext, useEffect } from 'react'
+import { Link, useHistory, useLocation } from 'react-router-dom'
 import { AppContext } from '../AppContext'
 
 import Navbar from 'react-bootstrap/Navbar'
@@ -9,6 +9,7 @@ import Container from 'react-bootstrap/Container'
 import Modal from 'react-bootstrap/Modal'
 import Nav from 'react-bootstrap/Nav'
 import { UnreadMessagesBadge } from '../components/common/'
+import Button from 'react-bootstrap/Button'
 import DropdownButton from 'react-bootstrap/DropdownButton'
 import Dropdown from 'react-bootstrap/Dropdown'
 import AccountIcon from '@material-ui/icons/AccountCircle'
@@ -16,24 +17,41 @@ import ExitIcon from '@material-ui/icons/ExitToApp'
 
 export default function Header() {
 	const history = useHistory()
+	const location = useLocation()
 	const { userLoggedIn, userEmail, logOut } = useContext(AppContext)
 	const [expanded, setExpanded] = useState(false)
 	const [dropdown, setDropdown] = useState(false)
 	const [loginShow, setLoginShow] = useState(false)
 	const [signupShow, setSignupShow] = useState(false)
 
-	const FoldLink = ({ to, children, callback = null }) => (
+	const FoldLink = ({ to, children, className, callback = null }) => (
 		<div
 			onClick={() => {
 				setExpanded(false)
 				if (callback) callback()
 			}}>
-			<Link to={to}>{children}</Link>
+			<Link to={to} className={className}>
+				{children}
+			</Link>
 		</div>
 	)
 
+	const FoldButton = ({ children }) => <div onClick={() => setExpanded(false)}>{children}</div>
+
+	// Handle smooth scroll to different page with a given element #ID
+	useEffect(() => {
+		if (location.hash) {
+			let elem = document.getElementById(location.hash.slice(1))
+			if (elem) {
+				elem.scrollIntoView({ behavior: 'smooth' })
+			}
+		} else {
+			window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
+		}
+	}, [location])
+
 	return (
-		<Navbar expand='md' className='header' bg='dark' expanded={expanded}>
+		<Navbar id='Header' expand='md' className='header' expanded={expanded}>
 			<Container>
 				<Modal className='login-modal' show={loginShow} onHide={() => setLoginShow(false)} centered>
 					<Modal.Header closeButton>
@@ -52,7 +70,7 @@ export default function Header() {
 					</Modal.Body>
 				</Modal>
 				<Navbar.Brand onClick={() => setExpanded(false)}>
-					<Link to='/'>LOGO</Link>
+					<Link to='/'>Fish For Help</Link>
 				</Navbar.Brand>
 				<Navbar.Toggle aria-controls='basic-navbar-nav' onClick={() => setExpanded(prev => !prev)}>
 					<div className={`toggler ${expanded ? 'active' : ''}`}>
@@ -62,14 +80,22 @@ export default function Header() {
 					</div>
 				</Navbar.Toggle>
 				<Navbar.Collapse id='basic-navbar-nav'>
-					<Nav className='mr-auto'>
-						<FoldLink to='/map'>Map</FoldLink>
-						<FoldLink to='/faq'>FAQ</FoldLink>
+					<Nav className='mr-auto nav-links'>
+						<a href='/#About' onClick={() => setExpanded(false)}>
+							About us
+						</a>
+						<FoldLink to='/map' className={location.pathname.toLowerCase().includes('/map') ? 'active' : ''}>
+							Map
+						</FoldLink>
+						<FoldLink to='/faq' className={location.pathname.toLowerCase().includes('/faq') ? 'active' : ''}>
+							FAQ
+						</FoldLink>
 					</Nav>
 					{userLoggedIn}
 					<Nav className='account-navigation ml-auto'>
 						{userLoggedIn ? (
 							<div
+								// className={`account-group ${dropdown ? 'active' : ''}`}
 								className='account-group'
 								onMouseLeave={() => setDropdown(false)}
 								onMouseEnter={() => setDropdown(true)}>
@@ -93,23 +119,26 @@ export default function Header() {
 							</div>
 						) : (
 							<div className='account-links'>
-								<FoldLink
-									to='#'
-									callback={() => {
-										setDropdown(false)
-										setLoginShow(true)
-									}}>
-									Log in
-								</FoldLink>
-								|
-								<FoldLink
-									to='#'
-									callback={() => {
-										setDropdown(false)
-										setSignupShow(true)
-									}}>
-									Sign up
-								</FoldLink>
+								<FoldButton>
+									<Button
+										className='fancy-blue'
+										onClick={() => {
+											setDropdown(false)
+											setLoginShow(true)
+										}}>
+										Log in
+									</Button>
+								</FoldButton>
+								<FoldButton>
+									<Button
+										className='plain-blue'
+										onClick={() => {
+											setDropdown(false)
+											setSignupShow(true)
+										}}>
+										Sign up
+									</Button>
+								</FoldButton>
 							</div>
 						)}
 					</Nav>
