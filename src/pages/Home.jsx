@@ -21,7 +21,7 @@ export default function Home() {
 								Do you feel left out, even for the simplest task? <br /> Your neighbors are willing to help.
 							</h3>
 							<a href='#About'>
-								<Button className='plain-red'>Learn more</Button>
+								<Button className='plain-red large'>Learn more</Button>
 							</a>
 						</div>
 					</div>

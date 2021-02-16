@@ -4,7 +4,7 @@ import Container from 'react-bootstrap/Container'
 import { DoublePane } from '../components/common/'
 import Overview from '../components/dashboard/Overview'
 import CreateRequest from '../components/forms/CreateRequest'
-import Awards from '../components/dashboard/Awards'
+//import Awards from '../components/dashboard/Awards'
 
 export default function Dashboard({ match }) {
 	const activePane = () => {
@@ -30,7 +30,7 @@ export default function Dashboard({ match }) {
 					}
 				/>
 				<CreateRequest title='Create request' />
-				<Awards title='Awards' />
+				{/* <Awards title='Awards' /> */}
 			</DoublePane>
 		</Container>
 	)

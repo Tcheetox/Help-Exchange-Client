@@ -17,5 +17,13 @@ export default function UnreadMessagesBadge({ convId = -1 }) {
 		}
 	}, [conversations, convId])
 
-	return <>{unreadMessages > 0 ? <Badge variant='primary'>{unreadMessages}</Badge> : null}</>
+	return (
+		<>
+			{unreadMessages > 0 ? (
+				<Badge className='unread' variant='primary' pill>
+					{unreadMessages}
+				</Badge>
+			) : null}
+		</>
+	)
 }

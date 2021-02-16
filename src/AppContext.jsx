@@ -17,10 +17,10 @@ export const AppContextProvider = props => {
 	const handleCookie = useCallback(
 		(name, create, val = null) => {
 			const date = new Date()
-			const cookieOptions = {
+			let cookieOptions = {
 				path: '/',
-				secure: process.env['REACT_APP_SECURED_COOKIE'],
 				sameSite: 'lax',
+				secure: process.env['REACT_APP_SECURED_COOKIE'].toLowerCase() === 'true' ? true : false,
 				expires: new Date(date.setMonth(date.getMonth() + 2)),
 			}
 			if (create) setCookie(name, val, cookieOptions)

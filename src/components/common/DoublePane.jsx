@@ -31,12 +31,13 @@ export default function DoublePane({
 	return (
 		<Card className={`double-pane ${title}`}>
 			<Row>
-				<Col lg={leftPane}>
+				<Col lg={leftPane} className='tab-col'>
 					{Array.isArray(children)
 						? children.map((x, i) => tabTitle(x.props.title, i))
 						: tabTitle(children.props.title, 0)}
+					<div className='filler' />
 				</Col>
-				<Col lg={12 - leftPane}>
+				<Col lg={12 - leftPane} className='content-col'>
 					<Card.Body>{Array.isArray(children) ? children[pane] : children}</Card.Body>
 				</Col>
 			</Row>

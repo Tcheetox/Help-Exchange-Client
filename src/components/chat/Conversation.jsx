@@ -1,22 +1,28 @@
 import React, { useState, useEffect, useContext, useRef } from 'react'
+import { useHistory } from 'react-router-dom'
 
 import { AppContext } from '../../AppContext'
 import { AppData } from '../../AppData'
 import MessagesArea from './MessagesArea'
-import { DoublePane, InputForm, LoadingButton, UnreadMessagesBadge } from '../common/'
 import Card from 'react-bootstrap/Card'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import Form from 'react-bootstrap/Form'
+import SendIcon from '@material-ui/icons/Send'
+import ArrowBackIcon from '@material-ui/icons/ArrowBackIos'
+import { DoublePane, InputForm, LoadingButton, UnreadMessagesBadge } from '../common/'
 
 export default function Conversation({ defaultActivePane }) {
 	const leftPaneWidth = 3
 	const subscriptionRef = useRef()
+	const history = useHistory()
 	const [loading, setLoading] = useState(false)
 	const { fetchRequest, userLoggedIn, userId, cable } = useContext(AppContext)
 	const { conversations, setConversationMessages } = useContext(AppData)
 	const [activeConversation, setActiveConversation] = useState(0)
 	const [message, setMessage] = useState('')
+	const [messageToMonitor, setMessageToMonitor] = useState({})
+	const [display, setDisplay] = useState(0)
 
 	// Fetch full conversation if necessary, switch to proper subscription to be able to send messages
 	useEffect(() => {
@@ -57,18 +63,39 @@ export default function Conversation({ defaultActivePane }) {
 	const onSubmit = e => {
 		e.preventDefault()
 		if (message.length && userLoggedIn && subscriptionRef.current) {
-			setMessage('')
+			setDisplay(1)
+			setMessageToMonitor({ conversation: activeConversation, message: message })
 			subscriptionRef.current.send({ action: 'new_message', content: message })
+			setMessage('')
 		}
 	}
+
+	// Monitor that last message sent has been sent (and received back in response) successfully
+	useEffect(() => {
+		if (
+			conversations.length &&
+			Object.keys(messageToMonitor).length > 0 &&
+			conversations.length >= messageToMonitor.conversation
+		) {
+			const messageSent = conversations[messageToMonitor.conversation - 1].messages.find(
+				m => m.message === messageToMonitor.message
+			)
+			if (messageSent && messageSent.user_id === userId) setDisplay(0)
+		}
+	}, [messageToMonitor, conversations, userId])
 
 	const conversationTitle = c => (
 		<div className='title'>
 			<div className='request'>{c.help_request_title}</div>
 			<div className='user'>
-				{c.target_user_first_name} {c.target_user_last_name}
+				<ArrowBackIcon
+					onClick={e => {
+						e.stopPropagation()
+						history.push(`/users/dashboard/overview/${c.help_request_id}`)
+					}}
+				/>
+				{c.target_user_first_name} {c.target_user_last_name} <UnreadMessagesBadge convId={c.id} />
 			</div>
-			<UnreadMessagesBadge convId={c.id} />
 		</div>
 	)
 
@@ -99,8 +126,8 @@ export default function Conversation({ defaultActivePane }) {
 									<Form onSubmit={onSubmit}>
 										<Row>
 											<InputForm name='message' value={message} onChange={e => setMessage(e.target.value)} />
-											<LoadingButton variant='primary' type='submit'>
-												Submit
+											<LoadingButton className='send plain-blue' type='submit' display={display}>
+												<SendIcon />
 											</LoadingButton>
 										</Row>
 									</Form>

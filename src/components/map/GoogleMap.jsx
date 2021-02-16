@@ -10,6 +10,9 @@ import Settings from './Settings'
 import { logError } from '../../utilities'
 import publicIP from 'react-native-public-ip'
 
+// TODO: publicIp crash!?
+// TODO: shouldn't be able to sub until profile complete => banner
+
 // https://github.com/google-map-react/google-map-react/blob/HEAD/API.md
 // https://developers.google.com/maps/documentation/javascript/controls
 

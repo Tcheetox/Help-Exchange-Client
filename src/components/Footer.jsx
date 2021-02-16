@@ -44,19 +44,19 @@ export default function Footer() {
 						<ul className='socials'>
 							<li>
 								<FacebookIcon className='facebook' />
-								<a href='https://www.facebook.com' target='_blank' rel='noopener'>
+								<a href='https://www.facebook.com' target='_blank' rel='noreferrer'>
 									Facebook
 								</a>
 							</li>
 							<li>
 								<InstagramIcon className='instagram' />
-								<a href='https://www.instagram.com' target='_blank' rel='noopener'>
+								<a href='https://www.instagram.com' target='_blank' rel='noreferrer'>
 									Instagram
 								</a>
 							</li>
 							<li>
 								<TwitterIcon className='twitter' />
-								<a href='https://twitter.com' target='_blank' rel='noopener'>
+								<a href='https://twitter.com' target='_blank' rel='noreferrer'>
 									Twitter
 								</a>
 							</li>
@@ -65,7 +65,7 @@ export default function Footer() {
 				</Row>
 				<hr />
 				<div className='copyright'>
-					© 2021 Copyright <a href='#Header'>Fish For Help</a>. All rights reserved.
+					© 2021 Copyright <a href='/'>Fish For Help</a>. All rights reserved.
 				</div>
 			</Container>
 		</footer>
