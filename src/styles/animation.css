@@ -16,13 +16,13 @@ button.loading > .spinner-button {
 	color: var(--color-b6);
 }
 
-button.loading:not(button.send) > .check {
+button.loading:not(button.send, button.location) > .check {
 	margin: -0.14rem 0.378rem -0.14rem 0.378rem;
 }
-button.loading:not(button.send) > .spinner-button {
+button.loading:not(button.send, button.location) > .spinner-button {
 	margin: 0 0.5rem 0 0.5rem;
 }
-button.loading.button-text:not(button.send) {
+button.loading.button-text:not(button.send, button.location) {
 	padding-top: 0.557rem !important;
 	padding-bottom: 0.557rem !important;
 }

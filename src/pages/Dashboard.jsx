@@ -20,11 +20,11 @@ export default function Dashboard({ match }) {
 	}
 
 	return (
-		<Container className='core'>
+		<Container className='dashboard core'>
 			<h1>Dashboard</h1>
 			<DoublePane leftPane='2' defaultActivePane={activePane()}>
 				<Overview
-					title='Requests overview'
+					title='Overview'
 					showRequest={
 						match.params && 'section' in match.params && 'id' in match.params ? match.params.id : -1
 					}

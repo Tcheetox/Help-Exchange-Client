@@ -23,12 +23,6 @@ body {
 	--default-transition-duration: 100ms;
 	--default-border-radius: 15px;
 
-	--lightgray: #fafafa;
-	--lesslightgray: #f5f5f5;
-	--darkergray: #3e3e3e;
-	--bs-invalid-color: rgb(220, 53, 69);
-	--bs-valid-color: #28a745;
-
 	--color-low-transparency: rgba(255, 255, 255, 0.7);
 	--color-b1: #dde8fc;
 	--color-b2: #bfd2fa;
@@ -119,10 +113,10 @@ body {
 /* Specific BS adjustments */
 .error,
 .invalid.form-text {
-	color: var(--bs-invalid-color) !important;
+	color: var(--red) !important;
 }
 .valid.form-text {
-	color: var(--bs-valid-color);
+	color: var(--green);
 }
 
 /* DOUBLE PANER */
@@ -172,6 +166,9 @@ body {
 	border: 1px solid var(--color-g3);
 	border-left: none;
 }
+.double-pane .tab-col > div:last-child:not(.profile .double-pane .tab-col > div:last-child) {
+	border-top: none;
+}
 .double-pane .tab-title.active {
 	border-right: 1px solid var(--color-g1);
 }
@@ -191,18 +188,18 @@ body {
 .droppable-area {
 	background-color: white;
 	border-radius: 0.25rem;
-	border: 1px dashed lightgray;
+	border: 1px dashed var(--color-g5);
 	cursor: pointer;
 	position: relative;
 	height: 200px;
 	display: flex;
 }
 .droppable-area.valid {
-	border-color: var(--bs-valid-color);
+	border-color: var(--green);
 	border-style: solid;
 }
 .droppable-area.dragging {
-	background-color: var(--lesslightgray);
+	background-color: var(--color-g2);
 }
 .droppable-area .invalid-icon,
 .droppable-area .valid-icon {
@@ -225,7 +222,6 @@ body {
 	width: 3rem;
 	height: auto;
 	display: flex;
-	color: var(--darkergray);
 	transition: all var(--default-transition-duration);
 }
 .droppable-area .label {
@@ -260,7 +256,7 @@ body {
 	height: 100%;
 	width: 100%;
 	z-index: 11;
-	background-color: rgba(224, 228, 232, 0.7);
+	background-color: rgba(224, 228, 232, 0.7); /* DO NOT TOUCH */
 }
 
 /* OVERVIEW PANE */
@@ -309,7 +305,7 @@ svg.chattable {
 	right: 1rem;
 }
 .settings-dropdown button > svg {
-	color: var(--darkergray);
+	color: var(--color-g7);
 	height: 2.5rem;
 	width: auto;
 }
@@ -606,12 +602,12 @@ button.fancy-blue:hover:not(.button-check) {
 	top: 106%;
 }
 .account-dropdown .dropdown-item svg {
-	top: 0;
+	top: -1px;
 	color: var(--color-b6);
 }
 .account-dropdown .dropdown-item {
 	padding-left: 2rem;
-	color: var(--color-b6);
+	color: var(--color-b6) !important;
 }
 
 /* FOOTER */
@@ -710,6 +706,7 @@ button.fancy-blue:hover:not(.button-check) {
 	background-position: right top;
 	background-size: 450px;
 }
+.dashboard h1,
 .profile h1,
 .troubleshoot h1,
 .signup h1,
@@ -734,6 +731,7 @@ button.fancy-blue:hover:not(.button-check) {
 }
 
 /* MESSENGER - CHAT - CONVERSATION */
+.dashboard,
 .profile,
 .troubleshoot,
 .login,
@@ -973,4 +971,47 @@ a {
 }
 .modal-content {
 	color: var(--color-b6);
+}
+
+/* PROFILE - EDIT ACCOUNT */
+.dashboard .create-request .form-row,
+.profile .edit-account .form-row {
+	padding-left: 0.25rem;
+	padding-right: 0.25rem;
+}
+.profile .edit-account .form-row .form-group {
+	min-width: 30%;
+}
+.profile .edit-account .form-row .form-group:nth-child(2) {
+	margin-left: 0.75rem;
+}
+
+/* DASHBOARD - CREATE REQUEST */
+.dashboard .create-request .form-row .form-group {
+	width: 94.8%;
+}
+.dashboard .create-request .form-row .form-group .form-control {
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+}
+.create-request button.location {
+	margin-top: auto;
+	margin-bottom: 1.24rem;
+	height: 2.4rem;
+	border-top-left-radius: 0 !important;
+	border-bottom-left-radius: 0 !important;
+	border-top-right-radius: 0.25rem !important;
+	border-bottom-right-radius: 0.25rem !important;
+	padding: 0.2rem 0.6rem 0.2rem 0.6rem !important;
+}
+.create-request button.location.button-spin {
+	padding-left: 0.72rem !important;
+	padding-right: 0.72rem !important;
+}
+.create-request button.location svg {
+	width: auto;
+	height: 1.8rem;
+}
+.create-request select.form-control {
+	max-width: 300px;
 }

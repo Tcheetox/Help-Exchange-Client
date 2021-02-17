@@ -21,7 +21,6 @@ export default function FileForm({
 	const inputFileButton = useRef(null)
 	const [inputFile, setInputFile] = useState(null)
 	const [dragging, setDragging] = useState(false)
-	const [useDefault, setUseDefault] = useState(true)
 	const [uploading, setUploading] = useState(false)
 	const [highlight, setHighlight] = useState(false)
 	const { current: extensions } = useRef(allowedExtensions)
@@ -53,7 +52,6 @@ export default function FileForm({
 	const onClose = () => {
 		setHighlight(false)
 		setInputFile(null)
-		setUseDefault(false)
 		onChange(null)
 	}
 
@@ -65,7 +63,7 @@ export default function FileForm({
 	}
 
 	return (
-		<Form.Group>
+		<Form.Group className='input-file'>
 			<Form.Label>{label}</Form.Label>
 			<div
 				onDragEnter={() => setDragging(true)}
@@ -76,7 +74,7 @@ export default function FileForm({
 					display === 1 ? 'disabled' : dragging ? 'dragging' : display === 2 ? 'disabled valid' : ''
 				}`}
 				onClick={() => inputFileButton && inputFileButton.current && inputFileButton.current.click()}>
-				{inputFile || (defaultUrl && defaultUrl !== '' && useDefault) ? (
+				{inputFile || (defaultUrl && defaultUrl !== '') ? (
 					<>
 						{display === 2 && (defaultUrl !== '' || inputFile) ? (
 							<div className='valid-icon' />

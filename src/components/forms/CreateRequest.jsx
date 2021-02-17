@@ -3,13 +3,13 @@ import React, { useState, useEffect, useContext } from 'react'
 import { geocode, reverseGeocode, titleize } from '../../utilities'
 import Form from 'react-bootstrap/Form'
 import { InputForm, LoadingButton } from '../common/'
-import Button from 'react-bootstrap/Button'
 import ExploreIcon from '@material-ui/icons/Explore'
 import { AppContext } from '../../AppContext'
 
 export default function CreateRequest() {
 	const { fetchRequest, userLoggedIn, userProfile, triggerBanner } = useContext(AppContext)
 	const [display, setDisplay] = useState(0)
+	const [displayLocating, setDisplayLocating] = useState(0)
 	const [data, setData] = useState({
 		title: '',
 		description: '',
@@ -74,15 +74,21 @@ export default function CreateRequest() {
 		}
 	}
 
-	const acquireLocation = () =>
-		navigator.geolocation.getCurrentPosition(pos =>
-			reverseGeocode({ lat: pos.coords.latitude, lng: pos.coords.longitude }, addr =>
-				setData({ ...data, address: addr, lat: pos.coords.latitude, lng: pos.coords.longitude })
-			)
+	const acquireLocation = () => {
+		setDisplayLocating(1)
+		navigator.geolocation.getCurrentPosition(
+			pos => {
+				reverseGeocode({ lat: pos.coords.latitude, lng: pos.coords.longitude }, addr =>
+					setData({ ...data, address: addr, lat: pos.coords.latitude, lng: pos.coords.longitude })
+				)
+				setDisplayLocating(0)
+			},
+			() => setDisplayLocating(0)
 		)
+	}
 
 	return (
-		<Form onSubmit={onSubmit}>
+		<Form onSubmit={onSubmit} className='create-request'>
 			<InputForm
 				label='Title'
 				name='title'
@@ -105,19 +111,17 @@ export default function CreateRequest() {
 			</InputForm>
 			<Form.Row>
 				<InputForm
-					label='Address'
+					label='Location'
 					name='address'
-					placeholder='Help address'
+					placeholder='Complete address'
 					value={data.address}
 					error={errors.address}
 					onChange={onChange}
 					display={display}
 				/>
-				<Form.Group>
-					<Button onClick={acquireLocation}>
-						<ExploreIcon />
-					</Button>
-				</Form.Group>
+				<LoadingButton onClick={acquireLocation} className='fancy-blue location' display={displayLocating}>
+					<ExploreIcon />
+				</LoadingButton>
 			</Form.Row>
 			<InputForm
 				label='Description'
@@ -136,7 +140,7 @@ export default function CreateRequest() {
 						: 'Maximum 300 characters'
 				}
 			/>
-			<LoadingButton variant='primary' type='submit' display={display}>
+			<LoadingButton className='plain-blue' type='submit' display={display}>
 				Submit
 			</LoadingButton>
 		</Form>

@@ -91,7 +91,7 @@ export default function EditAccount() {
 	)
 
 	return (
-		<Form onSubmit={handleSubmit}>
+		<Form onSubmit={handleSubmit} className='edit-account'>
 			<Form.Row>
 				<InputForm
 					label='First name'
@@ -112,6 +112,17 @@ export default function EditAccount() {
 					canBeInvalid={false}
 				/>
 			</Form.Row>
+			<Form.Row>
+				<InputForm
+					label='Phone'
+					name='phone'
+					placeholder='Phone'
+					value={data.phone}
+					onChange={handleChange}
+					display={display}
+					canBeInvalid={false}
+				/>
+			</Form.Row>
 			<FileForm
 				allowedExtensions={['.jpg', '.jpeg', '.png', '.pdf']}
 				maxSize={3145728}
@@ -120,15 +131,6 @@ export default function EditAccount() {
 				display={display}
 				label='Government ID'
 				text='An official proof of identity is required to use our services'
-			/>
-			<InputForm
-				label='Phone'
-				name='phone'
-				placeholder='Phone'
-				value={data.phone}
-				onChange={handleChange}
-				display={display}
-				canBeInvalid={false}
 			/>
 			<InputForm
 				label='Address'
