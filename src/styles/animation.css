@@ -4,15 +4,31 @@ button.loading.button-check {
 	padding-top: 0;
 	padding-bottom: 0;
 }
+
+button.loading > .check {
+	width: 1.8rem;
+	height: 1.8rem;
+}
 button.loading > .spinner-button {
 	height: 1.556rem;
 	width: 1.556rem;
 	border-width: 2px;
-	margin: 0.3rem 0.5rem 0.3rem 0.5rem;
 	color: var(--color-b6);
 }
-button.loading > .check {
-	width: 1.8rem;
-	height: 1.8rem;
-	margin: 0.225rem 0.378rem 0.225rem 0.378rem;
+
+button.loading:not(button.send) > .check {
+	margin: -0.14rem 0.378rem -0.14rem 0.378rem;
+}
+button.loading:not(button.send) > .spinner-button {
+	margin: 0 0.5rem 0 0.5rem;
+}
+button.loading.button-text:not(button.send) {
+	padding-top: 0.557rem !important;
+	padding-bottom: 0.557rem !important;
+}
+
+button.button-check {
+	background-color: #afdeba !important;
+	border-color: var(--green) !important;
+	color: var(--green) !important;
 }

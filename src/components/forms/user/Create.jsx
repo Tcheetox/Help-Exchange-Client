@@ -73,16 +73,17 @@ export default function Create({ modalShow = null }) {
 	}
 
 	return (
-		<div className='signup'>
+		<div className='create'>
 			<Form onSubmit={handleSubmit}>
 				<InputForm
 					label='Email'
 					name='email'
-					placeholder='Enter email'
+					placeholder='Username'
 					value={data.email}
 					onChange={handleChange}
 					error={errors.email}
 					display={display}
+					text="We'll never share you email address"
 				/>
 				<InputForm
 					label='Password'
@@ -113,7 +114,7 @@ export default function Create({ modalShow = null }) {
 					error={errors.condition}
 					display={display}
 					text={
-						<>
+						<div className='create-conditions'>
 							By signing up to Fish For Help, you agree to the{' '}
 							<Link to='/' onClick={() => (modalShow ? modalShow(false) : null)}>
 								Terms of Service
@@ -123,13 +124,14 @@ export default function Create({ modalShow = null }) {
 								Privacy Policy
 							</Link>
 							.
-						</>
+						</div>
 					}
 				/>
-				<LoadingButton variant='primary' type='submit' display={display}>
+				<LoadingButton className='plain-blue' type='submit' display={display}>
 					Register
 				</LoadingButton>
 			</Form>
+			<hr />
 			<div className='links'>
 				<div>
 					Didn't get a confirmation link?{' '}

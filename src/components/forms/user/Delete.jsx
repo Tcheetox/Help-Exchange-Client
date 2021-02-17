@@ -39,8 +39,8 @@ export default function RemoveUser() {
 				display={display}
 				text='I am sure I want to delete my account'
 			/>
-			<LoadingButton variant='primary' type='submit' display={display}>
-				Submit
+			<LoadingButton className='plain-red' type='submit' display={display}>
+				Delete
 			</LoadingButton>
 		</Form>
 	)

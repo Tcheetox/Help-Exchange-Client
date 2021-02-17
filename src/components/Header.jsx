@@ -81,9 +81,7 @@ export default function Header() {
 				</Navbar.Toggle>
 				<Navbar.Collapse id='basic-navbar-nav'>
 					<Nav className='mr-auto nav-links'>
-						<a href='/#About' onClick={() => setExpanded(false)}>
-							About us
-						</a>
+						<FoldLink to='/#About'>About us</FoldLink>
 						<FoldLink to='/map' className={location.pathname.toLowerCase().includes('/map') ? 'active' : ''}>
 							Map
 						</FoldLink>

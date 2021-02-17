@@ -159,7 +159,7 @@ export default function EditAccount() {
 					canBeInvalid={false}
 				/>
 			</Form.Row>
-			<LoadingButton variant='primary' type='submit' display={display}>
+			<LoadingButton className='plain-blue' type='submit' display={display}>
 				Submit
 			</LoadingButton>
 		</Form>

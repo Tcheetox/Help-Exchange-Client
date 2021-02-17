@@ -20,17 +20,19 @@ export default function Login({ match }) {
 				r => r.status === 204 && triggerBanner('account_verified'),
 				false
 			),
-		[match, fetchRequest]
+		[match, fetchRequest, triggerBanner]
 	)
 
 	return (
-		<Container className='core'>
-			<h1>Log in</h1>
-			<Card>
-				<Card.Body>
-					<Connect />
-				</Card.Body>
-			</Card>
+		<Container className='login core'>
+			<Container>
+				<h1>Log in</h1>
+				<Card>
+					<Card.Body>
+						<Connect />
+					</Card.Body>
+				</Card>
+			</Container>
 		</Container>
 	)
 }

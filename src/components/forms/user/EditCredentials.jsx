@@ -1,4 +1,6 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
+import { useHistory } from 'react-router-dom'
+
 import { isBlank } from '../../../utilities'
 import { AppContext } from '../../../AppContext'
 import Form from 'react-bootstrap/Form'
@@ -6,6 +8,8 @@ import { LoadingButton, InputForm } from '../../common/'
 
 export default function EditCredentials({ reset = false, token }) {
 	const { fetchRequest, triggerBanner } = useContext(AppContext)
+	const history = useHistory()
+	const [redirect, setRedirect] = useState(false)
 	const [display, setDisplay] = useState(0)
 	const [data, setData] = useState({ currentPassword: '', password: '', passwordConfirmation: '' })
 	const [errors, setErrors] = useState({
@@ -25,6 +29,7 @@ export default function EditCredentials({ reset = false, token }) {
 		} else {
 			triggerBanner('changed_credentials')
 			setDisplay(2)
+			if (reset) setRedirect(true)
 		}
 	}
 
@@ -73,6 +78,13 @@ export default function EditCredentials({ reset = false, token }) {
 		setErrors({ ...errors, [e.target.name]: undefined })
 	}
 
+	// Handle automatic redirect in case of password reset
+	useEffect(() => {
+		let timer
+		if (redirect) timer = setTimeout(() => history.push('/'), 1500)
+		return () => clearTimeout(timer)
+	}, [redirect, history])
+
 	return (
 		<Form onSubmit={handleSubmit}>
 			{!reset ? (
@@ -81,7 +93,7 @@ export default function EditCredentials({ reset = false, token }) {
 						label='Current password'
 						type='password'
 						name='currentPassword'
-						placeholder='Current password'
+						placeholder='Password'
 						value={data.currentPassword}
 						error={errors.currentPassword}
 						onChange={handleChange}
@@ -95,7 +107,7 @@ export default function EditCredentials({ reset = false, token }) {
 				label='New password'
 				type='password'
 				name='password'
-				placeholder='Password'
+				placeholder='New password'
 				value={data.password}
 				error={errors.password}
 				onChange={handleChange}
@@ -106,13 +118,13 @@ export default function EditCredentials({ reset = false, token }) {
 				label='Confirm new password'
 				type='password'
 				name='passwordConfirmation'
-				placeholder='Password'
+				placeholder='New password'
 				value={data.passwordConfirmation}
 				error={errors.passwordConfirmation}
 				onChange={handleChange}
 				display={display}
 			/>
-			<LoadingButton variant='primary' type='submit' display={display}>
+			<LoadingButton className='plain-blue' type='submit' display={display}>
 				Submit
 			</LoadingButton>
 		</Form>

@@ -20,7 +20,7 @@ export default function Profile({ match }) {
 	}
 
 	return (
-		<Container className='core'>
+		<Container className='profile core'>
 			<h1>Profile</h1>
 			<DoublePane leftPane='2' defaultActivePane={activePane()}>
 				<EditAccount title='Account information' />

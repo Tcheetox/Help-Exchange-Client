@@ -37,9 +37,9 @@ export default function EmailOnly({ action }) {
 	return (
 		<Form onSubmit={handleSubmit}>
 			<InputForm
-				label='Email'
+				label='Email address'
 				name='email'
-				placeholder='Enter email'
+				placeholder='Email'
 				value={data}
 				error={error}
 				display={display}
@@ -48,7 +48,7 @@ export default function EmailOnly({ action }) {
 					setError(undefined)
 				}}
 			/>
-			<LoadingButton variant='primary' type='submit' display={display}>
+			<LoadingButton className='fancy-blue' type='submit' display={display}>
 				Send
 			</LoadingButton>
 		</Form>

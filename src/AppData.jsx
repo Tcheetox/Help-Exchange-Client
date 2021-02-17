@@ -8,14 +8,17 @@ export const AppDataProvider = ({ children }) => {
 	const userIdRef = useRef()
 	userIdRef.current = userId
 
-	const refreshHelpRequests = () =>
-		fetchRequest(
-			'GET',
-			null,
-			'help_requests',
-			(r, pR) => r.status === 200 && setData(d => ({ ...d, helpRequests: pR })),
-			false
-		)
+	const refreshHelpRequests = useCallback(
+		() =>
+			fetchRequest(
+				'GET',
+				null,
+				'help_requests',
+				(r, pR) => r.status === 200 && setData(d => ({ ...d, helpRequests: pR })),
+				false
+			),
+		[fetchRequest]
+	)
 
 	// Update an existing conversation with new messages
 	const setConversationMessages = (convId, messages) =>
@@ -57,15 +60,14 @@ export const AppDataProvider = ({ children }) => {
 			cable.subscriptions.create(
 				{ channel: 'MessagesChannel', conversation: convId },
 				{
-					received: m => {
-						console.log('> CHAT MESSAGE received from socket')
-						console.log(m)
-						setConversationMessages(convId, m)
-					},
+					received: m => setConversationMessages(convId, m),
 				}
 			),
 		[cable]
 	)
+
+	// Initial fetch of (all published) help requests (this action is done again each time the user visits the map)
+	useEffect(() => refreshHelpRequests(), [refreshHelpRequests])
 
 	// Handle conversations update
 	useEffect(
@@ -82,9 +84,7 @@ export const AppDataProvider = ({ children }) => {
 				cable.subscriptions.create(
 					{ channel: 'ConversationsChannel' },
 					{
-						received: c => {
-							console.log('> CONVERSATION UPDATE from socket')
-							console.log(c)
+						received: c =>
 							setData(d => {
 								const conversationsCopy = d.conversations
 								const convIndex = conversationsCopy.findIndex(co => co.id === c.id)
@@ -93,8 +93,7 @@ export const AppDataProvider = ({ children }) => {
 									subToConvMessages(c.id)
 								} else conversationsCopy[convIndex] = { ...c, messages: [] }
 								return { ...d, conversations: conversationsCopy }
-							})
-						},
+							}),
 					}
 				)
 			}),
@@ -112,11 +111,7 @@ export const AppDataProvider = ({ children }) => {
 					cable.subscriptions.create(
 						{ channel: 'HelpRequestsChannel' },
 						{
-							received: h => {
-								console.log('> HELP REQUEST UPDATE from socket')
-								console.log(h)
-								handleHelpRequest(h)
-							},
+							received: h => handleHelpRequest(h),
 						}
 					)
 				}

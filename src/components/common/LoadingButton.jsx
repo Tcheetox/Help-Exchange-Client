@@ -17,7 +17,7 @@ export default function LoadingButton({ className, children, variant, type, onCl
 					? `${className} loading button-spin`
 					: display === 2
 					? `${className} loading button-check`
-					: `${className} loading`
+					: `${className} loading button-text`
 			}>
 			{display === 1 ? (
 				<Spinner className='spinner-button' animation='border' />

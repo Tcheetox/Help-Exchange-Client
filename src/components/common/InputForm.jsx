@@ -40,6 +40,7 @@ export default function InputForm({
 				return (
 					<Form.Check
 						type='checkbox'
+						className={value ? 'checked' : 'unchecked'}
 						id={name}
 						name={name}
 						checked={value}

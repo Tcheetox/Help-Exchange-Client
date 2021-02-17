@@ -6,13 +6,15 @@ import Create from '../components/forms/user/Create'
 
 export default function Signup() {
 	return (
-		<Container className='core'>
-			<h1>Sign up</h1>
-			<Card>
-				<Card.Body>
-					<Create />
-				</Card.Body>
-			</Card>
+		<Container className='signup core'>
+			<Container>
+				<h1>Sign up</h1>
+				<Card>
+					<Card.Body>
+						<Create />
+					</Card.Body>
+				</Card>
+			</Container>
 		</Container>
 	)
 }

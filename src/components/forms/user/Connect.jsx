@@ -1,13 +1,13 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import { isBlank } from '../../../utilities'
 import { AppContext } from '../../../AppContext'
 import Form from 'react-bootstrap/Form'
 import { LoadingButton, InputForm } from '../../common/'
-import { Modal } from 'bootstrap'
 
 export default function Connect({ modalShow = null }) {
 	const { logIn } = useContext(AppContext)
+	const history = useHistory()
 	const [display, setDisplay] = useState(0)
 	const [data, setData] = useState({
 		email: '',
@@ -18,6 +18,14 @@ export default function Connect({ modalShow = null }) {
 		email: undefined,
 		password: undefined,
 	})
+	const [redirect, setRedirect] = useState(false)
+
+	// Automatic redirection after successful login
+	useEffect(() => {
+		let timer
+		if (redirect) timer = setTimeout(() => history.push('/'), 1500)
+		return () => clearTimeout(timer)
+	}, [redirect, history])
 
 	// Prevent modifying state on unmounted component
 	const [mounted, setMounted] = useState(false)
@@ -51,6 +59,7 @@ export default function Connect({ modalShow = null }) {
 					if (r.status === 200) {
 						setDisplay(2)
 						if (modalShow) modalShow(false)
+						else setRedirect(true)
 					} else {
 						if (r.status === 500) setErrors({ email: undefined, password: undefined })
 						else setErrors({ email: rej, password: rej })
@@ -62,13 +71,13 @@ export default function Connect({ modalShow = null }) {
 	}
 
 	return (
-		<div className='login'>
+		<div className='connect'>
 			<Form onSubmit={handleSubmit} validated={false}>
 				<InputForm
 					label='Email'
 					name='email'
 					error={errors.email}
-					placeholder='Enter email'
+					placeholder='Username'
 					value={data.email}
 					onChange={handleChange}
 					display={display}
@@ -92,10 +101,11 @@ export default function Connect({ modalShow = null }) {
 					display={display}
 					canBeInvalid={false}
 				/>
-				<LoadingButton variant='primary' type='submit' display={display}>
-					Submit
+				<LoadingButton className='fancy-blue' type='submit' display={display}>
+					Connect
 				</LoadingButton>
 			</Form>
+			<hr />
 			<div className='links'>
 				<div>
 					Don't have an account yet?{' '}
