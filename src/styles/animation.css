@@ -26,9 +26,101 @@ button.loading.button-text:not(button.send, button.location) {
 	padding-top: 0.557rem !important;
 	padding-bottom: 0.557rem !important;
 }
-
 button.button-check {
 	background-color: #afdeba !important;
 	border-color: var(--green) !important;
 	color: var(--green) !important;
+}
+
+/* CIRCULAR PROGRESS BAR */
+.circular-progress {
+	position: absolute;
+	height: 100px;
+	width: 100px;
+	right: 1.25rem;
+}
+.circular-progress .progress {
+	width: inherit;
+	height: inherit;
+	background: none;
+	position: relative;
+}
+.circular-progress .progress::after {
+	content: '';
+	width: 100%;
+	height: 100%;
+	border-radius: 50%;
+	border: 6px solid var(--color-g3);
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+.circular-progress .percentage {
+	position: absolute;
+	font-weight: 400;
+	font-size: 1.3rem;
+	top: 1.7rem;
+	right: 1.3rem;
+	z-index: 1;
+}
+.circular-progress .progress.complete .percentage {
+	right: 0.9rem;
+}
+.circular-progress .progress-value {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	align-items: center;
+	justify-content: center;
+	display: flex;
+	margin-left: -2px;
+}
+.circular-progress .value {
+	margin-bottom: 0;
+}
+.circular-progress .progress > span {
+	width: 50%;
+	height: 100%;
+	overflow: hidden;
+	position: absolute;
+	top: 0;
+	z-index: 1;
+}
+.circular-progress .progress .progress-bar {
+	width: 100%;
+	height: 100%;
+	background: none;
+	border-width: 6px;
+	border-style: solid;
+	position: absolute;
+	top: 0;
+	border-color: var(--color-b4) !important;
+}
+.circular-progress .progress.complete .progress-bar {
+	border-color: #a2d9ae !important;
+}
+.circular-progress .progress.complete .progress-value {
+	color: darkgreen;
+	color: rgb(21, 106, 110);
+}
+
+.circular-progress .progress .progress-left {
+	left: 0;
+}
+.circular-progress .progress .progress-left .progress-bar {
+	left: 100%;
+	border-top-right-radius: 80px;
+	border-bottom-right-radius: 80px;
+	border-left: 0;
+	transform-origin: center left;
+}
+.circular-progress .progress .progress-right {
+	right: 0;
+}
+.circular-progress .progress .progress-right .progress-bar {
+	left: -100%;
+	border-top-left-radius: 80px;
+	border-bottom-left-radius: 80px;
+	border-right: 0;
+	transform-origin: center right;
 }

@@ -30,7 +30,12 @@ export default function CreateRequest() {
 			userLoggedIn &&
 			userProfile &&
 			setData(d => {
-				return { ...d, address: userProfile.address, lng: userProfile.lng, lat: userProfile.lat }
+				return {
+					...d,
+					address: `${userProfile.address}, ${userProfile.post_code} ${userProfile.country}`,
+					lng: userProfile.lng,
+					lat: userProfile.lat,
+				}
 			}),
 		[fetchRequest, userLoggedIn, userProfile]
 	)
@@ -119,7 +124,10 @@ export default function CreateRequest() {
 					onChange={onChange}
 					display={display}
 				/>
-				<LoadingButton onClick={acquireLocation} className='fancy-blue location' display={displayLocating}>
+				<LoadingButton
+					onClick={acquireLocation}
+					className='fancy-blue location'
+					display={display !== 0 ? display : displayLocating}>
 					<ExploreIcon />
 				</LoadingButton>
 			</Form.Row>

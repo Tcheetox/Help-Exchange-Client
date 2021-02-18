@@ -20,12 +20,8 @@ export default function Overview({ showRequest }) {
 
 	return (
 		<div className='overview-pane'>
-			<h4>Pending requests</h4>
-			{data.length > 0 ? (
-				<Paginator data={data} showRequest={showRequest} />
-			) : (
-				'Nothing to show... lazy fucker!'
-			)}
+			<h4>Ongoing requests</h4>
+			{data.length > 0 ? <Paginator data={data} showRequest={showRequest} /> : 'Nothing to show...'}
 			<h4>History</h4>
 			{histoData.length > 0 ? (
 				<Paginator data={histoData} showRequest={showRequest} />

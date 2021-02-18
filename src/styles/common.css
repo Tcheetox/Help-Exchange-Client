@@ -44,6 +44,12 @@ body {
 	--color-g6: #808080;
 	--color-g7: #404040;
 	--color-g8: #202020;
+	--color-e0: #e5f4e8;
+	--color-e1: #cae9d1;
+	--color-e2: #94d3a2;
+	--color-e3: #28a745;
+	--color-e4: #1e7e34;
+	--color-e5: #145423;
 }
 
 /* Override BS SUCCESS BANNER */
@@ -260,36 +266,11 @@ body {
 }
 
 /* OVERVIEW PANE */
-
 .overview-pane .spinner {
 	position: relative;
 	width: min-content;
 	margin-top: 1.5rem;
 	margin-bottom: 1rem;
-}
-
-/* HELP REQUEST */
-.help-request {
-	font-size: 0.95rem;
-}
-.help-request .card-header {
-	display: flex;
-}
-.help-request .info {
-	width: 85%;
-}
-.help-request .date {
-	color: gray;
-	font-size: 0.92rem;
-}
-.help-request .badges {
-	width: 15%;
-	/* align-self: center; */
-	display: flex;
-	justify-content: right;
-}
-svg.chattable {
-	cursor: pointer;
 }
 
 /* MAP */
@@ -428,6 +409,8 @@ svg.chattable {
 }
 
 /* BUTTON */
+button.fancy-green,
+button.plain-green,
 button.fancy-red,
 button.fancy-blue,
 button.plain-red,
@@ -446,6 +429,8 @@ button.plain-blue:focus {
 button.large {
 	font-size: 1.3rem !important;
 }
+button.fancy-green:hover:not(.button-check),
+button.plain-green:hover:not(.button-check),
 button.fancy-red:hover:not(.button-check),
 button.fancy-blue:hover:not(.button-check),
 button.plain-red:hover:not(.button-check),
@@ -494,6 +479,27 @@ button.fancy-blue:hover:not(.button-check) {
 	background-color: var(--color-b1) !important;
 	border-color: var(--color-b4) !important;
 	color: var(--color-b4) !important;
+}
+
+button.plain-green:not(.button-check),
+button.plain-green:focus:not(.button-check) {
+	background-color: var(--color-e2) !important;
+	border-color: var(--color-e2) !important;
+}
+button.plain-green:hover:not(.button-check) {
+	background-color: var(--color-e3) !important;
+	border-color: var(--color-e4) !important;
+}
+button.fancy-green:not(.button-check),
+button.fancy-green:focus:not(.button-check) {
+	color: var(--color-e3) !important;
+	background-color: white !important;
+	border-color: var(--color-e3) !important;
+}
+button.fancy-green:hover:not(.button-check) {
+	background-color: var(--color-e1) !important;
+	border-color: var(--color-e4) !important;
+	color: var(--color-e4) !important;
 }
 
 /* HEADER */
@@ -1014,4 +1020,134 @@ a {
 }
 .create-request select.form-control {
 	max-width: 300px;
+}
+
+/* DASHBOARD - OVERVIEW */
+.paginator .pagination {
+	width: max-content;
+	margin: 0.25rem 0 0 auto;
+}
+.paginator .pagination li * {
+	padding: 0.1rem 0.4rem 0.1rem 0.4rem;
+}
+.paginator .pagination .page-item.active span {
+	background-color: var(--color-b4);
+	border-color: var(--color-b4);
+}
+.help-request {
+	font-size: 0.95rem;
+	margin-bottom: 0.2rem;
+}
+.help-request .card-header {
+	display: flex;
+	border-top-left-radius: calc(var(--default-border-radius) - 1px);
+	border-top-right-radius: calc(var(--default-border-radius) - 1px);
+	border-bottom: none;
+	transition: all 500ms;
+}
+.help-request.inactive .card-header {
+	border-bottom: none;
+	border-bottom-left-radius: calc(var(--default-border-radius) - 1px);
+	border-bottom-right-radius: calc(var(--default-border-radius) - 1px);
+}
+.help-request.owner .card-header {
+	background-color: var(--color-b1);
+}
+/* .help-request.respondent .card-header {
+	background-color: white;
+} */
+.help-request .info {
+	width: 89%;
+	text-align: justify;
+}
+.help-request .date {
+	color: var(--color-g6);
+	font-size: 0.9rem;
+}
+.help-request .badges {
+	width: 11%;
+	/* align-self: center; */
+	display: flex;
+	justify-content: right;
+}
+.help-request .badges svg {
+	height: 1.6rem;
+	width: 1.6rem;
+	margin-left: 0.2rem;
+	margin-top: 0.2rem;
+}
+.help-request .location {
+	margin-bottom: 0.6rem;
+}
+.help-request .actions {
+	width: max-content;
+	margin: 0rem 0 auto auto;
+	padding-left: 1.25rem;
+	white-space: nowrap;
+}
+.help-request .actions button:nth-child(even) {
+	margin-left: 0.3rem;
+	margin-right: 0.3rem;
+}
+/* .help-request .actions button {
+	padding: 0.2rem 1rem 0.2rem 1rem !important;
+	font-size: 0.95rem !important;
+} */
+.help-request .actions button {
+	padding-left: 1rem !important;
+	padding-right: 1rem !important;
+}
+.help-request .description {
+	text-align: justify;
+}
+.help-request .flex-content {
+	display: flex;
+}
+.help-request .people {
+	margin-bottom: -0.2rem;
+}
+.help-request .people svg {
+	width: auto;
+	height: 2.2rem;
+	margin-right: 0.5rem;
+}
+.help-request .people svg.respondent {
+	margin-bottom: -1px;
+	height: 2.3rem;
+}
+.help-request .people svg.owner {
+	margin-right: 1rem;
+}
+.help-request .people svg.current {
+	color: var(--color-b4);
+	color: orange;
+}
+.chattable-tooltip svg {
+	margin-left: 0.5rem;
+}
+.chattable-tooltip .tooltip-inner {
+	display: flex;
+}
+
+svg.chattable {
+	cursor: pointer;
+}
+.badges .badge {
+	padding: 0;
+}
+.badge.fulfilled svg {
+	color: var(--green);
+}
+.badge.cancelled svg {
+	color: var(--danger);
+}
+.badge.not-visible svg {
+	color: var(--warning);
+}
+.badge.pending svg {
+	color: darkorange;
+}
+.badge.immaterial svg,
+.badge.material svg {
+	color: var(--color-g7);
 }

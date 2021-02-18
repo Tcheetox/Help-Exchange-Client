@@ -3,26 +3,22 @@ import { useHistory } from 'react-router-dom'
 
 import { AppContext } from '../../../AppContext'
 import { AppData } from '../../../AppData'
+import dateFormat from 'dateformat'
 import Card from 'react-bootstrap/Card'
 import Accordion from 'react-bootstrap/Accordion'
 import Tooltip from 'react-bootstrap/Tooltip'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
-import { LoadingButton } from '../../common/'
+import Button from 'react-bootstrap/Button'
 import PinIcon from '@material-ui/icons/PinDrop'
 import OwnerIcon from '@material-ui/icons/RecordVoiceOver'
 import PersonIcon from '@material-ui/icons/Person'
 import ChatIcon from '@material-ui/icons/Chat'
-import MaterialIcon from '@material-ui/icons/Widgets'
-import ImmaterialIcon from '@material-ui/icons/ThumbUp'
-import VisibilityIcon from '@material-ui/icons/Visibility'
-import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
-import PublicIcon from '@material-ui/icons/Public'
-import HourglassIcon from '@material-ui/icons/HourglassFull'
-import CancelIcon from '@material-ui/icons/Cancel'
-import CheckCircleIcon from '@material-ui/icons/CheckCircle'
+import { Badge } from '../../common'
+import { titleize } from '../../../utilities'
 
 export default function HelpRequest({
 	eventKey,
+	active,
 	data: { id, title, description, status, help_type, users, created_at, pending_at, address },
 }) {
 	const { fetchRequest, userLoggedIn, userId, triggerBanner } = useContext(AppContext)
@@ -60,85 +56,90 @@ export default function HelpRequest({
 	}
 
 	return (
-		<Card className={`help-request ${role}`}>
+		<Card className={`help-request ${role} ${active ? 'active' : 'inactive'}`}>
 			<Accordion.Toggle as={Card.Header} eventKey={eventKey}>
 				<div className='info'>
 					<div className='title'>{title}</div>
-					<div className='date'>Posted on {created_at}</div>
+					<div className='date'>Created {dateFormat(created_at, 'mmm dd yyyy')}</div>
 				</div>
 				<div className='badges'>
-					{help_type === 'material' ? <MaterialIcon /> : <ImmaterialIcon />}
-					{status === 'published' ? <VisibilityIcon /> : <VisibilityOffIcon />}
-					{status === 'cancelled' ? (
-						<CancelIcon />
-					) : status === 'fulfilled' ? (
-						<CheckCircleIcon />
-					) : status === 'pending' ? (
-						<HourglassIcon />
+					<Badge type={help_type} tooltip={help_type === 'material' ? 'Material' : 'One-time help'} />
+					{status === 'published' ? (
+						<Badge type='visible' tooltip='Visible' />
 					) : (
-						<PublicIcon />
+						<Badge type='not-visible' tooltip='Not visible' />
 					)}
+					<Badge type={status} tooltip={titleize(status)} />
 				</div>
 			</Accordion.Toggle>
 			<Accordion.Collapse eventKey={eventKey}>
 				<Card.Body>
-					<div className='actions'>
-						{role === 'owner' &&
-						(status === 'cancelled' ||
-							(status === 'pending' &&
-								new Date(pending_at).setDate(new Date(pending_at).getDate() + 1) < new Date())) ? (
-							<LoadingButton variant='info' name='republish' onClick={handleClick}>
-								Republish
-							</LoadingButton>
-						) : null}
-						{role === 'owner' && status !== 'cancelled' && status !== 'fulfilled' ? (
-							<LoadingButton variant='danger' name='cancel' onClick={handleClick}>
-								Cancel
-							</LoadingButton>
-						) : null}
-						{role === 'respondent' && status !== 'cancelled' && status !== 'fulfilled' ? (
-							<LoadingButton variant='secondary' name='unsubscribe' onClick={handleClick}>
-								Unsubscribe
-							</LoadingButton>
-						) : null}
-						{role.length > 0 && status !== 'fulfilled' ? (
-							<LoadingButton variant='success' name='markasfulfilled' onClick={handleClick}>
-								Mark as fulfilled
-							</LoadingButton>
-						) : null}
-					</div>
 					<div className='description'>{description}</div>
-					<div className='location'>
-						<PinIcon /> {address}
-					</div>
-					<div className='people'>
-						{users.map((x, k) => (
-							<OverlayTrigger
-								key={k}
-								placement='bottom'
-								overlay={
-									<Tooltip>
-										{x.first_name} {x.last_name}
-										{isChattable(x.user_type) ? <ChatIcon /> : null}
-									</Tooltip>
-								}>
-								{x.user_type === 'owner' ? (
-									<OwnerIcon
-										className={`owner ${x.id === userId ? 'current' : ''} ${
-											isChattable(x.user_type) ? 'chattable' : ''
-										}`}
-										onClick={() => handleConversation(x)}
-									/>
-								) : (
-									<PersonIcon
-										className={`respondent ${x.id === userId ? 'current' : ''} ${
-											isChattable(x.user_type) ? 'chattable' : ''
-										}`}
-										onClick={() => handleConversation(x)}
-									/>
-								)}
-							</OverlayTrigger>
-						))}
+					<hr />
+					<div className='flex-content'>
+						<div>
+							<div className='location'>
+								<PinIcon />{' '}
+								<a href={`https://www.google.com/maps/dir//${address}`} target='_blank' rel='noreferrer'>
+									{address}
+								</a>
+							</div>
+							<div className='people'>
+								{users.map((x, k) => (
+									<OverlayTrigger
+										key={k}
+										placement='bottom'
+										overlay={
+											<Tooltip id={`ChattableTooltip-${k}`} className='chattable-tooltip'>
+												{x.first_name} {x.last_name}
+												{isChattable(x.user_type) ? <ChatIcon /> : null}
+											</Tooltip>
+										}>
+										{x.user_type === 'owner' ? (
+											<OwnerIcon
+												className={`owner ${x.id === userId ? 'current' : ''} ${
+													isChattable(x.user_type) ? 'chattable' : ''
+												}`}
+												onClick={() => handleConversation(x)}
+											/>
+										) : (
+											<PersonIcon
+												className={`respondent ${x.id === userId ? 'current' : ''} ${
+													isChattable(x.user_type) ? 'chattable' : ''
+												}`}
+												onClick={() => handleConversation(x)}
+											/>
+										)}
+									</OverlayTrigger>
+								))}
+							</div>
+						</div>
+
+						<div className='actions'>
+							{role === 'owner' &&
+							(status === 'cancelled' ||
+								(status === 'pending' &&
+									new Date(pending_at).setDate(new Date(pending_at).getDate() + 1) < new Date())) ? (
+								<Button className='fancy-green' name='republish' onClick={handleClick}>
+									Republish
+								</Button>
+							) : null}
+							{role === 'owner' && status !== 'cancelled' && status !== 'fulfilled' ? (
+								<Button className='plain-red' name='cancel' onClick={handleClick}>
+									Cancel
+								</Button>
+							) : null}
+							{role === 'respondent' && status !== 'cancelled' && status !== 'fulfilled' ? (
+								<Button className='fancy-red' name='unsubscribe' onClick={handleClick}>
+									Unsubscribe
+								</Button>
+							) : null}
+							{role.length > 0 && status !== 'fulfilled' ? (
+								<Button className='plain-green' name='markasfulfilled' onClick={handleClick}>
+									Mark as fulfilled
+								</Button>
+							) : null}
+						</div>
 					</div>
 				</Card.Body>
 			</Accordion.Collapse>

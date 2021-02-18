@@ -107,7 +107,10 @@ export const AppDataProvider = ({ children }) => {
 			cable &&
 			fetchRequest('GET', null, 'help_requests/filter', (p, pR) => {
 				if (p.status === 200) {
-					setData(d => ({ ...d, userHelpRequests: pR }))
+					setData(d => ({
+						...d,
+						userHelpRequests: pR.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at)),
+					}))
 					cable.subscriptions.create(
 						{ channel: 'HelpRequestsChannel' },
 						{
@@ -126,10 +129,16 @@ export const AppDataProvider = ({ children }) => {
 				? d.userHelpRequests.findIndex(uH => uH.id === h.id)
 				: -1
 			const userHelpRequestsCopy = d.userHelpRequests.length ? [...d.userHelpRequests] : []
-			if (!h.users.length && helpRequestIndex !== -1) userHelpRequestsCopy.splice(helpRequestIndex, 1)
+			if (helpRequestIndex !== -1 || !h.users.find(u => u.id === userId))
+				userHelpRequestsCopy.splice(helpRequestIndex, 1)
 			else if (helpRequestIndex === -1) userHelpRequestsCopy.push(h)
 			else userHelpRequestsCopy[helpRequestIndex] = h
-			return { ...d, userHelpRequests: userHelpRequestsCopy }
+			return {
+				...d,
+				userHelpRequests: userHelpRequestsCopy.sort(
+					(a, b) => new Date(b.updated_at) - new Date(a.updated_at)
+				),
+			}
 		})
 
 	return <AppData.Provider value={data}>{children}</AppData.Provider>

@@ -43,9 +43,7 @@ export default function MessageArea({ conversation, loading }) {
 				conversation.messages.map((m, k) => (
 					<MessageMemo props={{ ...m, current_year: currentYear, current_user_id: userId }} key={k} />
 				))
-			) : (
-				<h4>You're yet to communicate with this person.</h4>
-			)}
+			) : null}
 		</div>
 	)
 }

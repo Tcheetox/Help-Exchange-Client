@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext, useCallback } from 'react'
 
 import { AppContext } from '../../../AppContext'
 import Form from 'react-bootstrap/Form'
-import { LoadingButton, InputForm, FileForm } from '../../common/'
+import { LoadingButton, InputForm, FileForm, CircularProgress } from '../../common/'
 import { geocode } from '../../../utilities'
 
 export default function EditAccount() {
@@ -27,6 +27,17 @@ export default function EditAccount() {
 		country: '',
 		govId: '',
 	})
+
+	const [completion, setCompletion] = useState(0)
+	useEffect(() => {
+		if (data && Object.keys(data).length) {
+			let count = 0
+			for (const [key, val] of Object.entries(data)) {
+				if (key !== 'lat' && key !== 'lng' && val && val.length > 0) count++
+			}
+			setCompletion((count / 7) * 100)
+		}
+	}, [data])
 
 	const handleChange = e => setData({ ...data, [e.target.name]: e.target.value })
 	const handleSubmit = e => {
@@ -111,6 +122,7 @@ export default function EditAccount() {
 					display={display}
 					canBeInvalid={false}
 				/>
+				<CircularProgress title='Profile completion' percent={completion} />
 			</Form.Row>
 			<Form.Row>
 				<InputForm

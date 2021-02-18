@@ -27,7 +27,7 @@ export default function Paginator({ data, showRequest }) {
 			<Accordion activeKey={activeKey}>
 				{data.slice(activePage * itemsPerPage, (activePage + 1) * itemsPerPage).map((x, k) => (
 					<div key={k} onClick={() => (k + 1 === activeKey ? setActiveKey(0) : setActiveKey(k + 1))}>
-						<HelpRequest key={k} data={x} eventKey={k + 1} />
+						<HelpRequest key={k} data={x} eventKey={k + 1} active={k + 1 === activeKey} />
 					</div>
 				))}
 			</Accordion>
