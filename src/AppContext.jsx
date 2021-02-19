@@ -39,12 +39,10 @@ export const AppContextProvider = props => {
 			let parsedResp
 			let error
 			try {
-				resp = uriSuffix.includes('oauth')
-					? await fetch(`${process.env.REACT_APP_API_PREFIX}/${uriSuffix}`, reqOptions)
-					: await fetch(
-							`${process.env.REACT_APP_API_PREFIX}/api/${process.env.REACT_APP_API_VERSION}/${uriSuffix}`,
-							reqOptions
-					  )
+				resp = await fetch(
+					`${process.env.REACT_APP_API_PREFIX}/api/${process.env.REACT_APP_API_VERSION}/${uriSuffix}`,
+					reqOptions
+				)
 				parsedResp = resp.status !== 204 ? await resp.json() : {}
 			} catch (_error) {
 				error = _error
