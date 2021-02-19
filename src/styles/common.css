@@ -1315,4 +1315,9 @@ svg.chattable {
 }
 .header .logo g path:first-child {
 	fill: var(--color-b5);
+	transition: all calc(var(--default-transition-duration) * 3);
+}
+.header .logo:hover g path:first-child {
+	transform: rotate(180deg) translate(-15%, -1100%);
+	transform-origin: 100% 0;
 }
