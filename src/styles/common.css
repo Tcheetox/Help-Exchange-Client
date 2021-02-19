@@ -169,12 +169,9 @@ body {
 .double-pane .tab-title:hover:not(.active) {
 	background-color: var(--color-g2);
 }
-.double-pane .tab-title:nth-child(even) {
-	border: 1px solid var(--color-g3);
+.double-pane .tab-title:not(.double-pane .tab-title:first-child) {
+	border-top: 1px solid var(--color-g3);
 	border-left: none;
-}
-.double-pane .tab-col > div:last-child:not(.profile .double-pane .tab-col > div:last-child) {
-	border-top: none;
 }
 .double-pane .tab-title.active {
 	border-right: 1px solid var(--color-g1);
@@ -707,7 +704,7 @@ button.fancy-green:hover:not(.button-check) {
 	margin: 0 auto 0.2rem auto;
 }
 .counter .number {
-	padding: 0.3rem 0.55rem 0.3rem 0.55rem;
+	padding: 0.3rem 0.6rem 0.3rem 0.6rem;
 	font-size: 1.5rem;
 	border-radius: 0.25em;
 	background-color: var(--color-g7);
@@ -829,7 +826,7 @@ button.fancy-green:hover:not(.button-check) {
 	color: var(--color-b5);
 }
 .messenger .request {
-	font-size: 1rem;
+	font-size: 0.95rem;
 	text-align: justify;
 	font-weight: 200;
 	padding-bottom: 0.1rem;
@@ -1087,9 +1084,9 @@ a {
 	justify-content: right;
 }
 .help-request .badges svg {
-	height: 1.6rem;
-	width: 1.6rem;
-	margin-left: 0.2rem;
+	height: 1.7rem;
+	width: 1.7rem;
+	margin-left: 0.4rem;
 	margin-top: 0.2rem;
 }
 .help-request .location {
@@ -1115,6 +1112,7 @@ a {
 }
 .help-request .description {
 	text-align: justify;
+	font-weight: 200;
 }
 .help-request .flex-content {
 	display: flex;
@@ -1235,4 +1233,86 @@ svg.chattable {
 	border-top-width: 1px;
 	border-left-width: 1px;
 	border-top-right-radius: 0;
+}
+
+/* MAP MARKER */
+.map .marker svg {
+	width: auto;
+	height: 6rem;
+	transform: translate(-1.2rem, -3rem);
+}
+.map .marker svg path:nth-child(2),
+.map .marker svg path:nth-child(3) {
+	fill: var(--color-g7);
+}
+.map .marker svg.material path:first-child {
+	fill: var(--color-b4);
+}
+.map .marker svg.immaterial path:first-child {
+	fill: var(--color-r2);
+}
+.map svg.user-marker {
+	width: auto;
+	height: 2rem;
+	color: orange;
+	transform: translate(-1rem, -2rem);
+}
+.map-popover {
+	border: 1px solid lightgray;
+	border-radius: var(--default-border-radius);
+	color: var(--color-b6);
+	font-family: 'Open Sans', sans-serif;
+}
+.map-popover .popover-body {
+	color: var(--color-b6);
+	text-align: justify;
+
+	display: -webkit-box;
+	-webkit-line-clamp: 5;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	padding-bottom: 0.3rem;
+	margin-bottom: 0.2rem;
+	font-weight: 200;
+}
+.map-popover.material .popover-header {
+	background-color: var(--color-b1);
+}
+.map-popover.immaterial .popover-header {
+	background-color: var(--color-r1);
+}
+.map-popover .popover-header {
+	border-top-left-radius: var(--default-border-radius);
+	border-top-right-radius: var(--default-border-radius);
+	border-bottom: none;
+	display: flex;
+	font-size: 0.95rem;
+}
+.map-popover .popover-header .request-title {
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+.map-popover .popover-header svg {
+	width: 2rem;
+	height: auto;
+	margin: 0.1rem 0 auto 0.5rem;
+	color: var(--color-b6);
+}
+.map-popover .popover-header .icon-action {
+	margin-right: 0;
+	margin-left: auto;
+	cursor: pointer;
+}
+
+.header .logo {
+	width: auto;
+	height: 3rem;
+}
+.header .logo g {
+	fill: var(--color-b6);
+}
+.header .logo g path:first-child {
+	fill: var(--color-b5);
 }

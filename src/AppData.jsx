@@ -100,6 +100,28 @@ export const AppDataProvider = ({ children }) => {
 		[userLoggedIn, cable, fetchRequest, subToConvMessages]
 	)
 
+	// Handle help request notification
+	const handleHelpRequest = useCallback(
+		h =>
+			setData(d => {
+				const helpRequestIndex = d.userHelpRequests.length
+					? d.userHelpRequests.findIndex(uH => uH.id === h.id)
+					: -1
+				const userHelpRequestsCopy = d.userHelpRequests.length ? [...d.userHelpRequests] : []
+				if (helpRequestIndex === -1 || !h.users.find(u => u.id === userId))
+					userHelpRequestsCopy.splice(helpRequestIndex, 1)
+				else if (helpRequestIndex === -1) userHelpRequestsCopy.push(h)
+				else userHelpRequestsCopy[helpRequestIndex] = h
+				return {
+					...d,
+					userHelpRequests: userHelpRequestsCopy.sort(
+						(a, b) => new Date(b.updated_at) - new Date(a.updated_at)
+					),
+				}
+			}),
+		[userId]
+	)
+
 	// Fetch user associated help requests on mount
 	useEffect(
 		() =>
@@ -109,7 +131,9 @@ export const AppDataProvider = ({ children }) => {
 				if (p.status === 200) {
 					setData(d => ({
 						...d,
-						userHelpRequests: pR.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at)),
+						userHelpRequests: pR.length
+							? pR.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
+							: [],
 					}))
 					cable.subscriptions.create(
 						{ channel: 'HelpRequestsChannel' },
@@ -119,27 +143,8 @@ export const AppDataProvider = ({ children }) => {
 					)
 				}
 			}),
-		[userLoggedIn, fetchRequest, cable]
+		[userLoggedIn, fetchRequest, cable, handleHelpRequest]
 	)
-
-	// Handle help request notification
-	const handleHelpRequest = h =>
-		setData(d => {
-			const helpRequestIndex = d.userHelpRequests.length
-				? d.userHelpRequests.findIndex(uH => uH.id === h.id)
-				: -1
-			const userHelpRequestsCopy = d.userHelpRequests.length ? [...d.userHelpRequests] : []
-			if (helpRequestIndex !== -1 || !h.users.find(u => u.id === userId))
-				userHelpRequestsCopy.splice(helpRequestIndex, 1)
-			else if (helpRequestIndex === -1) userHelpRequestsCopy.push(h)
-			else userHelpRequestsCopy[helpRequestIndex] = h
-			return {
-				...d,
-				userHelpRequests: userHelpRequestsCopy.sort(
-					(a, b) => new Date(b.updated_at) - new Date(a.updated_at)
-				),
-			}
-		})
 
 	return <AppData.Provider value={data}>{children}</AppData.Provider>
 }

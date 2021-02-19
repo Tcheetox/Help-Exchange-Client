@@ -38,7 +38,14 @@ export default function HelpRequest({
 	const isChattable = user_type =>
 		(role === 'owner' && user_type !== 'owner') || (role === 'respondent' && user_type === 'owner')
 
-	const handleClick = e => userLoggedIn && fetchRequest('PUT', null, `help_requests/${id}/${e.target.name}`)
+	const handleClick = e =>
+		userLoggedIn &&
+		fetchRequest(
+			'PUT',
+			null,
+			`help_requests/${id}/${e.target.name}`,
+			(r, pR) => e.target.name === 'cancel' && r.status === 200 && triggerBanner('request_cancelled')
+		)
 
 	const handleConversation = t => {
 		if ((role === 'owner' && t.user_type !== 'owner') || (role === 'respondent' && t.user_type === 'owner')) {
@@ -134,7 +141,7 @@ export default function HelpRequest({
 									Unsubscribe
 								</Button>
 							) : null}
-							{role.length > 0 && status !== 'fulfilled' ? (
+							{role.length > 0 && status !== 'fulfilled' && status !== 'cancelled' ? (
 								<Button className='plain-green' name='markasfulfilled' onClick={handleClick}>
 									Mark as fulfilled
 								</Button>

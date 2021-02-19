@@ -71,6 +71,31 @@ export default function Banner() {
 					}
 					break
 
+				case 'request_cancelled':
+					newBanner = {
+						message: (
+							<span>
+								Your request has been cancelled and is no longer visible on the <Link to='/map'>map</Link>.
+							</span>
+						),
+						type: 'warning',
+						duration: 4000,
+					}
+					break
+
+				case 'request_subscribed':
+					newBanner = {
+						message: (
+							<span>
+								Yeah! You subscribed to a help request, it will now appear on your{' '}
+								<Link to='/users/dashboard'>dashboard</Link>.
+							</span>
+						),
+						type: 'success',
+						duration: 4000,
+					}
+					break
+
 				case 'profile_updated':
 					newBanner = {
 						message: 'Profile information successfully updated.',
@@ -90,7 +115,7 @@ export default function Banner() {
 				case 'forgot_password':
 					newBanner = {
 						message: 'A link to reset your password has been sent. Please check your inbox.',
-						type: 'success',
+						type: 'warning',
 						duration: 5000,
 					}
 					break
@@ -98,7 +123,7 @@ export default function Banner() {
 				case 'send_confirmation':
 					newBanner = {
 						message: 'A confirmation email has been sent. Please check your inbox.',
-						type: 'success',
+						type: 'warning',
 						duration: 5000,
 					}
 					break

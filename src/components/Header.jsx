@@ -14,6 +14,7 @@ import DropdownButton from 'react-bootstrap/DropdownButton'
 import Dropdown from 'react-bootstrap/Dropdown'
 import AccountIcon from '@material-ui/icons/AccountCircle'
 import ExitIcon from '@material-ui/icons/ExitToApp'
+import { ReactComponent as Logo } from '../media/logo.svg'
 
 export default function Header() {
 	const history = useHistory()
@@ -70,7 +71,9 @@ export default function Header() {
 					</Modal.Body>
 				</Modal>
 				<Navbar.Brand onClick={() => setExpanded(false)}>
-					<Link to='/'>Fish For Help</Link>
+					<Link to='/'>
+						<Logo className='logo' />
+					</Link>
 				</Navbar.Brand>
 				<Navbar.Toggle aria-controls='basic-navbar-nav' onClick={() => setExpanded(prev => !prev)}>
 					<div className={`toggler ${expanded ? 'active' : ''}`}>

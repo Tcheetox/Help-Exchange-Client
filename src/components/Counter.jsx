@@ -20,12 +20,17 @@ export default function Counter() {
 		return () => document.removeEventListener('scroll', onScroll)
 	}, [headerRef])
 
-	return (
+	return helpRequests && helpRequests.length ? (
 		<Card className='counter' style={{ transform: `translateY(${topOffset}px)` }}>
 			<Card.Body>
 				<div className='numbers'>
-					{helpRequests.length < 100 ? <div className='number'>0</div> : null}
-					{helpRequests.length < 10 ? <div className='number'>0</div> : null}
+					{helpRequests.length.toString().length < 3
+						? [...Array(3 - helpRequests.length.toString().length).keys()].map(i => (
+								<div key={i} className='number'>
+									0
+								</div>
+						  ))
+						: 'null'}
 					{helpRequests.length
 						.toString()
 						.split('')
@@ -35,8 +40,8 @@ export default function Counter() {
 							</div>
 						))}
 				</div>
-				fish requests
+				help requests
 			</Card.Body>
 		</Card>
-	)
+	) : null
 }

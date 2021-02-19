@@ -95,7 +95,7 @@ export default function GoogleMap() {
 					center={center}
 					options={{ zoomControl: false, fullscreenControl: false, mapTypeId: mapType }}
 					zoomControl={false}
-					defaultZoom={12}>
+					defaultZoom={13}>
 					<UserMarkerMemo lat={center.lat} lng={center.lng} />
 					{helpRequests.length
 						? helpRequests.map((h, i) => <MarkerMemo key={i} lat={h.lat} lng={h.lng} helpRequest={h} />)

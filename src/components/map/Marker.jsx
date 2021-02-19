@@ -5,37 +5,45 @@ import { AppContext } from '../../AppContext'
 import { AppData } from '../../AppData'
 import Popover from 'react-bootstrap/Popover'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
-import MaterialIcon from '@material-ui/icons/Widgets'
-import ImmaterialIcon from '@material-ui/icons/ThumbUp'
-import LocationIcon from '@material-ui/icons/LocationOn'
 import SubscribeIcon from '@material-ui/icons/PostAdd'
 import ManageIcon from '@material-ui/icons/Launch'
+import { ReactComponent as MaterialPin } from '../../media/icons/materialPin.svg'
+import { ReactComponent as ImmaterialPin } from '../../media/icons/immaterialPin.svg'
 
 export const MarkerMemo = React.memo(Marker)
-export default function Marker({
-	helpRequest: { id, address, created_at, description, help_count, help_type, title },
-}) {
-	const { userLoggedIn, fetchRequest } = useContext(AppContext)
+export default function Marker({ helpRequest: { id, description, help_type, title } }) {
+	const { userLoggedIn, fetchRequest, triggerBanner } = useContext(AppContext)
 	const { userHelpRequests } = useContext(AppData)
 	const [preventClose, setPreventClose] = useState(undefined)
 
 	const popover = (
 		<Popover
-			className='popover'
+			className={`map-popover ${help_type}`}
 			onMouseEnter={() => setPreventClose(true)}
 			onMouseLeave={() => setPreventClose(undefined)}>
 			<Popover.Title>
-				{help_type === 'material' ? <MaterialIcon /> : <ImmaterialIcon />}
-				{title}
-				{userHelpRequests.length && userHelpRequests.find(u => u.id === id) ? (
-					<Link to={`users/dashboard/overview/${id}`}>
-						<ManageIcon />
-					</Link>
-				) : (
-					<SubscribeIcon
-						onClick={() => userLoggedIn && fetchRequest('PUT', null, `help_requests/${id}/subscribe`)}
-					/>
-				)}
+				<div className='request-title'>{title}</div>
+
+				<div className='icon-action'>
+					{userHelpRequests.length && userHelpRequests.find(u => u.id === id) ? (
+						<Link to={`users/dashboard/overview/${id}`}>
+							<ManageIcon className='manage' />
+						</Link>
+					) : (
+						<SubscribeIcon
+							className='subscribe'
+							onClick={() =>
+								userLoggedIn &&
+								fetchRequest(
+									'PUT',
+									null,
+									`help_requests/${id}/subscribe`,
+									(r, pR) => r.status === 200 && triggerBanner('request_subscribed')
+								)
+							}
+						/>
+					)}
+				</div>
 			</Popover.Title>
 			<Popover.Content>{description}</Popover.Content>
 		</Popover>
@@ -48,7 +56,11 @@ export default function Marker({
 				overlay={popover}
 				trigger={['hover', 'focus', 'click']}
 				show={preventClose}>
-				<LocationIcon className={help_type} />
+				{help_type === 'material' ? (
+					<MaterialPin className={help_type} />
+				) : (
+					<ImmaterialPin className={help_type} />
+				)}
 			</OverlayTrigger>
 		</div>
 	)

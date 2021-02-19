@@ -12,6 +12,8 @@ import Footer from './components/Footer'
 import LeftMenu from './components/LeftMenu'
 import { Home, Map, Signup, Login, Profile, Dashboard, Messenger, Faq, Troubleshoot } from './pages/'
 
+import TEMP from './pages/Temp'
+
 export default function App() {
 	return (
 		<>
@@ -20,6 +22,8 @@ export default function App() {
 				<Banner />
 				<LeftMenu />
 				<Switch>
+					<Route path='/temp' component={TEMP} exact />
+
 					<Route path='/' component={Home} exact />
 					<Route path='/map' component={Map} exact />
 					<Route path='/faq' component={Faq} exact />
