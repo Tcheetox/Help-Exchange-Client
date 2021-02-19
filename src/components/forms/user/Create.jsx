@@ -135,7 +135,7 @@ export default function Create({ modalShow = null }) {
 			<div className='links'>
 				<div>
 					Didn't get a confirmation link?{' '}
-					<Link to='/users/troubleshoot/password' onClick={() => (modalShow ? modalShow(false) : null)}>
+					<Link to='/users/troubleshoot/confirmation' onClick={() => (modalShow ? modalShow(false) : null)}>
 						Send again
 					</Link>
 					.

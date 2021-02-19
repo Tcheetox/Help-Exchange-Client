@@ -7,7 +7,7 @@ import { AppContextProvider } from './AppContext'
 //import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
-	<BrowserRouter>
+	<BrowserRouter basename='krenier/fishforhelp'>
 		<AppContextProvider>
 			<App />
 		</AppContextProvider>
