@@ -51,7 +51,10 @@ export const AppContextProvider = props => {
 				logError(error)
 			}
 			// Display error message automatically by triggering a banner update if server provided a display message or if try-catch is triggered
-			if ((!resp && error) || (resp && 'error' in parsedResp && parsedResp.error.server_code === 50000))
+			if (
+				(!resp && error) ||
+				(resp && parsedResp && 'error' in parsedResp && parsedResp.error.server_code === 50000)
+			)
 				triggerBanner('unexpected_error')
 			if (callback) callback(!resp ? { status: 500 } : resp, isBlank(parsedResp) ? {} : parsedResp)
 		},
