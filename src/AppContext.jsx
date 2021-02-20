@@ -218,7 +218,7 @@ export const AppContextProvider = props => {
 		if (globals.userLoggedIn && !globals.cable) {
 			let appCable = {}
 			appCable.cable = ActionCable.createConsumer(
-				`${process.env.REACT_APP_WS_API_PREFIX}/api/${process.env.REACT_APP_API_VERSION}/users/${tokensRef.current.accessToken}/cable`
+				`${process.env.REACT_APP_WS_API_PREFIX}/api/${process.env.REACT_APP_API_VERSION}/cable/${tokensRef.current.accessToken}`
 			)
 			setGlobals(g => ({ ...g, cable: appCable.cable }))
 		} else if (!globals.userLoggedIn && globals.cable) {
