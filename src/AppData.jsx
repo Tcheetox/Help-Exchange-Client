@@ -61,8 +61,10 @@ export const AppDataProvider = ({ children }) => {
 				{ channel: 'MessagesChannel', conversation: convId },
 				{
 					received: m => {
-						console.log('WS received - MessagesChannel:')
-						console.log(m)
+						if (process.env['REACT_APP_DEBUG'] === 'true') {
+							console.log('WS received - MessagesChannel:')
+							console.log(m)
+						}
 						setConversationMessages(convId, m)
 					},
 				}
@@ -89,8 +91,10 @@ export const AppDataProvider = ({ children }) => {
 					{ channel: 'ConversationsChannel' },
 					{
 						received: c => {
-							console.log('WS received - ConversationsChannel:')
-							console.log(c)
+							if (process.env['REACT_APP_DEBUG'] === 'true') {
+								console.log('WS received - ConversationsChannel:')
+								console.log(c)
+							}
 							setData(d => {
 								const conversationsCopy = d.conversations
 								const convIndex = conversationsCopy.findIndex(co => co.id === c.id)
@@ -115,7 +119,7 @@ export const AppDataProvider = ({ children }) => {
 					? d.userHelpRequests.findIndex(uH => uH.id === h.id)
 					: -1
 				const userHelpRequestsCopy = d.userHelpRequests.length ? [...d.userHelpRequests] : []
-				if (helpRequestIndex === -1 || !h.users.find(u => u.id === userId))
+				if (helpRequestIndex !== -1 && !h.users.find(u => u.id === userId))
 					userHelpRequestsCopy.splice(helpRequestIndex, 1)
 				else if (helpRequestIndex === -1) userHelpRequestsCopy.push(h)
 				else userHelpRequestsCopy[helpRequestIndex] = h
@@ -146,8 +150,10 @@ export const AppDataProvider = ({ children }) => {
 						{ channel: 'HelpRequestsChannel' },
 						{
 							received: h => {
-								console.log('WS received - HelpRequestsChannel:')
-								console.log(h)
+								if (process.env['REACT_APP_DEBUG'] === 'true') {
+									console.log('WS received - HelpRequestsChannel:')
+									console.log(h)
+								}
 								handleHelpRequest(h)
 							},
 						}
