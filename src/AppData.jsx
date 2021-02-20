@@ -60,7 +60,11 @@ export const AppDataProvider = ({ children }) => {
 			cable.subscriptions.create(
 				{ channel: 'MessagesChannel', conversation: convId },
 				{
-					received: m => setConversationMessages(convId, m),
+					received: m => {
+						console.log('WS received - MessagesChannel:')
+						console.log(m)
+						setConversationMessages(convId, m)
+					},
 				}
 			),
 		[cable]
@@ -84,7 +88,9 @@ export const AppDataProvider = ({ children }) => {
 				cable.subscriptions.create(
 					{ channel: 'ConversationsChannel' },
 					{
-						received: c =>
+						received: c => {
+							console.log('WS received - ConversationsChannel:')
+							console.log(c)
 							setData(d => {
 								const conversationsCopy = d.conversations
 								const convIndex = conversationsCopy.findIndex(co => co.id === c.id)
@@ -93,7 +99,8 @@ export const AppDataProvider = ({ children }) => {
 									subToConvMessages(c.id)
 								} else conversationsCopy[convIndex] = { ...c, messages: [] }
 								return { ...d, conversations: conversationsCopy }
-							}),
+							})
+						},
 					}
 				)
 			}),
@@ -138,7 +145,11 @@ export const AppDataProvider = ({ children }) => {
 					cable.subscriptions.create(
 						{ channel: 'HelpRequestsChannel' },
 						{
-							received: h => handleHelpRequest(h),
+							received: h => {
+								console.log('WS received - HelpRequestsChannel:')
+								console.log(h)
+								handleHelpRequest(h)
+							},
 						}
 					)
 				}
