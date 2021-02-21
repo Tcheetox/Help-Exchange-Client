@@ -19,7 +19,7 @@ export const AppContextProvider = props => {
 			const date = new Date()
 			let cookieOptions = {
 				path: '/',
-				sameSite: 'lax',
+				sameSite: 'strict',
 				secure: process.env['REACT_APP_SECURED_COOKIE'].toLowerCase() === 'true' ? true : false,
 				expires: new Date(date.setMonth(date.getMonth() + 2)),
 			}
@@ -99,7 +99,7 @@ export const AppContextProvider = props => {
 				if (r.status === 200) {
 					storeLogIn(pR.id, pR.email, pR.completed, pR.access_token, pR.refresh_token)
 					triggerBanner({ name: 'welcome', email: pR.email, profileCompleted: pR.completed })
-					if (rememberMe) createCookieAuth(pR.cookie)
+					if (rememberMe) createCookieAuth(pR.refresh_token)
 					else removeCookieAuth()
 				} else {
 					storeLogOut()
@@ -109,28 +109,6 @@ export const AppContextProvider = props => {
 			},
 			false
 		)
-
-	const logInFromCookie = useCallback(
-		() =>
-			Object.keys(cookies).length > 0 &&
-			cookies[authCookieName] !== '' &&
-			fetchRequest(
-				'POST',
-				{ cookie: cookies[authCookieName], grant_type: 'password' },
-				'oauth/token',
-				(r, pR) => {
-					if (r.status === 200) {
-						storeLogIn(pR.id, pR.email, pR.completed, pR.access_token, pR.refresh_token)
-						triggerBanner({ name: 'welcome', email: pR.email, profileCompleted: pR.completed })
-					} else {
-						storeLogOut()
-						removeCookieAuth() // Delete cookie because it seems invalid
-					}
-				},
-				false
-			),
-		[cookies, fetchRequest, removeCookieAuth, triggerBanner]
-	)
 
 	const logOut = () => {
 		removeCookieAuth()
@@ -230,20 +208,38 @@ export const AppContextProvider = props => {
 	// Handle session auth
 	useEffect(() => {
 		if (tokens.refreshToken !== undefined) {
-			if (tokens.refreshToken === '') sessionStorage.removeItem('shortlived-auth')
-			else sessionStorage.setItem('shortlived-auth', tokens.refreshToken)
+			if (tokens.refreshToken === '') {
+				sessionStorage.removeItem('shortlived-auth')
+				removeCookieAuth()
+			} else {
+				sessionStorage.setItem('shortlived-auth', tokens.refreshToken)
+				if (
+					Object.keys(cookies).length > 0 &&
+					cookies[authCookieName] !== '' &&
+					cookies[authCookieName] !== tokens.refreshToken
+				)
+					createCookieAuth(tokens.refreshToken)
+			}
 		}
-	}, [tokens.refreshToken])
+	}, [tokens.refreshToken, cookies, createCookieAuth, removeCookieAuth])
 
 	// Attempt to authenticate user automatically
 	useEffect(() => {
 		if (!globals.userLoggedIn) {
 			const token = sessionStorage.getItem('shortlived-auth')
 			if (token && tokensRef.current.refreshToken !== '') {
-				refreshToken(token, r => r.status !== 200 && logInFromCookie())
-			} else logInFromCookie()
+				refreshToken(
+					token,
+					r =>
+						r.status !== 200 &&
+						Object.keys(cookies).length > 0 &&
+						cookies[authCookieName] !== '' &&
+						refreshToken(cookies[authCookieName])
+				)
+			} else if (Object.keys(cookies).length > 0 && cookies[authCookieName] !== '')
+				refreshToken(cookies[authCookieName])
 		}
-	}, [globals.userLoggedIn, cookies, logInFromCookie, refreshToken])
+	}, [globals.userLoggedIn, cookies, refreshToken])
 
 	// Automatic token refresh
 	useEffect(() => {
