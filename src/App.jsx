@@ -17,49 +17,51 @@ export default function App() {
 		<>
 			<div className='fullscreen'>
 				<Header />
-				<Banner />
-				<LeftMenu />
-				<Switch>
-					<Route path='/' component={Home} exact />
-					<Route path='/map' component={Map} exact />
-					<Route path='/faq' component={Faq} exact />
+				<div className='fullscreen-no-header'>
+					<Banner />
+					<LeftMenu />
+					<Switch>
+						<Route path='/' component={Home} exact />
+						<Route path='/map' component={Map} exact />
+						<Route path='/faq' component={Faq} exact />
 
-					<Route path='/users/signup' component={Signup} exact />
+						<Route path='/users/signup' component={Signup} exact />
 
-					<Route path='/users/login' component={Login} exact />
-					<Route path='/users/login/:token' component={Login} exact />
+						<Route path='/users/login' component={Login} exact />
+						<Route path='/users/login/:token' component={Login} exact />
 
-					<ProtectedRoute path='/users/account' component={Profile} authenticated={true} exact={true} />
-					<ProtectedRoute path='/users/account/:section' component={Profile} authenticated={true} />
+						<ProtectedRoute path='/users/account' component={Profile} authenticated={true} exact={true} />
+						<ProtectedRoute path='/users/account/:section' component={Profile} authenticated={true} />
 
-					<Route path='/users/troubleshoot/:action' component={Troubleshoot} exact />
-					<Route path='/users/troubleshoot/:action/:token' component={Troubleshoot} exact />
+						<Route path='/users/troubleshoot/:action' component={Troubleshoot} exact />
+						<Route path='/users/troubleshoot/:action/:token' component={Troubleshoot} exact />
 
-					<ProtectedRoute
-						path='/users/dashboard'
-						component={Dashboard}
-						authenticated={true}
-						profileCompleted={true}
-						exact={true}
-					/>
-					<ProtectedRoute
-						path='/users/dashboard/:section/:id'
-						component={Dashboard}
-						authenticated={true}
-						profileCompleted={true}
-					/>
-					<ProtectedRoute
-						path='/users/dashboard/:section'
-						component={Dashboard}
-						authenticated={true}
-						profileCompleted={true}
-					/>
+						<ProtectedRoute
+							path='/users/dashboard'
+							component={Dashboard}
+							authenticated={true}
+							profileCompleted={true}
+							exact={true}
+						/>
+						<ProtectedRoute
+							path='/users/dashboard/:section/:id'
+							component={Dashboard}
+							authenticated={true}
+							profileCompleted={true}
+						/>
+						<ProtectedRoute
+							path='/users/dashboard/:section'
+							component={Dashboard}
+							authenticated={true}
+							profileCompleted={true}
+						/>
 
-					<ProtectedRoute path='/users/messenger' component={Messenger} authenticated={true} exact={true} />
-					<ProtectedRoute path='/users/messenger/:id' component={Messenger} authenticated={true} />
+						<ProtectedRoute path='/users/messenger' component={Messenger} authenticated={true} exact={true} />
+						<ProtectedRoute path='/users/messenger/:id' component={Messenger} authenticated={true} />
 
-					<Route component={Error} />
-				</Switch>
+						<Route component={Error} />
+					</Switch>
+				</div>
 			</div>
 			<Footer />
 		</>

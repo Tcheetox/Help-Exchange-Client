@@ -84,7 +84,12 @@ export const AppDataProvider = ({ children }) => {
 				if (r.status === 200 && pR.length) {
 					// Subscribe to each conversation MessagesChannel to receive new messages
 					pR.forEach(c => subToConvMessages(c.id))
-					setData(d => ({ ...d, conversations: pR.map(c => ({ ...c, messages: [] })) }))
+					setData(d => ({
+						...d,
+						conversations: pR
+							.map(c => ({ ...c, messages: [] }))
+							.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at)),
+					}))
 				}
 				// Subscribe to ConversationsChannel to be notified of newly created conversation
 				cable.subscriptions.create(
@@ -102,7 +107,12 @@ export const AppDataProvider = ({ children }) => {
 									conversationsCopy.push({ ...c, messages: [] })
 									subToConvMessages(c.id)
 								} else conversationsCopy[convIndex] = { ...c, messages: [] }
-								return { ...d, conversations: conversationsCopy }
+								return {
+									...d,
+									conversations: conversationsCopy.sort(
+										(a, b) => new Date(b.updated_at) - new Date(a.updated_at)
+									),
+								}
 							})
 						},
 					}

@@ -10,9 +10,6 @@ import Settings from './Settings'
 import { logError } from '../../utilities'
 import publicIP from 'react-native-public-ip'
 
-// TODO: publicIp crash!?
-// TODO: shouldn't be able to sub until profile complete => banner
-
 // https://github.com/google-map-react/google-map-react/blob/HEAD/API.md
 // https://developers.google.com/maps/documentation/javascript/controls
 
@@ -74,8 +71,12 @@ export default function GoogleMap() {
 	// Trigger fullscreen mode
 	useEffect(() => {
 		if (mapContainerRef.current && fullScreen !== null) {
-			if (!window.fullScreen) mapContainerRef.current.requestFullscreen()
-			else document.exitFullscreen()
+			try {
+				if (!document.fullscreenElement) mapContainerRef.current.requestFullscreen()
+				else document.exitFullscreen()
+			} catch (error) {
+				logError(error)
+			}
 		}
 	}, [fullScreen])
 

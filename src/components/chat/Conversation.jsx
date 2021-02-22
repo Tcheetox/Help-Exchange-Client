@@ -72,17 +72,12 @@ export default function Conversation({ defaultActivePane }) {
 
 	// Monitor that last message sent has been sent (and received back in response) successfully
 	useEffect(() => {
-		if (
-			conversations.length &&
-			Object.keys(messageToMonitor).length > 0 &&
-			conversations.length >= messageToMonitor.conversation
-		) {
-			const messageSent = conversations[messageToMonitor.conversation - 1].messages.find(
-				m => m.message === messageToMonitor.message
-			)
+		const targetConv = conversations.find(c => c.id === messageToMonitor.conversation)
+		if (targetConv && display === 1) {
+			const messageSent = targetConv.messages.find(m => m.message === messageToMonitor.message)
 			if (messageSent && messageSent.user_id === userId) setDisplay(0)
 		}
-	}, [messageToMonitor, conversations, userId])
+	}, [messageToMonitor, conversations, userId, display])
 
 	const conversationTitle = c => (
 		<div className='title'>

@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 
 import { AppContext } from '../../AppContext'
 import { AppData } from '../../AppData'
@@ -12,7 +12,8 @@ import { ReactComponent as ImmaterialPin } from '../../media/icons/immaterialPin
 
 export const MarkerMemo = React.memo(Marker)
 export default function Marker({ helpRequest: { id, description, help_type, title } }) {
-	const { userLoggedIn, fetchRequest, triggerBanner } = useContext(AppContext)
+	const history = useHistory()
+	const { userLoggedIn, userProfileCompleted, fetchRequest, triggerBanner } = useContext(AppContext)
 	const { userHelpRequests } = useContext(AppData)
 	const [preventClose, setPreventClose] = useState(undefined)
 
@@ -32,15 +33,16 @@ export default function Marker({ helpRequest: { id, description, help_type, titl
 					) : (
 						<SubscribeIcon
 							className='subscribe'
-							onClick={() =>
-								userLoggedIn &&
-								fetchRequest(
-									'PUT',
-									null,
-									`help_requests/${id}/subscribe`,
-									(r, pR) => r.status === 200 && triggerBanner('request_subscribed')
-								)
-							}
+							onClick={() => {
+								if (userLoggedIn && userProfileCompleted)
+									fetchRequest(
+										'PUT',
+										null,
+										`help_requests/${id}/subscribe`,
+										(r, pR) => r.status === 200 && triggerBanner('request_subscribed')
+									)
+								else history.push('/users/dashboard/overview')
+							}}
 						/>
 					)}
 				</div>
