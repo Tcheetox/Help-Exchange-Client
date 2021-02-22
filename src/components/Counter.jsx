@@ -1,27 +1,26 @@
-import React, { useState, useEffect, useContext, useRef } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 
 import { AppData } from '../AppData'
 import Card from 'react-bootstrap/Card'
 
 export default function Counter() {
 	const { helpRequests } = useContext(AppData)
-	const [topOffset, setTopOffset] = useState(0)
-	const headerRef = useRef
+	const [posClass, setPosClass] = useState('')
 
 	useEffect(() => {
-		headerRef.current = document.querySelector('.header')
+		const header = document.querySelector('.header')
 		const onScroll = () => {
-			if (headerRef.current) {
-				if (window.scrollY > headerRef.current.offsetHeight) setTopOffset(-75)
-				else setTopOffset(-window.scrollY)
+			if (header) {
+				if (window.scrollY > header.offsetHeight) setPosClass('top')
+				else setPosClass('')
 			}
 		}
 		document.addEventListener('scroll', onScroll)
 		return () => document.removeEventListener('scroll', onScroll)
-	}, [headerRef])
+	}, [])
 
 	return helpRequests && helpRequests.length ? (
-		<Card className='counter' style={{ transform: `translateY(${topOffset}px)` }}>
+		<Card className={`counter ${posClass}`}>
 			<Card.Body>
 				<div className='numbers'>
 					{helpRequests.length.toString().length < 3

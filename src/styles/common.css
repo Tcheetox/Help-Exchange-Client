@@ -9,6 +9,11 @@ body,
 	min-height: 100vh;
 	font-family: 'Open Sans', sans-serif;
 }
+.fullscreen-no-header {
+	height: inherit;
+	min-height: inherit;
+	display: flex;
+}
 body {
 	overflow-x: hidden;
 }
@@ -290,23 +295,41 @@ body {
 }
 
 /* LEFT MENU */
+.outer-menu {
+	display: flex;
+	width: 0;
+	flex-direction: column;
+}
+.inner-menu {
+	width: 3.5rem;
+	background-color: var(--color-b5);
+	display: flex;
+	flex-basis: 100%;
+	transition: all var(--default-transition-duration);
+}
 .slider {
 	padding: 1rem 1.5rem 1rem 0rem;
-	position: absolute;
+	position: fixed;
 	z-index: 1;
 }
 .left-menu {
-	background-color: rgba(191, 210, 250, 0.5);
-	border-top-right-radius: var(--default-border-radius);
-	border-bottom-right-radius: var(--default-border-radius);
+	background-color: transparent;
 	display: flex;
 	flex-direction: column;
-	padding: 0.5rem;
+	padding: 0.7rem;
+	width: 3.5rem;
 	transform: translate3d(0, 0, 0);
 	/* Apparently the above triggers browser 3D accelerated graphics, that can improve perf on non-opaque items */
 }
 .left-menu > * {
+	padding-top: 0.3rem;
 	position: relative;
+}
+.left-menu > *:nth-child(3) {
+	padding-top: 0.2rem;
+}
+.left-menu > *:last-child {
+	padding-top: 0.5rem;
 }
 .left-menu .badge {
 	position: absolute;
@@ -321,10 +344,12 @@ body {
 	width: auto;
 	height: 2rem;
 	color: var(--color-b5);
+	color: white;
 	transition: all var(--default-transition-duration);
 }
 .left-menu a:hover svg {
-	color: var(--color-b6);
+	transform: scale(1.3);
+	/* color: var(--color-b6); */
 }
 .left-menu > *:nth-child(2) {
 	margin-top: 0.2rem;
@@ -505,7 +530,7 @@ button.fancy-green:hover:not(.button-check) {
 	padding-top: 1rem;
 	padding-bottom: 1rem;
 	box-shadow: 0px 1px 5px 1px rgba(0, 0, 0, 0.08);
-	z-index: 1;
+	z-index: 2;
 	height: 76px; /* TODO: CAREFUL CAN CLASH WITH MOBILE!!! */
 }
 .header button {
@@ -618,6 +643,8 @@ button.fancy-green:hover:not(.button-check) {
 .footer {
 	background-color: var(--color-b7);
 	color: white;
+	position: relative;
+	z-index: 1;
 }
 
 .footer .row {
@@ -691,8 +718,11 @@ button.fancy-green:hover:not(.button-check) {
 	user-select: none;
 	pointer-events: none;
 	position: fixed;
-
 	box-shadow: 0px 1px 5px 1px rgba(0, 0, 0, 0.05);
+	transition: all var(--default-transition-duration);
+}
+.counter.top {
+	transform: translateY(-76px);
 }
 .counter .card-body {
 	padding: 0.5rem;
