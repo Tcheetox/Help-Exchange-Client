@@ -94,7 +94,12 @@ export default function GoogleMap() {
 				<GoogleMapReact
 					bootstrapURLKeys={{ key: process.env.REACT_APP_GOOGLE_KEY }}
 					center={center}
-					options={{ zoomControl: false, fullscreenControl: false, mapTypeId: mapType }}
+					options={{
+						zoomControl: false,
+						fullscreenControl: false,
+						mapTypeId: mapType,
+						clickableIcons: false,
+					}}
 					zoomControl={false}
 					defaultZoom={13}>
 					<UserMarkerMemo lat={center.lat} lng={center.lng} />

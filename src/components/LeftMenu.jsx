@@ -10,13 +10,13 @@ import ListBullet from '@material-ui/icons/FormatListBulleted'
 
 export default function LeftMenu() {
 	const menuRef = useRef()
-	const [top, setTop] = useState('10%')
+	const [top, setTop] = useState('20%')
 	const [offset, setOffset] = useState(0)
 	const { userLoggedIn } = useContext(AppContext)
 
 	return (
 		<div className='outer-menu'>
-			<div className='inner-menu' style={{ zIndex: userLoggedIn ? 1 : -1, opacity: userLoggedIn ? 1 : 0 }}>
+			<div className='inner-menu' style={{ zIndex: userLoggedIn ? 2 : -1, opacity: userLoggedIn ? 1 : 0 }}>
 				<div
 					className='slider'
 					ref={menuRef}

@@ -15,9 +15,10 @@ export default function Settings({ setCenter, mapType, setMapType, fullScreen, s
 	return (
 		<DropdownButton
 			id='SettingsDropdown'
-			className='settings-dropdown'
+			className={`settings-dropdown ${fullScreen ? 'fullscreen' : ''}`}
 			title={<SettingsIcon />}
 			show={dropdown}
+			onClick={() => setDropdown(!dropdown)}
 			onMouseLeave={() => setDropdown(false)}
 			onMouseEnter={() => setDropdown(true)}>
 			<ToggleButtonGroup

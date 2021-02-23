@@ -28,7 +28,7 @@ export default function Home() {
 				</div>
 				<div id='About' className='about'>
 					<Row>
-						<Col xs={5}>
+						<Col xs={5} className='image'>
 							<div className='image mutual' />
 						</Col>
 						<Col xs={5} className='text mutual'>
@@ -45,12 +45,12 @@ export default function Home() {
 								foster caring in your region.
 							</h3>
 						</Col>
-						<Col xs={4}>
+						<Col xs={4} className='image'>
 							<div className='image elder' />
 						</Col>
 					</Row>
 					<Row>
-						<Col xs={5} className='foster'>
+						<Col xs={5} className='image foster'>
 							<div className='image foster' />
 						</Col>
 						<Col xs={5} className='text foster'>

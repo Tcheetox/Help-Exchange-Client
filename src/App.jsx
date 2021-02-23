@@ -4,6 +4,7 @@ import { Switch, Route } from 'react-router-dom'
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
 import './styles/common.css'
 import './styles/animation.css'
+import './styles/mobile.css'
 
 import ProtectedRoute from './ProtectedRoute'
 import Header from './components/Header'
