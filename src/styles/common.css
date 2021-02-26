@@ -374,7 +374,7 @@ body {
 .connect .links > *:last-child {
 	float: right;
 }
-.connect .google-tooltip-trigger {
+.connect .fancy-google {
 	float: right;
 }
 .connect .fancy-google svg {
@@ -914,7 +914,10 @@ button.fancy-google:hover:not(.button-check) {
 	margin: auto;
 	margin-right: 0.1rem;
 }
-
+.messenger .user .badge svg {
+	height: auto;
+	width: 1.3rem;
+}
 .messenger .tab-title .unread {
 	position: relative;
 	top: -2px;
@@ -923,6 +926,10 @@ button.fancy-google:hover:not(.button-check) {
 .messenger .user svg:hover {
 	transform: scale(1.3);
 }
+.messenger .user .badge svg:hover {
+	transform: none;
+}
+
 .messenger .message {
 	width: max-content;
 	max-width: 70%;

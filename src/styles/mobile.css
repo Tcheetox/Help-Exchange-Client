@@ -235,6 +235,11 @@
 		position: absolute;
 	}
 
+	/* LIGHTER DOUBLE-PANE BORDER COLOR */
+	.double-pane {
+		border-color: var(--color-g3);
+	}
+
 	/* CHAT - CONVERSATION - MESSENGER */
 	.conversation .double-pane,
 	.conversation .tab-title:first-child {
@@ -309,6 +314,8 @@
 	.core.container:not(.messenger) .double-pane .tab-col .filler {
 		border-left: none;
 		border-top-right-radius: var(--default-border-radius);
+		border-top: none;
+		border-right: none;
 	}
 	.core.container:not(.messenger) .double-pane .tab-title .card-title {
 		font-size: 1rem;

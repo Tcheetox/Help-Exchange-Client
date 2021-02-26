@@ -91,25 +91,21 @@ export const AppContextProvider = props => {
 	)
 
 	const logInWithGoogle = (resp, rememberMe, callback = null) =>
-		// TODO: test if it failed and why, trigger banner if not tester? fetch only if resp === 200
-		{
-			console.log(resp)
-			fetchRequest(
-				'POST',
-				{ token: resp.tokenId },
-				'oauth/sso',
-				(r, pR) => {
-					if (r.status === 201) {
-						storeLogIn(pR.id, pR.email, pR.completed, pR.access_token, pR.refresh_token)
-						triggerBanner({ name: 'welcome', email: pR.email, profileCompleted: pR.completed })
-						if (rememberMe) createCookieAuth(pR.refresh_token)
-						else removeCookieAuth()
-					}
-					if (callback) callback(r, pR)
-				},
-				false
-			)
-		}
+		fetchRequest(
+			'POST',
+			{ token: resp.tokenId },
+			'oauth/sso',
+			(r, pR) => {
+				if (r.status === 201) {
+					storeLogIn(pR.id, pR.email, pR.completed, pR.access_token, pR.refresh_token)
+					triggerBanner({ name: 'welcome', email: pR.email, profileCompleted: pR.completed })
+					if (rememberMe) createCookieAuth(pR.refresh_token)
+					else removeCookieAuth()
+				}
+				if (callback) callback(r, pR)
+			},
+			false
+		)
 	const logIn = (email, password, rememberMe, callback = null) =>
 		fetchRequest(
 			'POST',

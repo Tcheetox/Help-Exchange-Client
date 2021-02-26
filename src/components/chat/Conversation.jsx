@@ -10,7 +10,8 @@ import Row from 'react-bootstrap/Row'
 import Form from 'react-bootstrap/Form'
 import SendIcon from '@material-ui/icons/Send'
 import ArrowBackIcon from '@material-ui/icons/ArrowBackIos'
-import { DoublePane, InputForm, LoadingButton, UnreadMessagesBadge } from '../common/'
+import { titleize } from '../../utilities'
+import { DoublePane, InputForm, LoadingButton, UnreadMessagesBadge, Badge } from '../common/'
 
 export default function Conversation({ defaultActivePane }) {
 	const leftPaneWidth = 3
@@ -18,7 +19,7 @@ export default function Conversation({ defaultActivePane }) {
 	const history = useHistory()
 	const [loading, setLoading] = useState(false)
 	const { fetchRequest, userLoggedIn, userId, cable } = useContext(AppContext)
-	const { conversations, setConversationMessages } = useContext(AppData)
+	const { conversations, setConversationMessages, userHelpRequests } = useContext(AppData)
 	const [activeConversation, setActiveConversation] = useState(0)
 	const [message, setMessage] = useState('')
 	const [messageToMonitor, setMessageToMonitor] = useState({})
@@ -79,6 +80,13 @@ export default function Conversation({ defaultActivePane }) {
 		}
 	}, [messageToMonitor, conversations, userId, display])
 
+	const renderStatusIcon = c => {
+		if (userHelpRequests && userHelpRequests.length > 0) {
+			const uHR = userHelpRequests.find(u => u.id === c.help_request_id)
+			if (uHR) return <Badge type={uHR.status} tooltip={titleize(uHR.status)} />
+		}
+	}
+
 	const conversationTitle = c => (
 		<div className='title'>
 			<div className='request'>{c.help_request_title}</div>
@@ -90,6 +98,7 @@ export default function Conversation({ defaultActivePane }) {
 					}}
 				/>
 				{c.target_user_first_name} {c.target_user_last_name} <UnreadMessagesBadge convId={c.id} />
+				{renderStatusIcon(c)}
 			</div>
 		</div>
 	)
