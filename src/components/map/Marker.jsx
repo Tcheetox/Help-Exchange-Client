@@ -58,11 +58,13 @@ export default function Marker({ helpRequest: { id, description, help_type, titl
 				overlay={popover}
 				trigger={['hover', 'focus', 'click']}
 				show={preventClose}>
-				{help_type === 'material' ? (
-					<MaterialPin className={help_type} />
-				) : (
-					<ImmaterialPin className={help_type} />
-				)}
+				<div className='icon-wrapper'>
+					{help_type === 'material' ? (
+						<MaterialPin className={help_type} />
+					) : (
+						<ImmaterialPin className={help_type} />
+					)}
+				</div>
 			</OverlayTrigger>
 		</div>
 	)

@@ -43,6 +43,19 @@ export default function Banner() {
 					}
 					break
 
+				case 'google_sign_in_error':
+					newBanner = {
+						message: (
+							<span>
+								Google sign-in is only available for dedicated testers. Please contact our{' '}
+								<a href='mailto:fishforhelp@thekecha.com?subject=Tester request'>support</a>.
+							</span>
+						),
+						type: 'warning',
+						duration: 4500,
+					}
+					break
+
 				case 'invalid_credentials':
 					newBanner = {
 						message: 'Invalid username and/or password.',

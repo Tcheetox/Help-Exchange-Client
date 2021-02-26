@@ -10,7 +10,7 @@ import ListBullet from '@material-ui/icons/FormatListBulleted'
 
 export default function LeftMenu() {
 	const menuRef = useRef()
-	const [top, setTop] = useState('20%')
+	const [top, setTop] = useState('76px')
 	const [offset, setOffset] = useState(0)
 	const { userLoggedIn } = useContext(AppContext)
 

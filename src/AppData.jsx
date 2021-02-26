@@ -55,6 +55,13 @@ export const AppDataProvider = ({ children }) => {
 		setConversationMessages: setConversationMessages,
 	})
 
+	// Clear cache when disconnected
+	useEffect(
+		() =>
+			!userLoggedIn && setData(d => ({ ...d, helpRequests: [], userHelpRequests: [], conversations: [] })),
+		[userLoggedIn]
+	)
+
 	const subToConvMessages = useCallback(
 		convId =>
 			cable.subscriptions.create(

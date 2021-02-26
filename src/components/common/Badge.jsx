@@ -35,7 +35,7 @@ export default function Badge({ type, tooltip }) {
 	return (
 		<div className={`badge ${type}`}>
 			<OverlayTrigger placement='top' overlay={<Tooltip id={`BadgeTooltip-${type}`}>{tooltip}</Tooltip>}>
-				{icon()}
+				<div>{icon()}</div>
 			</OverlayTrigger>
 		</div>
 	)

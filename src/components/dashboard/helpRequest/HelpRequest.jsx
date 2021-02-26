@@ -92,33 +92,35 @@ export default function HelpRequest({
 								</a>
 							</div>
 							<div className='people'>
-								{users.map((x, k) => (
-									<OverlayTrigger
-										key={k}
-										placement='bottom'
-										overlay={
-											<Tooltip id={`ChattableTooltip-${k}`} className='chattable-tooltip'>
-												{x.first_name} {x.last_name}
-												{isChattable(x.user_type) ? <ChatIcon /> : null}
-											</Tooltip>
-										}>
-										{x.user_type === 'owner' ? (
-											<OwnerIcon
-												className={`owner ${x.id === userId ? 'current' : ''} ${
-													isChattable(x.user_type) ? 'chattable' : ''
-												}`}
-												onClick={() => handleConversation(x)}
-											/>
-										) : (
-											<PersonIcon
-												className={`respondent ${x.id === userId ? 'current' : ''} ${
-													isChattable(x.user_type) ? 'chattable' : ''
-												}`}
-												onClick={() => handleConversation(x)}
-											/>
-										)}
-									</OverlayTrigger>
-								))}
+								{users
+									.sort((a, b) => a.user_type > b.user_type)
+									.map((x, k) => (
+										<OverlayTrigger
+											key={k}
+											placement='bottom'
+											overlay={
+												<Tooltip id={`ChattableTooltip-${k}`} className='chattable-tooltip'>
+													{x.first_name} {x.last_name}
+													{isChattable(x.user_type) ? <ChatIcon /> : null}
+												</Tooltip>
+											}>
+											{x.user_type === 'owner' ? (
+												<OwnerIcon
+													className={`owner ${x.id === userId ? 'current' : ''} ${
+														isChattable(x.user_type) ? 'chattable' : ''
+													}`}
+													onClick={() => handleConversation(x)}
+												/>
+											) : (
+												<PersonIcon
+													className={`respondent ${x.id === userId ? 'current' : ''} ${
+														isChattable(x.user_type) ? 'chattable' : ''
+													}`}
+													onClick={() => handleConversation(x)}
+												/>
+											)}
+										</OverlayTrigger>
+									))}
 							</div>
 						</div>
 

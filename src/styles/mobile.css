@@ -125,8 +125,10 @@
 	}
 
 	/* MODAL - LOGIN */
-	.connect .links > a {
-		float: left !important;
+	@media (max-width: 488px) {
+		.connect .links > a {
+			float: left !important;
+		}
 	}
 
 	/* LOGIN*/
@@ -177,8 +179,6 @@
 		width: 100%;
 		left: 50%;
 		transform: translateX(-50%);
-		/* TODO: add this margin for slightly bigger screen */
-		/* margin-left: -1rem; */
 	}
 	.about .text.col-5 {
 		max-width: 100%;
@@ -220,7 +220,7 @@
 
 	/* HOME WHEN CONNECTED */
 	.header.connected + .fullscreen-no-header .core.container {
-		margin-left: 3rem;
+		padding-left: 4rem;
 	}
 	.header.connected + .fullscreen-no-header .about .image {
 		width: 300px;

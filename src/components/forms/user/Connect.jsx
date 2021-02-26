@@ -4,9 +4,14 @@ import { isBlank } from '../../../utilities'
 import { AppContext } from '../../../AppContext'
 import Form from 'react-bootstrap/Form'
 import { LoadingButton, InputForm } from '../../common/'
+import GoogleLogin from 'react-google-login'
+import Tooltip from 'react-bootstrap/Tooltip'
+import Button from 'react-bootstrap/Button'
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
+import { ReactComponent as Google } from '../../../media/icons/google.svg'
 
 export default function Connect({ modalShow = null }) {
-	const { logIn } = useContext(AppContext)
+	const { logIn, logInWithGoogle } = useContext(AppContext)
 	const history = useHistory()
 	const [display, setDisplay] = useState(0)
 	const [data, setData] = useState({
@@ -19,6 +24,15 @@ export default function Connect({ modalShow = null }) {
 		password: undefined,
 	})
 	const [redirect, setRedirect] = useState(false)
+
+	const logInWithGoogleProxy = resp =>
+		logInWithGoogle(resp, data.rememberMe, r => {
+			if (mounted && r.status === 201) {
+				setDisplay(2)
+				if (modalShow) modalShow(false)
+				else setRedirect(true)
+			}
+		})
 
 	// Automatic redirection after successful login
 	useEffect(() => {
@@ -104,6 +118,27 @@ export default function Connect({ modalShow = null }) {
 				<LoadingButton className='fancy-blue' type='submit' display={display}>
 					Connect
 				</LoadingButton>
+
+				<OverlayTrigger
+					placement='top'
+					overlay={<Tooltip id={`GoogleLoginTooltip`}>Only for dedicated testers</Tooltip>}>
+					<div className='google-tooltip-trigger'>
+						<GoogleLogin
+							onMouseMove={e => console.log('AKI')}
+							render={renderProps => (
+								<LoadingButton onClick={renderProps.onClick} className='fancy-google'>
+									<Google />
+									Sign in
+								</LoadingButton>
+							)}
+							clientId={process.env.REACT_APP_GOOGLE_SSO_ID}
+							buttonText='Login'
+							onSuccess={logInWithGoogleProxy}
+							onFailure={logInWithGoogleProxy}
+							cookiePolicy={'single_host_origin'}
+						/>
+					</div>
+				</OverlayTrigger>
 			</Form>
 			<hr />
 			<div className='links'>
