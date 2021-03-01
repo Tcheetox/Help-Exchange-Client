@@ -116,7 +116,6 @@ export default function Connect({ modalShow = null }) {
 					Connect
 				</LoadingButton>
 				<GoogleLogin
-					onMouseMove={e => console.log('AKI')}
 					render={renderProps => (
 						<LoadingButton onClick={renderProps.onClick} className='fancy-google'>
 							<Google />
