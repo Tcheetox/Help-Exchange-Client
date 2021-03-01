@@ -6,7 +6,7 @@ import { AppData } from '../../AppData'
 import Popover from 'react-bootstrap/Popover'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import SubscribeIcon from '@material-ui/icons/PostAdd'
-import ManageIcon from '@material-ui/icons/Launch'
+import ManageIcon from '@material-ui/icons/FormatListBulleted'
 import { ReactComponent as MaterialPin } from '../../media/icons/materialPin.svg'
 import { ReactComponent as ImmaterialPin } from '../../media/icons/immaterialPin.svg'
 

@@ -4,6 +4,11 @@
 		--smaller-card-padding: 0.4rem 0.5rem 0.3rem 0.5rem;
 	}
 
+	/* HIDE MAP LEGEND */
+	.map .legend {
+		display: none;
+	}
+
 	/* CONTAINER */
 	.container {
 		max-width: unset;

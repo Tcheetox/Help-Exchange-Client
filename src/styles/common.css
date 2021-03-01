@@ -766,6 +766,8 @@ button.fancy-google:hover:not(.button-check) {
 	display: flex;
 	width: min-content;
 	margin: 0 auto 0.2rem auto;
+	pointer-events: all;
+	cursor: pointer;
 }
 .counter .number {
 	padding: 0.3rem 0.6rem 0.3rem 0.6rem;
@@ -1318,13 +1320,17 @@ svg.chattable {
 	width: auto;
 	height: 6rem;
 }
+.map .legend svg path:nth-child(2),
+.map .legend svg path:nth-child(3),
 .map .marker svg path:nth-child(2),
 .map .marker svg path:nth-child(3) {
 	fill: var(--color-g7);
 }
+.map .legend .material svg path:first-child,
 .map .marker svg.material path:first-child {
 	fill: var(--color-b4);
 }
+.map .legend .immaterial svg path:first-child,
 .map .marker svg.immaterial path:first-child {
 	fill: var(--color-r2);
 }
@@ -1385,6 +1391,17 @@ svg.chattable {
 	margin-right: 0;
 	margin-left: auto;
 	cursor: pointer;
+	height: 33.5px;
+}
+.map-popover .popover-header .icon-action svg.subscribe {
+	position: relative;
+	top: -3px;
+	right: -3px;
+}
+.map-popover .popover-header .icon-action svg.manage {
+	border: 3px solid var(--color-b6);
+	border-radius: 5px;
+	width: 1.6rem;
 }
 
 .header .logo {
@@ -1401,4 +1418,35 @@ svg.chattable {
 .header .logo:hover g path:first-child {
 	transform: rotate(180deg) translate(-15%, -1100%);
 	transform-origin: 100% 0;
+}
+
+/* MAP LEGEND */
+.map .legend {
+	position: absolute;
+	z-index: 1;
+	margin-top: -0.6rem;
+	margin-left: 5rem;
+	display: flex;
+	flex-direction: row;
+	color: var(--color-b6);
+	font-weight: 600;
+	font-size: 0.9rem;
+	text-align: center;
+	user-select: none;
+	pointer-events: none;
+}
+.map .legend svg {
+	height: auto;
+	width: 2rem;
+	transform: translate(20px, 40px);
+}
+.map .legend > div {
+	display: flex;
+	flex-direction: column;
+}
+.map .legend .material svg {
+	margin-left: -0.4rem;
+}
+.map .legend .immaterial {
+	margin-left: 0.7rem;
 }

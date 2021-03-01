@@ -23,7 +23,10 @@ export default function App() {
 					<LeftMenu />
 					<Switch>
 						<Route path='/' component={Home} exact />
+
 						<Route path='/map' component={Map} exact />
+						<Route path='/map/:center' component={Map} exact />
+
 						<Route path='/faq' component={Faq} exact />
 
 						<Route path='/users/signup' component={Signup} exact />

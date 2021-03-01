@@ -18,7 +18,7 @@ export const geocode = async (address, callback) => {
 		try {
 			const resp = await fetch(
 				`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURI(address)}&key=${
-					process.env.REACT_APP_GOOGLE_KEY
+					process.env.REACT_APP_GOOGLE_GEOCODE_KEY
 				}`
 			)
 			const parsedResp = await resp.json()
@@ -39,7 +39,7 @@ export const reverseGeocode = async ({ lat, lng }, callback) => {
 	if (lat && lng) {
 		try {
 			const resp = await fetch(
-				`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${process.env.REACT_APP_GOOGLE_KEY}`
+				`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${process.env.REACT_APP_GOOGLE_GEOCODE_KEY}`
 			)
 			const parsedResp = await resp.json()
 			address = parsedResp.results[0].formatted_address
