@@ -127,7 +127,8 @@ export default function Banner() {
 
 				case 'forgot_password':
 					newBanner = {
-						message: 'A link to reset your password has been sent. Please check your inbox.',
+						message:
+							'A link to reset your password has been sent. Please check your inbox and its spam folder.',
 						type: 'warning',
 						duration: 5000,
 					}
@@ -135,7 +136,7 @@ export default function Banner() {
 
 				case 'send_confirmation':
 					newBanner = {
-						message: 'A confirmation email has been sent. Please check your inbox.',
+						message: 'A confirmation email has been sent. Please check your inbox and its spam folder.',
 						type: 'warning',
 						duration: 5000,
 					}
