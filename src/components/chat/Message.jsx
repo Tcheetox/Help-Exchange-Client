@@ -9,8 +9,8 @@ export default function Message({ props: { message, user_id, updated_at, current
 			{message}
 			<div className='time'>
 				{current_year !== dateFormat(updated_at, 'yyyy')
-					? dateFormat(updated_at, 'mmm dd yyyy, hh:mm')
-					: dateFormat(updated_at, 'mmm dd, hh:mm')}
+					? dateFormat(updated_at, 'mmm dd yyyy, HH:MM')
+					: dateFormat(updated_at, 'mmm dd, HH:MM')}
 			</div>
 		</div>
 	)
