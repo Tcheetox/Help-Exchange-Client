@@ -434,7 +434,7 @@ body {
 	background-image: url('../media/elder.jpg');
 	float: right;
 }
-.about .image.foster {
+.about .image.foster:not(.image.foster.col-5) {
 	background-image: url('../media/foster.jpg');
 }
 .about .text > * {
