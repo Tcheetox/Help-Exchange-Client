@@ -1,7 +1,7 @@
 # Fish For Help
 
-This project has been realized as part of the Full-Stack developer path proposed by [OpenClassrooms](https://openclassrooms.com).
-The goal is to **Build and aid platform for your neighborhood**.
+This project represents the final piece of the Full-Stack developer path proposed by [OpenClassrooms](https://openclassrooms.com).
+The goal is to **Build and aid platform for your neighborhood**. It requires a broad(er) range of features, such as real-time communication, automated testing, and external APIs usage.
 
 ## Objective
 
@@ -16,7 +16,7 @@ Deliver a complete solution including both front-end and back-end that allows:
 
 ## Content
 
-### Front-end ([repo](https://github.com/Tcheetox/Help-Exchange-Client))
+### [Front-end](https://github.com/Tcheetox/Help-Exchange-Client)
 
 Mobile friendly website built around:
 - Bootstrap for REACT
@@ -26,7 +26,7 @@ Mobile friendly website built around:
 - Material UI
 
 
-### Back-end ([repo](https://github.com/Tcheetox/Help-Exchange-Server))
+### [Back-end](https://github.com/Tcheetox/Help-Exchange-Server)
 
 Ruby on Rails solution with MYSQL database:
 - Devise
