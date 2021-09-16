@@ -10,6 +10,7 @@
     "@testing-library/user-event": "^12.1.10",
     "actioncable": "^5.2.4-4",
     "bootstrap": "^4.6.0",
+    "compress-create-react-app": "^1.0.6",
     "dateformat": "^4.5.1",
     "google-map-react": "^2.1.9",
     "jquery": "^3.5.1",
@@ -27,7 +28,7 @@
   },
   "scripts": {
     "start": "set PORT=3001&& react-scripts start --env.ENVIRONMENT=development",
-    "build": "PUBLIC_URL=https://thekecha.com/krenier/fishforhelp&& react-scripts build",
+    "build": "PUBLIC_URL=https://thekecha.com/krenier/fishforhelp&& react-scripts build && compress-cra",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
