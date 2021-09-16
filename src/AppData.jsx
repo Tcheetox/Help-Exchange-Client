@@ -9,14 +9,7 @@ export const AppDataProvider = ({ children }) => {
 	userIdRef.current = userId
 
 	const refreshHelpRequests = useCallback(
-		() =>
-			fetchRequest(
-				'GET',
-				null,
-				'help_requests',
-				(r, pR) => r.status === 200 && setData(d => ({ ...d, helpRequests: pR })),
-				false
-			),
+		() => fetchRequest('GET', null, 'help_requests', (r, pR) => r.status === 200 && setData(d => ({ ...d, helpRequests: pR })), false),
 		[fetchRequest]
 	)
 
@@ -34,12 +27,9 @@ export const AppDataProvider = ({ children }) => {
 					convCopy[convIndex].total_messages += 1
 				}
 				let unreadMessages = 0
-				convCopy[convIndex].messages.forEach(m =>
-					m.status === 'unread' && m.user_id !== userIdRef.current ? (unreadMessages += 1) : null
-				)
+				convCopy[convIndex].messages.forEach(m => (m.status === 'unread' && m.user_id !== userIdRef.current ? (unreadMessages += 1) : null))
 				convCopy[convIndex].unread_messages = unreadMessages
-				convCopy[convIndex].updated_at =
-					convCopy[convIndex].messages[convCopy[convIndex].messages.length - 1].updated_at
+				convCopy[convIndex].updated_at = convCopy[convIndex].messages[convCopy[convIndex].messages.length - 1].updated_at
 			}
 			return {
 				...d,
@@ -56,11 +46,7 @@ export const AppDataProvider = ({ children }) => {
 	})
 
 	// Clear cache when disconnected
-	useEffect(
-		() =>
-			!userLoggedIn && setData(d => ({ ...d, helpRequests: [], userHelpRequests: [], conversations: [] })),
-		[userLoggedIn]
-	)
+	useEffect(() => !userLoggedIn && setData(d => ({ ...d, helpRequests: [], userHelpRequests: [], conversations: [] })), [userLoggedIn])
 
 	const subToConvMessages = useCallback(
 		convId =>
@@ -93,9 +79,7 @@ export const AppDataProvider = ({ children }) => {
 					pR.forEach(c => subToConvMessages(c.id))
 					setData(d => ({
 						...d,
-						conversations: pR
-							.map(c => ({ ...c, messages: [] }))
-							.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at)),
+						conversations: pR.map(c => ({ ...c, messages: [] })).sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at)),
 					}))
 				}
 				// Subscribe to ConversationsChannel to be notified of newly created conversation
@@ -116,9 +100,7 @@ export const AppDataProvider = ({ children }) => {
 								} else conversationsCopy[convIndex] = { ...c, messages: [] }
 								return {
 									...d,
-									conversations: conversationsCopy.sort(
-										(a, b) => new Date(b.updated_at) - new Date(a.updated_at)
-									),
+									conversations: conversationsCopy.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at)),
 								}
 							})
 						},
@@ -132,19 +114,14 @@ export const AppDataProvider = ({ children }) => {
 	const handleHelpRequest = useCallback(
 		h =>
 			setData(d => {
-				const helpRequestIndex = d.userHelpRequests.length
-					? d.userHelpRequests.findIndex(uH => uH.id === h.id)
-					: -1
+				const helpRequestIndex = d.userHelpRequests.length ? d.userHelpRequests.findIndex(uH => uH.id === h.id) : -1
 				const userHelpRequestsCopy = d.userHelpRequests.length ? [...d.userHelpRequests] : []
-				if (helpRequestIndex !== -1 && !h.users.find(u => u.id === userId))
-					userHelpRequestsCopy.splice(helpRequestIndex, 1)
+				if (helpRequestIndex !== -1 && !h.users.find(u => u.id === userId)) userHelpRequestsCopy.splice(helpRequestIndex, 1)
 				else if (helpRequestIndex === -1) userHelpRequestsCopy.push(h)
 				else userHelpRequestsCopy[helpRequestIndex] = h
 				return {
 					...d,
-					userHelpRequests: userHelpRequestsCopy.sort(
-						(a, b) => new Date(b.updated_at) - new Date(a.updated_at)
-					),
+					userHelpRequests: userHelpRequestsCopy.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at)),
 				}
 			}),
 		[userId]
@@ -159,9 +136,7 @@ export const AppDataProvider = ({ children }) => {
 				if (p.status === 200) {
 					setData(d => ({
 						...d,
-						userHelpRequests: pR.length
-							? pR.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
-							: [],
+						userHelpRequests: pR.length ? pR.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at)) : [],
 					}))
 					cable.subscriptions.create(
 						{ channel: 'HelpRequestsChannel' },

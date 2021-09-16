@@ -53,11 +53,7 @@ export default function Header() {
 	}, [location])
 
 	return (
-		<Navbar
-			id='Header'
-			expand='lg'
-			className={`header ${userLoggedIn ? 'connected' : 'disconnected'}`}
-			expanded={expanded}>
+		<Navbar id='Header' expand='lg' className={`header ${userLoggedIn ? 'connected' : 'disconnected'}`} expanded={expanded}>
 			<Container>
 				<Modal className='login-modal' show={loginShow} onHide={() => setLoginShow(false)} centered>
 					<Modal.Header closeButton>
@@ -106,12 +102,7 @@ export default function Header() {
 								onMouseLeave={() => setDropdown(false)}
 								onMouseEnter={() => setDropdown(true)}>
 								<FoldLink to='/users/account'>{userEmail}</FoldLink>
-								<DropdownButton
-									id='AccountDropdown'
-									className='account-dropdown'
-									title={<AccountIcon />}
-									menuAlign='right'
-									show={dropdown}>
+								<DropdownButton id='AccountDropdown' className='account-dropdown' title={<AccountIcon />} menuAlign='right' show={dropdown}>
 									<Dropdown.Item onClick={() => handleClick('/users/account')}>Profile</Dropdown.Item>
 									<Dropdown.Item onClick={() => handleClick('/users/dashboard')}>Dashboard</Dropdown.Item>
 									<Dropdown.Item onClick={() => handleClick('/users/messenger')}>

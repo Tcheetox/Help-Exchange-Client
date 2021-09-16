@@ -40,25 +40,9 @@ export default function App() {
 						<Route path='/users/troubleshoot/:action' component={Troubleshoot} exact />
 						<Route path='/users/troubleshoot/:action/:token' component={Troubleshoot} exact />
 
-						<ProtectedRoute
-							path='/users/dashboard'
-							component={Dashboard}
-							authenticated={true}
-							profileCompleted={true}
-							exact={true}
-						/>
-						<ProtectedRoute
-							path='/users/dashboard/:section/:id'
-							component={Dashboard}
-							authenticated={true}
-							profileCompleted={true}
-						/>
-						<ProtectedRoute
-							path='/users/dashboard/:section'
-							component={Dashboard}
-							authenticated={true}
-							profileCompleted={true}
-						/>
+						<ProtectedRoute path='/users/dashboard' component={Dashboard} authenticated={true} profileCompleted={true} exact={true} />
+						<ProtectedRoute path='/users/dashboard/:section/:id' component={Dashboard} authenticated={true} profileCompleted={true} />
+						<ProtectedRoute path='/users/dashboard/:section' component={Dashboard} authenticated={true} profileCompleted={true} />
 
 						<ProtectedRoute path='/users/messenger' component={Messenger} authenticated={true} exact={true} />
 						<ProtectedRoute path='/users/messenger/:id' component={Messenger} authenticated={true} />

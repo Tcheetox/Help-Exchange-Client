@@ -234,7 +234,9 @@ export const AppContextProvider = props => {
 					r =>
 						r.status !== 200 && Object.keys(cookies).length > 0 && cookies[authCookieName] !== '' && refreshToken(cookies[authCookieName])
 				)
-			} else if (Object.keys(cookies).length > 0 && cookies[authCookieName] !== '') refreshToken(cookies[authCookieName])
+			} else if (Object.keys(cookies).length > 0 && cookies[authCookieName] && cookies[authCookieName] !== '') {
+				refreshToken(cookies[authCookieName])
+			}
 		}
 	}, [globals.userLoggedIn, cookies, refreshToken])
 

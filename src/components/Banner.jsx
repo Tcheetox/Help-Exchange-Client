@@ -22,8 +22,7 @@ export default function Banner() {
 								Welcome back <span className='bold'>{banner.email}</span>!{' '}
 								{!banner.profileCompleted ? (
 									<>
-										Don't forget to <Link to='/users/account/information'>complete your profile</Link> before
-										using our services.
+										Don't forget to <Link to='/users/account/information'>complete your profile</Link> before using our services.
 									</>
 								) : (
 									''
@@ -100,8 +99,7 @@ export default function Banner() {
 					newBanner = {
 						message: (
 							<span>
-								Yeah! You subscribed to a help request, it will now appear on your{' '}
-								<Link to='/users/dashboard'>dashboard</Link>.
+								Yeah! You subscribed to a help request, it will now appear on your <Link to='/users/dashboard'>dashboard</Link>.
 							</span>
 						),
 						type: 'success',
@@ -145,8 +143,7 @@ export default function Banner() {
 					newBanner = {
 						message: (
 							<span>
-								You must <Link to='/users/account/information'>complete your profile</Link> to access this
-								service.
+								You must <Link to='/users/account/information'>complete your profile</Link> to access this service.
 							</span>
 						),
 						type: 'warning',
@@ -158,8 +155,7 @@ export default function Banner() {
 					newBanner = {
 						message: (
 							<span>
-								You must be authenticated to view this page. Don't have an account yet?{' '}
-								<Link to='/users/signup'>Sign up</Link>!
+								You must be authenticated to view this page. Don't have an account yet? <Link to='/users/signup'>Sign up</Link>!
 							</span>
 						),
 						type: 'warning',
@@ -188,11 +184,7 @@ export default function Banner() {
 
 	// Smart banner automatic discard
 	useEffect(() => {
-		if (
-			display &&
-			((userLoggedIn && banner === 'authentication_required') ||
-				(userProfileCompleted && banner === 'incomplete_profile'))
-		)
+		if (display && ((userLoggedIn && banner === 'authentication_required') || (userProfileCompleted && banner === 'incomplete_profile')))
 			setDisplay(false)
 	}, [display, userLoggedIn, userProfileCompleted, banner])
 

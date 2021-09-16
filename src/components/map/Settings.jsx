@@ -21,22 +21,14 @@ export default function Settings({ setCenter, mapType, setMapType, fullScreen, s
 			onClick={() => setDropdown(!dropdown)}
 			onMouseLeave={() => setDropdown(false)}
 			onMouseEnter={() => setDropdown(true)}>
-			<ToggleButtonGroup
-				type='radio'
-				name='maptypeid-options'
-				onChange={v => setMapType(v)}
-				defaultValue={mapType}>
+			<ToggleButtonGroup type='radio' name='maptypeid-options' onChange={v => setMapType(v)} defaultValue={mapType}>
 				<ToggleButton value='roadmap'>Roadmap</ToggleButton>
 				<ToggleButton value='hybrid'>Hybrid</ToggleButton>
 				<ToggleButton value='satellite'>Satellite</ToggleButton>
 				<ToggleButton value='terrain'>Terrain</ToggleButton>
 			</ToggleButtonGroup>
 			<Dropdown.Item
-				onClick={() =>
-					navigator.geolocation.getCurrentPosition(pos =>
-						setCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude })
-					)
-				}>
+				onClick={() => navigator.geolocation.getCurrentPosition(pos => setCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude }))}>
 				Center <CenterIcon />
 			</Dropdown.Item>
 			<Dropdown.Item onClick={() => setFullScreen(!fullScreen)}>

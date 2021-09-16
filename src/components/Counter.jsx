@@ -23,12 +23,7 @@ export default function Counter() {
 	}, [])
 
 	const handleClick = () => {
-		if (
-			location.pathname.includes('/map/') &&
-			location.pathname.includes(';') &&
-			helpRequests &&
-			helpRequests.length > 0
-		) {
+		if (location.pathname.includes('/map/') && location.pathname.includes(';') && helpRequests && helpRequests.length > 0) {
 			const centerSplit = location.pathname.replace('/map/', '').split(';')
 			const center = { lat: parseFloat(centerSplit[0]), lng: parseFloat(centerSplit[1]) }
 			let targetRequest = 0
@@ -39,8 +34,7 @@ export default function Counter() {
 				}
 			}
 			history.push(`/map/${helpRequests[targetRequest].lat};${helpRequests[targetRequest].lng}`)
-		} else if (helpRequests && helpRequests.length > 0)
-			history.push(`/map/${helpRequests[0].lat};${helpRequests[0].lng}`)
+		} else if (helpRequests && helpRequests.length > 0) history.push(`/map/${helpRequests[0].lat};${helpRequests[0].lng}`)
 	}
 
 	return helpRequests && helpRequests.length ? (

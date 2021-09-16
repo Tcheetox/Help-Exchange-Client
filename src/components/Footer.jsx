@@ -65,7 +65,7 @@ export default function Footer() {
 				</Row>
 				<hr />
 				<div className='copyright'>
-					© 2021 Copyright <a href='/'>Fish For Help</a>. All rights reserved.
+					© 2021 Copyright <a href='https://thekecha.com'>TheKecha</a>. All rights reserved.
 				</div>
 			</Container>
 		</footer>

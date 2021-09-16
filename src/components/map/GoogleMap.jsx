@@ -58,9 +58,7 @@ export default function GoogleMap({ forcedCenter }) {
 			else {
 				try {
 					publicIP().then(ip =>
-						fetch(
-							`https://api.ipgeolocation.io/ipgeo?apiKey=${process.env.REACT_APP_IP_GEOLOCATION_KEY}&ip=${ip}`
-						)
+						fetch(`https://api.ipgeolocation.io/ipgeo?apiKey=${process.env.REACT_APP_IP_GEOLOCATION_KEY}&ip=${ip}`)
 							.then(resp => resp.json())
 							.then(pos => {
 								if (!userProfileRef.current || !userProfileRef.current.lat || !userProfileRef.current.lng)
@@ -71,8 +69,7 @@ export default function GoogleMap({ forcedCenter }) {
 					logError(error)
 				}
 			}
-		} else
-			setCenter({ lat: parseFloat(forcedCenter.split(';')[0]), lng: parseFloat(forcedCenter.split(';')[1]) })
+		} else setCenter({ lat: parseFloat(forcedCenter.split(';')[0]), lng: parseFloat(forcedCenter.split(';')[1]) })
 	}, [userProfile, forcedCenter])
 
 	// Trigger fullscreen mode
@@ -90,13 +87,7 @@ export default function GoogleMap({ forcedCenter }) {
 	return (
 		<>
 			<div className='map' ref={mapContainerRef}>
-				<Settings
-					setCenter={setCenter}
-					mapType={mapType}
-					setMapType={setMapType}
-					fullScreen={fullScreen}
-					setFullScreen={setFullScreen}
-				/>
+				<Settings setCenter={setCenter} mapType={mapType} setMapType={setMapType} fullScreen={fullScreen} setFullScreen={setFullScreen} />
 				<Legend />
 				<GoogleMapReact
 					bootstrapURLKeys={{ key: process.env.REACT_APP_GOOGLE_MAP_KEY }}
@@ -110,9 +101,7 @@ export default function GoogleMap({ forcedCenter }) {
 					zoomControl={false}
 					defaultZoom={13}>
 					<UserMarkerMemo lat={center.lat} lng={center.lng} />
-					{helpRequests.length
-						? helpRequests.map((h, i) => <MarkerMemo key={i} lat={h.lat} lng={h.lng} helpRequest={h} />)
-						: null}
+					{helpRequests.length ? helpRequests.map((h, i) => <MarkerMemo key={i} lat={h.lat} lng={h.lng} helpRequest={h} />) : null}
 				</GoogleMapReact>
 			</div>
 		</>
