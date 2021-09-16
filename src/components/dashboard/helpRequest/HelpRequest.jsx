@@ -102,9 +102,9 @@ export default function HelpRequest({
 												</Tooltip>
 											}>
 											{x.user_type === 'owner' ? (
-												<OwnerIcon className={`owner ${getIconClass()}`} onClick={() => handleConversation(x)} />
+												<OwnerIcon className={`owner ${getIconClass(x)}`} onClick={() => handleConversation(x)} />
 											) : (
-												<PersonIcon className={`respondent ${getIconClass()}`} onClick={() => handleConversation(x)} />
+												<PersonIcon className={`respondent ${getIconClass(x)}`} onClick={() => handleConversation(x)} />
 											)}
 										</OverlayTrigger>
 									))}
