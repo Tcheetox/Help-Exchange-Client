@@ -37,28 +37,30 @@ export default function Counter() {
 		} else if (helpRequests && helpRequests.length > 0) history.push(`/map/${helpRequests[0].lat};${helpRequests[0].lng}`)
 	}
 
-	return helpRequests && helpRequests.length ? (
-		<Card className={`counter ${posClass}`}>
-			<Card.Body>
-				<div className='numbers' onClick={handleClick}>
-					{helpRequests.length.toString().length < 3
-						? [...Array(3 - helpRequests.length.toString().length).keys()].map(i => (
-								<div key={i} className='number'>
-									0
+	if (helpRequests && helpRequests.length > 0)
+		return (
+			<Card className={`counter ${posClass}`}>
+				<Card.Body>
+					<div className='numbers' onClick={handleClick}>
+						{helpRequests.length.toString().length < 3
+							? [...Array(3 - helpRequests.length.toString().length).keys()].map(i => (
+									<div key={i} className='number'>
+										0
+									</div>
+							  ))
+							: 'null'}
+						{helpRequests.length
+							.toString()
+							.split('')
+							.map((c, k) => (
+								<div className='number' key={k}>
+									{c}
 								</div>
-						  ))
-						: 'null'}
-					{helpRequests.length
-						.toString()
-						.split('')
-						.map((c, k) => (
-							<div className='number' key={k}>
-								{c}
-							</div>
-						))}
-				</div>
-				help requests
-			</Card.Body>
-		</Card>
-	) : null
+							))}
+					</div>
+					help requests
+				</Card.Body>
+			</Card>
+		)
+	else return null
 }

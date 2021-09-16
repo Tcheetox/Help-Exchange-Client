@@ -129,12 +129,7 @@ export default function Conversation({ defaultActivePane }) {
 								<Card.Body>
 									<Form onSubmit={onSubmit}>
 										<Row>
-											<InputForm
-												name='message'
-												value={message}
-												onChange={e => setMessage(e.target.value)}
-												display={display}
-											/>
+											<InputForm name='message' value={message} onChange={e => setMessage(e.target.value)} display={display} />
 											<LoadingButton className='send plain-blue' type='submit' display={display}>
 												<SendIcon />
 											</LoadingButton>

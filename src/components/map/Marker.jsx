@@ -27,7 +27,7 @@ export default function Marker({ helpRequest: { id, description, help_type, titl
 
 				<div className='icon-action'>
 					{userHelpRequests.length && userHelpRequests.find(u => u.id === id) ? (
-						<Link to={`users/dashboard/overview/${id}`}>
+						<Link to={`/users/dashboard/overview/${id}`}>
 							<ManageIcon className='manage' />
 						</Link>
 					) : (

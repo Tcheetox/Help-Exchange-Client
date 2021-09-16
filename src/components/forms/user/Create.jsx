@@ -33,12 +33,9 @@ export default function Create({ modalShow = null }) {
 		const errorsAssessed = { ...errors }
 		Object.keys(errorsAssessed).forEach(k => (errorsAssessed[k] = ''))
 		if (!isValidEmail(data.email)) errorsAssessed.email = 'You must provide a valid email address'
-		if (isBlank(data.password) || data.password.length < 6)
-			errorsAssessed.password = 'Password must contain at least 6 characters'
-		if (isBlank(data.passwordConfirmation.length))
-			errorsAssessed.passwordConfirmation = 'Confirmation password cannot be left empty'
-		else if (data.password !== data.passwordConfirmation)
-			errorsAssessed.passwordConfirmation = "Confirmation password doesn't match"
+		if (isBlank(data.password) || data.password.length < 6) errorsAssessed.password = 'Password must contain at least 6 characters'
+		if (isBlank(data.passwordConfirmation.length)) errorsAssessed.passwordConfirmation = 'Confirmation password cannot be left empty'
+		else if (data.password !== data.passwordConfirmation) errorsAssessed.passwordConfirmation = "Confirmation password doesn't match"
 		if (data.condition !== true) errorsAssessed.condition = 'Unchecked'
 		setErrors(errorsAssessed)
 
@@ -55,8 +52,7 @@ export default function Create({ modalShow = null }) {
 						setDisplay(2)
 						if (modalShow) modalShow(false)
 						// Check if the error is due to existing email, adjust data validation
-					} else if ('error' in pR && pR.error.server_code === 42201)
-						setErrors({ ...errors, email: 'Email already in use' })
+					} else if ('error' in pR && pR.error.server_code === 42201) setErrors({ ...errors, email: 'Email already in use' })
 					// Reset data validation
 					else
 						setErrors({

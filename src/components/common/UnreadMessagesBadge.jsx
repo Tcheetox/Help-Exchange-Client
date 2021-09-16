@@ -10,10 +10,7 @@ export default function UnreadMessagesBadge({ convId = -1 }) {
 	useEffect(() => {
 		if (conversations.length) {
 			if (convId === -1) setUnreadMessages(conversations.reduce((prev, cur) => prev + cur.unread_messages, 0))
-			else
-				setUnreadMessages(
-					conversations.filter(c => c.id === convId).reduce((prev, cur) => prev + cur.unread_messages, 0)
-				)
+			else setUnreadMessages(conversations.filter(c => c.id === convId).reduce((prev, cur) => prev + cur.unread_messages, 0))
 		}
 	}, [conversations, convId])
 

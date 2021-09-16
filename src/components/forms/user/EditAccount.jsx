@@ -6,14 +6,7 @@ import { LoadingButton, InputForm, FileForm, CircularProgress } from '../../comm
 import { geocode } from '../../../utilities'
 
 export default function EditAccount() {
-	const {
-		fetchRequest,
-		fetchFileRequest,
-		userLoggedIn,
-		userProfile,
-		updateUserProfile,
-		triggerBanner,
-	} = useContext(AppContext)
+	const { fetchRequest, fetchFileRequest, userLoggedIn, userProfile, updateUserProfile, triggerBanner } = useContext(AppContext)
 
 	const [display, setDisplay] = useState(0)
 	const [data, setData] = useState({

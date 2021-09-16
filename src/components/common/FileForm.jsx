@@ -6,16 +6,7 @@ import DownloadIcon from '@material-ui/icons/CloudDownload'
 import { ReactComponent as PdfIcon } from '../../media/icons/pdf.svg'
 import { LoadingSpinner, CloseButton } from './'
 
-export default function FileForm({
-	onChange,
-	maxSize,
-	allowedExtensions,
-	error,
-	display = 0,
-	defaultUrl = '',
-	label = '',
-	text = '',
-}) {
+export default function FileForm({ onChange, maxSize, allowedExtensions, error, display = 0, defaultUrl = '', label = '', text = '' }) {
 	const inputFileButton = useRef(null)
 	const [inputFile, setInputFile] = useState(null)
 	const [dragging, setDragging] = useState(false)
@@ -24,15 +15,11 @@ export default function FileForm({
 	const { current: extensions } = useRef(allowedExtensions)
 
 	const shouldShowInvalid = () => error !== undefined && error.length > 0
-	const shouldShowValid = () =>
-		(error !== undefined && error === '' && display !== 1) || (error === undefined && display === 2)
+	const shouldShowValid = () => (error !== undefined && error === '' && display !== 1) || (error === undefined && display === 2)
 
 	useEffect(() => {
 		if (inputFile) {
-			if (
-				inputFile.size > maxSize ||
-				!extensions.includes('.'.concat(inputFile.type.substring(inputFile.type.indexOf('/') + 1)))
-			) {
+			if (inputFile.size > maxSize || !extensions.includes('.'.concat(inputFile.type.substring(inputFile.type.indexOf('/') + 1)))) {
 				setInputFile(null)
 				setHighlight(true)
 			} else {
@@ -68,17 +55,11 @@ export default function FileForm({
 				onDragLeave={() => setDragging(false)}
 				onDragOver={e => e.preventDefault()}
 				onDrop={onDrop}
-				className={`droppable-area ${
-					display === 1 ? 'disabled' : dragging ? 'dragging' : display === 2 ? 'disabled valid' : ''
-				}`}
+				className={`droppable-area ${display === 1 ? 'disabled' : dragging ? 'dragging' : display === 2 ? 'disabled valid' : ''}`}
 				onClick={() => inputFileButton && inputFileButton.current && inputFileButton.current.click()}>
 				{inputFile || (defaultUrl && defaultUrl !== '') ? (
 					<>
-						{display === 2 && (defaultUrl !== '' || inputFile) ? (
-							<div className='valid-icon' />
-						) : (
-							<CloseButton onClick={onClose} />
-						)}
+						{display === 2 && (defaultUrl !== '' || inputFile) ? <div className='valid-icon' /> : <CloseButton onClick={onClose} />}
 						{uploading ? <LoadingSpinner overlay={true} /> : null}
 						{(inputFile && inputFile.name.slice(-4).toLowerCase() === '.pdf') ||
 						(defaultUrl && defaultUrl.slice(-4).toLowerCase() === '.pdf') ? (
@@ -89,11 +70,7 @@ export default function FileForm({
 					</>
 				) : (
 					<>
-						{display === 2 ? (
-							<div className='valid-icon' />
-						) : highlight ? (
-							<div className='invalid-icon' />
-						) : null}
+						{display === 2 ? <div className='valid-icon' /> : highlight ? <div className='invalid-icon' /> : null}
 						<div className='zone-info'>
 							{dragging ? (
 								<>
@@ -116,12 +93,7 @@ export default function FileForm({
 						</div>
 					</>
 				)}
-				<input
-					ref={inputFileButton}
-					className='file-upload'
-					type='file'
-					onChange={e => setInputFile(e.target.files[0])}
-				/>
+				<input ref={inputFileButton} className='file-upload' type='file' onChange={e => setInputFile(e.target.files[0])} />
 			</div>
 			<Form.Text className={shouldShowInvalid() ? 'invalid' : shouldShowValid() ? 'valid' : ''}>
 				{shouldShowInvalid() ? error : text}

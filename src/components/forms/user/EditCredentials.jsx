@@ -38,21 +38,16 @@ export default function EditCredentials({ reset = false, token }) {
 		// Data validation
 		const errorsAssessed = { ...errors }
 		Object.keys(errorsAssessed).forEach(k => (errorsAssessed[k] = ''))
-		if (isBlank(data.password) || data.password.length < 6)
-			errorsAssessed.password = 'A valid password must contain at least 6 characters'
-		if (!reset && isBlank(data.currentPassword))
-			errorsAssessed.currentPassword = 'Current password cannot be left empty'
-		if (isBlank(data.passwordConfirmation))
-			errorsAssessed.passwordConfirmation = 'Confirmation password cannot be left empty'
-		else if (data.password !== data.passwordConfirmation)
-			errorsAssessed.passwordConfirmation = "Confirmation password doesn't match"
+		if (isBlank(data.password) || data.password.length < 6) errorsAssessed.password = 'A valid password must contain at least 6 characters'
+		if (!reset && isBlank(data.currentPassword)) errorsAssessed.currentPassword = 'Current password cannot be left empty'
+		if (isBlank(data.passwordConfirmation)) errorsAssessed.passwordConfirmation = 'Confirmation password cannot be left empty'
+		else if (data.password !== data.passwordConfirmation) errorsAssessed.passwordConfirmation = "Confirmation password doesn't match"
 		setErrors(errorsAssessed)
 
 		// Submit form if no errors
 		if (
-			Object.values(errorsAssessed).filter(
-				x => x === '' && (!reset || (reset && x.name !== 'currentPassword'))
-			).length === Object.keys(errors).length
+			Object.values(errorsAssessed).filter(x => x === '' && (!reset || (reset && x.name !== 'currentPassword'))).length ===
+			Object.keys(errors).length
 		) {
 			setDisplay(1)
 			if (reset)
@@ -64,12 +59,7 @@ export default function EditCredentials({ reset = false, token }) {
 					false
 				)
 			else
-				fetchRequest(
-					'PUT',
-					{ current_password: data.currentPassword, password: data.password },
-					'users',
-					(r, pR) => handleResponse(r, pR)
-				)
+				fetchRequest('PUT', { current_password: data.currentPassword, password: data.password }, 'users', (r, pR) => handleResponse(r, pR))
 		}
 	}
 

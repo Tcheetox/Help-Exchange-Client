@@ -27,7 +27,9 @@ export const AppDataProvider = ({ children }) => {
 					convCopy[convIndex].total_messages += 1
 				}
 				let unreadMessages = 0
-				convCopy[convIndex].messages.forEach(m => (m.status === 'unread' && m.user_id !== userIdRef.current ? (unreadMessages += 1) : null))
+				convCopy[convIndex].messages.forEach(m => {
+					if (m.status === 'unread' && m.user_id !== userIdRef.current) unreadMessages += 1
+				})
 				convCopy[convIndex].unread_messages = unreadMessages
 				convCopy[convIndex].updated_at = convCopy[convIndex].messages[convCopy[convIndex].messages.length - 1].updated_at
 			}

@@ -35,8 +35,7 @@ export default function HelpRequest({
 		[users, userId]
 	)
 
-	const isChattable = user_type =>
-		(role === 'owner' && user_type !== 'owner') || (role === 'respondent' && user_type === 'owner')
+	const isChattable = user_type => (role === 'owner' && user_type !== 'owner') || (role === 'respondent' && user_type === 'owner')
 
 	const handleClick = e =>
 		userLoggedIn &&
@@ -62,6 +61,8 @@ export default function HelpRequest({
 		}
 	}
 
+	const getIconClass = x => `owner ${x.id === userId ? 'current' : ''} ${isChattable(x.user_type) ? 'chattable' : ''}`
+
 	return (
 		<Card className={`help-request ${role} ${active ? 'active' : 'inactive'}`}>
 			<Accordion.Toggle as={Card.Header} eventKey={eventKey}>
@@ -71,11 +72,7 @@ export default function HelpRequest({
 				</div>
 				<div className='badges'>
 					<Badge type={help_type} tooltip={help_type === 'material' ? 'Material' : 'One-time help'} />
-					{status === 'published' ? (
-						<Badge type='visible' tooltip='Visible' />
-					) : (
-						<Badge type='not-visible' tooltip='Not visible' />
-					)}
+					{status === 'published' ? <Badge type='visible' tooltip='Visible' /> : <Badge type='not-visible' tooltip='Not visible' />}
 					<Badge type={status} tooltip={titleize(status)} />
 				</div>
 			</Accordion.Toggle>
@@ -105,19 +102,9 @@ export default function HelpRequest({
 												</Tooltip>
 											}>
 											{x.user_type === 'owner' ? (
-												<OwnerIcon
-													className={`owner ${x.id === userId ? 'current' : ''} ${
-														isChattable(x.user_type) ? 'chattable' : ''
-													}`}
-													onClick={() => handleConversation(x)}
-												/>
+												<OwnerIcon className={`owner ${getIconClass()}`} onClick={() => handleConversation(x)} />
 											) : (
-												<PersonIcon
-													className={`respondent ${x.id === userId ? 'current' : ''} ${
-														isChattable(x.user_type) ? 'chattable' : ''
-													}`}
-													onClick={() => handleConversation(x)}
-												/>
+												<PersonIcon className={`respondent ${getIconClass()}`} onClick={() => handleConversation(x)} />
 											)}
 										</OverlayTrigger>
 									))}
@@ -127,8 +114,7 @@ export default function HelpRequest({
 						<div className='actions'>
 							{role === 'owner' &&
 							(status === 'cancelled' ||
-								(status === 'pending' &&
-									new Date(pending_at).setDate(new Date(pending_at).getDate() + 1) < new Date())) ? (
+								(status === 'pending' && new Date(pending_at).setDate(new Date(pending_at).getDate() + 1) < new Date())) ? (
 								<Button className='fancy-green' name='republish' onClick={handleClick}>
 									Republish
 								</Button>

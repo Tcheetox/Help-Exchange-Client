@@ -12,20 +12,26 @@ export default function LoadingButton({ className, children, variant, type, onCl
 			disabled={display === 1 || display === 2}
 			onClick={onClick}
 			name={name}
-			className={
-				display === 1
-					? `${className} loading button-spin`
-					: display === 2
-					? `${className} loading button-check`
-					: `${className} loading button-text`
-			}>
-			{display === 1 ? (
-				<Spinner className='spinner-button' animation='border' />
-			) : display === 2 ? (
-				<CheckIcon className='check' color='inherit' />
-			) : (
-				children
-			)}
+			className={(() => {
+				switch (display) {
+					case 1:
+						return `${className} loading button-spin`
+					case 2:
+						return `${className} loading button-check`
+					default:
+						return `${className} loading button-text`
+				}
+			})()}>
+			{(() => {
+				switch (display) {
+					case 1:
+						return <Spinner className='spinner-button' animation='border' />
+					case 2:
+						return <CheckIcon className='check' color='inherit' />
+					default:
+						return children
+				}
+			})()}
 		</Button>
 	)
 }

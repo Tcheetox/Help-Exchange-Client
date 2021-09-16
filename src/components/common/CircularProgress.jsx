@@ -20,7 +20,7 @@ export default function CircularProgress({ percent, title }) {
 						<span
 							className='progress-bar border-primary'
 							style={{
-								transform: `rotate(${percent > 0 ? (percent >= 50 ? 180 : percent * 3.6) : 0}deg)`,
+								transform: `rotate(${percent > 0 && percent >= 50 ? 180 : percent * 3.6}deg)`,
 								transition: `all ${percent === 100 ? '0ms' : 'var(--default-transition-duration)'}`,
 							}}></span>
 					</span>

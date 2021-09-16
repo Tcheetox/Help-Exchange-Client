@@ -49,17 +49,17 @@ export default function CreateRequest() {
 	const onSubmit = e => {
 		e.preventDefault()
 		const _errors = { ...errors }
-		Object.keys(_errors).forEach(k =>
-			data[k].length > 0 ? (_errors[k] = '') : (_errors[k] = `${titleize(k)} cannot be left empty`)
-		)
+		Object.keys(_errors).forEach(k => {
+			if (data[k].length > 0) _errors[k] = ''
+			else _errors[k] = `${titleize(k)} cannot be left empty`
+		})
 		setErrors(_errors)
 		// Submit form if no errors
 		if (Object.values(_errors).filter(x => x === '').length === Object.keys(errors).length && userLoggedIn) {
 			setDisplay(1)
 			if (!data.lng || !data.lat)
 				geocode(data.address, ({ lat, lng }) => {
-					if (lat && lng)
-						fetchRequest('POST', { ...data, lng: lng, lat: lat }, 'help_requests', fetchCallback)
+					if (lat && lng) fetchRequest('POST', { ...data, lng: lng, lat: lat }, 'help_requests', fetchCallback)
 					else {
 						setErrors(er => ({ ...er, address: 'Invalid address' }))
 						setDisplay(0)
@@ -124,10 +124,7 @@ export default function CreateRequest() {
 					onChange={onChange}
 					display={display}
 				/>
-				<LoadingButton
-					onClick={acquireLocation}
-					className='fancy-blue location'
-					display={display !== 0 ? display : displayLocating}>
+				<LoadingButton onClick={acquireLocation} className='fancy-blue location' display={display !== 0 ? display : displayLocating}>
 					<ExploreIcon />
 				</LoadingButton>
 			</Form.Row>
@@ -142,11 +139,7 @@ export default function CreateRequest() {
 				onChange={onChange}
 				display={display}
 				maxChars={300}
-				text={
-					data.description.length > 0
-						? `${300 - data.description.length} characters remaining`
-						: 'Maximum 300 characters'
-				}
+				text={data.description.length > 0 ? `${300 - data.description.length} characters remaining` : 'Maximum 300 characters'}
 			/>
 			<LoadingButton className='plain-blue' type='submit' display={display}>
 				Submit

@@ -8,11 +8,7 @@ export default function Map({ match }) {
 		<>
 			<Counter />
 			<GoogleMap
-				forcedCenter={
-					match.params && 'center' in match.params && match.params.center.includes(';')
-						? match.params.center
-						: null
-				}
+				forcedCenter={match.params && 'center' in match.params && match.params.center.includes(';') ? match.params.center : null}
 			/>
 		</>
 	)

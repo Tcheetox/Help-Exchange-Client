@@ -30,8 +30,7 @@ export default function SmartFaq() {
 	)
 
 	const handleSearch = e => {
-		if (e.target.value !== '')
-			setFilteredData(() => search(data, ['question', 'response', 'keywords'], e.target.value))
+		if (e.target.value !== '') setFilteredData(() => search(data, ['question', 'response', 'keywords'], e.target.value))
 		else setFilteredData(data)
 		setSearchField(e.target.value)
 	}

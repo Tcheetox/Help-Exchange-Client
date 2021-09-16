@@ -13,8 +13,7 @@ export default function MessageArea({ conversation, loading }) {
 	// Auto-scroll until last message sent
 	useEffect(() => {
 		if (!loading && conversation.messages.length && messagesAreaRef.current) {
-			if (messagesAreaRef.current.childNodes && messagesAreaRef.current.childNodes.length > 1)
-				autoScroll('auto')
+			if (messagesAreaRef.current.childNodes && messagesAreaRef.current.childNodes.length > 1) autoScroll('auto')
 		}
 	}, [conversation.messages.length, loading])
 
@@ -27,8 +26,7 @@ export default function MessageArea({ conversation, loading }) {
 					break
 				}
 			// Scroll
-			const scrollHeight =
-				targetNode.offsetTop - targetNode.offsetParent.offsetHeight + targetNode.offsetHeight + 6
+			const scrollHeight = targetNode.offsetTop - targetNode.offsetParent.offsetHeight + targetNode.offsetHeight + 6
 			messagesAreaRef.current.scrollBy({ left: 0, top: scrollHeight, behavior: behavior })
 		} catch (error) {
 			logError(error)
@@ -40,9 +38,7 @@ export default function MessageArea({ conversation, loading }) {
 			{loading ? (
 				<LoadingSpinner />
 			) : conversation.messages.length ? (
-				conversation.messages.map((m, k) => (
-					<MessageMemo props={{ ...m, current_year: currentYear, current_user_id: userId }} key={k} />
-				))
+				conversation.messages.map((m, k) => <MessageMemo props={{ ...m, current_year: currentYear, current_user_id: userId }} key={k} />)
 			) : null}
 		</div>
 	)

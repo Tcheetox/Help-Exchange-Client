@@ -12,9 +12,7 @@ export default function Item({ question, response }) {
 
 	const renderHyperlinks = () => {
 		let responseElements = []
-		const splittedRepsonse = response
-			.split(new RegExp(hyperlinks.map(h => `(${h.tag})`).join('|'), 'g'))
-			.filter(Boolean)
+		const splittedRepsonse = response.split(new RegExp(hyperlinks.map(h => `(${h.tag})`).join('|'), 'g')).filter(Boolean)
 		splittedRepsonse.forEach((e, i) => {
 			const hyperIndex = hyperlinks.findIndex(h => h.tag === e)
 			if (hyperIndex !== -1) responseElements.push(<span key={i}>{hyperlinks[hyperIndex].compo}</span>)

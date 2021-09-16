@@ -50,12 +50,12 @@ export default function GoogleMap({ forcedCenter }) {
 		if (!forcedCenter) {
 			if (userProfile && userProfile.lat && userProfile.lng) {
 				setCenter({ lat: userProfile.lat, lng: userProfile.lng })
-			} else if (hasGeolocationPermission())
+			} else if (hasGeolocationPermission()) {
 				navigator.geolocation.getCurrentPosition(pos => {
 					if (!userProfileRef.current || !userProfileRef.current.lat || !userProfileRef.current.lng)
 						setCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude })
 				})
-			else {
+			} else {
 				try {
 					publicIP().then(ip =>
 						fetch(`https://api.ipgeolocation.io/ipgeo?apiKey=${process.env.REACT_APP_IP_GEOLOCATION_KEY}&ip=${ip}`)

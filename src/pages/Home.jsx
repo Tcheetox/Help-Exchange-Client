@@ -41,8 +41,7 @@ export default function Home() {
 						<Col xs={3} />
 						<Col xs={5} className='text elder'>
 							<h3>
-								<span className='bold'>Fish For Help</span> is a free platform that enables mutual aid and
-								foster caring in your region.
+								<span className='bold'>Fish For Help</span> is a free platform that enables mutual aid and foster caring in your region.
 							</h3>
 						</Col>
 						<Col xs={4} className='image'>

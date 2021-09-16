@@ -20,8 +20,7 @@ export default function InputForm({
 	canBeDisabled = true,
 }) {
 	const shouldShowInvalid = () => error !== undefined && error.length > 0
-	const shouldShowValid = () =>
-		(error !== undefined && error === '' && display !== 1) || (error === undefined && display === 2)
+	const shouldShowValid = () => (error !== undefined && error === '' && display !== 1) || (error === undefined && display === 2)
 
 	const renderText = () => (
 		<Form.Text className={shouldShowInvalid() ? 'invalid' : shouldShowValid() ? 'valid' : ''}>

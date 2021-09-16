@@ -10,23 +10,30 @@ export default function Troubleshoot({ match }) {
 		return (
 			<Container className='troubleshoot core'>
 				<h1>
-					{match.params.action.toLowerCase() === 'password'
-						? 'Forgot password'
-						: match.params.action.toLowerCase() === 'confirmation'
-						? 'Resend confirmation'
-						: 'Reset password'}
+					{(() => {
+						switch (match.params.action.toLowerCase()) {
+							case 'password':
+								return 'Forgot password'
+							case 'confirmation':
+								return 'Resend confirmation'
+							default:
+								return 'Reset password'
+						}
+					})()}
 				</h1>
 				<Card>
 					<Card.Body>
-						{match.params.action.toLowerCase() === 'password' ? (
-							<EmailOnly action='forgot_password' />
-						) : match.params.action.toLowerCase() === 'confirmation' ? (
-							<EmailOnly action='send_confirmation' />
-						) : (
-							<EditCredentials reset={true} token={match.params.token} />
-						)}
-						{match.params.action.toLowerCase() === 'password' ||
-						match.params.action.toLowerCase() === 'confirmation' ? (
+						{(() => {
+							switch (match.params.action.toLowerCase()) {
+								case 'password':
+									return <EmailOnly action='forgot_password' />
+								case 'confirmation':
+									return <EmailOnly action='send_confirmation' />
+								default:
+									return <EditCredentials reset={true} token={match.params.token} />
+							}
+						})()}
+						{match.params.action.toLowerCase() === 'password' || match.params.action.toLowerCase() === 'confirmation' ? (
 							<>
 								<hr /> Don't worry, we got you covered!
 							</>
