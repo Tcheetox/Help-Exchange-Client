@@ -39,20 +39,14 @@ export const AppContextProvider = props => {
 			let parsedResp
 			let error
 			try {
-				resp = await fetch(
-					`${process.env.REACT_APP_API_PREFIX}/api/${process.env.REACT_APP_API_VERSION}/${uriSuffix}`,
-					reqOptions
-				)
+				resp = await fetch(`${process.env.REACT_APP_API_PREFIX}/api/${process.env.REACT_APP_API_VERSION}/${uriSuffix}`, reqOptions)
 				parsedResp = resp.status !== 204 ? await resp.json() : {}
 			} catch (_error) {
 				error = _error
 				logError(error)
 			}
 			// Display error message automatically by triggering a banner update if server provided a display message or if try-catch is triggered
-			if (
-				(!resp && error) ||
-				(resp && parsedResp && 'error' in parsedResp && parsedResp.error.server_code === 50000)
-			)
+			if ((!resp && error) || (resp && parsedResp && 'error' in parsedResp && parsedResp.error.server_code === 50000))
 				triggerBanner('unexpected_error')
 			if (callback) callback(!resp ? { status: 500 } : resp, isBlank(parsedResp) ? {} : parsedResp)
 		},
@@ -187,8 +181,7 @@ export const AppContextProvider = props => {
 		userEmail: '',
 		userProfileCompleted: false,
 		userProfile: null,
-		updateUserProfile: profile =>
-			setGlobals(g => ({ ...g, userProfileCompleted: profile.completed, userProfile: profile })),
+		updateUserProfile: profile => setGlobals(g => ({ ...g, userProfileCompleted: profile.completed, userProfile: profile })),
 		cable: null,
 		logIn: logIn,
 		logInWithGoogle: logInWithGoogle,
@@ -199,12 +192,7 @@ export const AppContextProvider = props => {
 	useEffect(
 		() =>
 			globals.userLoggedIn &&
-			fetchRequest(
-				'GET',
-				null,
-				'users',
-				(r, pR) => r.status === 200 && setGlobals(g => ({ ...g, userProfile: pR }))
-			),
+			fetchRequest('GET', null, 'users', (r, pR) => r.status === 200 && setGlobals(g => ({ ...g, userProfile: pR }))),
 		[globals.userLoggedIn, fetchRequest]
 	)
 
@@ -230,11 +218,7 @@ export const AppContextProvider = props => {
 				removeCookieAuth()
 			} else {
 				sessionStorage.setItem('shortlived-auth', tokens.refreshToken)
-				if (
-					Object.keys(cookies).length > 0 &&
-					cookies[authCookieName] !== '' &&
-					cookies[authCookieName] !== tokens.refreshToken
-				)
+				if (Object.keys(cookies).length > 0 && cookies[authCookieName] !== '' && cookies[authCookieName] !== tokens.refreshToken)
 					createCookieAuth(tokens.refreshToken)
 			}
 		}
@@ -248,21 +232,16 @@ export const AppContextProvider = props => {
 				refreshToken(
 					token,
 					r =>
-						r.status !== 200 &&
-						Object.keys(cookies).length > 0 &&
-						cookies[authCookieName] !== '' &&
-						refreshToken(cookies[authCookieName])
+						r.status !== 200 && Object.keys(cookies).length > 0 && cookies[authCookieName] !== '' && refreshToken(cookies[authCookieName])
 				)
-			} else if (Object.keys(cookies).length > 0 && cookies[authCookieName] !== '')
-				refreshToken(cookies[authCookieName])
+			} else if (Object.keys(cookies).length > 0 && cookies[authCookieName] !== '') refreshToken(cookies[authCookieName])
 		}
 	}, [globals.userLoggedIn, cookies, refreshToken])
 
 	// Automatic token refresh
 	useEffect(() => {
 		let intervalId
-		if (!isBlank(tokens.refreshToken) && globals.userLoggedIn)
-			intervalId = setInterval(() => refreshToken(tokens.refreshToken), 600000) // Runs every 10 min because token expires after 15 min
+		if (!isBlank(tokens.refreshToken) && globals.userLoggedIn) intervalId = setInterval(() => refreshToken(tokens.refreshToken), 600000) // Runs every 10 min because token expires after 15 min
 		return () => clearInterval(intervalId)
 	}, [tokens.refreshToken, globals.userLoggedIn, refreshToken])
 
