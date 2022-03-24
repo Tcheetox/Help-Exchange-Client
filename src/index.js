@@ -4,15 +4,14 @@ import './index.css'
 import App from './App'
 import { BrowserRouter } from 'react-router-dom'
 import { AppContextProvider } from './AppContext'
-//import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
-	<BrowserRouter basename='krenier/fishforhelp'>
-		<AppContextProvider>
-			<App />
-		</AppContextProvider>
-	</BrowserRouter>,
-	document.getElementById('root')
+    <BrowserRouter basename="fishforhelp">
+        <AppContextProvider>
+            <App />
+        </AppContextProvider>
+    </BrowserRouter>,
+    document.getElementById('root')
 )
 
 // If you want to start measuring performance in your app, pass a function

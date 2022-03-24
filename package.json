@@ -27,7 +27,7 @@
     "ss-search": "^1.6.1",
     "web-vitals": "^0.2.4"
   },
-  "homepage": "/krenier/fishforhelp",
+  "homepage": "/fishforhelp",
   "scripts": {
     "start": "set PORT=3001&& react-scripts start --env.ENVIRONMENT=development",
     "build": "react-scripts build && compress-cra",
