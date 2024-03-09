@@ -63,7 +63,7 @@ export default function HelpRequest({
 
   return (
     <Card className={`help-request ${role} ${active ? 'active' : 'inactive'}`}>
-      <Accordion.Toggle as={Card.Header} eventKey={eventKey}>
+      <Accordion.Item as={Card.Header} eventKey={eventKey}>
         <div className='info'>
           <div className='title'>{title}</div>
           <div className='date'>Created {dateFormat(created_at, 'mmm dd yyyy')}</div>
@@ -73,8 +73,8 @@ export default function HelpRequest({
           {status === 'published' ? <Badge type='visible' tooltip='Visible' /> : <Badge type='not-visible' tooltip='Not visible' />}
           <Badge type={status} tooltip={titleize(status)} />
         </div>
-      </Accordion.Toggle>
-      <Accordion.Collapse eventKey={eventKey}>
+      </Accordion.Item>
+      <Accordion.Item eventKey={eventKey}>
         <Card.Body>
           <div className='description'>{description}</div>
           <hr />
@@ -136,7 +136,7 @@ export default function HelpRequest({
             </div>
           </div>
         </Card.Body>
-      </Accordion.Collapse>
+      </Accordion.Item>
     </Card>
   )
 }

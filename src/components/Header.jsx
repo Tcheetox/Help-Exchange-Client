@@ -104,7 +104,13 @@ export default function Header() {
                 onMouseEnter={() => setDropdown(true)}
               >
                 <FoldLink to='/users/account'>{userEmail}</FoldLink>
-                <DropdownButton id='AccountDropdown' className='account-dropdown' title={<AccountIcon />} menuAlign='right' show={dropdown}>
+                <DropdownButton
+                  id='AccountDropdown'
+                  className='account-dropdown'
+                  title={<AccountIcon />}
+                  align={{ sm: 'end' }}
+                  show={dropdown}
+                >
                   <Dropdown.Item onClick={() => handleClick('/users/account')}>Profile</Dropdown.Item>
                   <Dropdown.Item onClick={() => handleClick('/users/dashboard')}>Dashboard</Dropdown.Item>
                   <Dropdown.Item onClick={() => handleClick('/users/messenger')}>
