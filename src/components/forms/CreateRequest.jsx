@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react'
 
 import { geocode, reverseGeocode, titleize } from '../../utilities'
-import Form from 'react-bootstrap/Form'
+import { Form, Row } from 'react-bootstrap'
 import { InputForm, LoadingButton } from '../common/'
 import ExploreIcon from '@mui/icons-material/Explore'
 import { AppContext } from '../../AppContext'
@@ -113,7 +113,7 @@ export default function CreateRequest() {
         <option>One-time help</option>
         <option>Material</option>
       </InputForm>
-      <Form.Row>
+      <Row>
         <InputForm
           label='Location'
           name='address'
@@ -126,7 +126,7 @@ export default function CreateRequest() {
         <LoadingButton onClick={acquireLocation} className='fancy-blue location' display={display !== 0 ? display : displayLocating}>
           <ExploreIcon />
         </LoadingButton>
-      </Form.Row>
+      </Row>
       <InputForm
         label='Description'
         name='description'
