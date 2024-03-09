@@ -23,7 +23,7 @@ export default function Marker({ helpRequest: { id, description, help_type, titl
       onMouseEnter={() => setPreventClose(true)}
       onMouseLeave={() => setPreventClose(undefined)}
     >
-      <Popover.Title>
+      <Popover.Header>
         <div className='request-title'>{title}</div>
 
         <div className='icon-action'>
@@ -47,8 +47,8 @@ export default function Marker({ helpRequest: { id, description, help_type, titl
             />
           )}
         </div>
-      </Popover.Title>
-      <Popover.Content>{description}</Popover.Content>
+      </Popover.Header>
+      <Popover.Body>{description}</Popover.Body>
     </Popover>
   )
 
