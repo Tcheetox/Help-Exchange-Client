@@ -1,0 +1,9 @@
+services:
+  portfolio-builder:
+    build: .
+    environment:
+      NODE_ENV: production
+    volumes:
+      - /var/www/help-exchange-client/data:/data
+    command: /bin/sh -c "rm -rf /data/* && npm run build && cp -r build/* /data/"
+    restart: unless-stopped
